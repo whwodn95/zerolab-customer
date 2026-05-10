@@ -6638,6 +6638,26 @@ function renderAdmin() {
               <textarea class="admin-input" id="admin-reason" rows="2" placeholder="예: 평일 오후 매출 저조하여 단골 회원 컴백 유도 필요" style="resize: vertical; font-family: inherit;">${draft.reason || ''}</textarea>
             </div>
 
+            <!-- v3: 시리얼 엑셀 첨부 (캠페인 신청 통합) -->
+            <div class="admin-input-group" style="margin-top: 14px;">
+              <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
+                <span>📤 시리얼 엑셀 첨부 <span style="color:#DC2626;font-weight:800;">(필수)</span></span>
+                <span id="campaign-serial-status" style="font-size: 10.5px; font-weight: 700; color: #6B7280;">미첨부</span>
+              </label>
+              <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 10.5px; color: #1E3A8A; font-weight: 600; line-height: 1.55;">
+                💡 POS사에서 받은 시리얼 엑셀을 첨부하세요.<br/>
+                형식: <code style="background:#FFFFFF;padding:1px 4px;border-radius:3px;font-size:10px;font-weight:800;color:#1E40DD;">[매장코드]-[6자리]</code> (예: NS001-A0F2K9)<br/>
+                <b style="color:#1E40DD;font-weight:800;">이 시리얼들은 모두 위 캠페인 (${draft.discount || 0}%) 으로 자동 매핑됩니다.</b>
+              </div>
+              <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 10px; padding: 18px 14px; text-align: center; cursor: pointer; transition: all 0.15s;" id="campaign-serial-zone">
+                <div style="font-size: 24px; margin-bottom: 6px;">📁</div>
+                <div style="font-size: 12px; color: #181600; font-weight: 800; margin-bottom: 2px; letter-spacing: -0.2px;" id="campaign-serial-filename">시리얼 엑셀 파일 선택</div>
+                <div style="font-size: 10px; color: #6B7280; font-weight: 500;" id="campaign-serial-hint">.xlsx · .xls · .csv · 최대 5MB</div>
+                <input type="file" id="campaign-serial-input" accept=".xlsx,.xls,.csv" style="display: none;" />
+              </div>
+              <div id="campaign-serial-result" style="display:none; margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; line-height: 1.55;"></div>
+            </div>
+
             <!-- v38 커스텀 메시지 (알림톡 본문) -->
             <div class="admin-input-group" style="margin-top: 14px;">
               <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
@@ -6873,11 +6893,17 @@ function renderAdmin() {
         </div>
         <!-- ========== /캠페인 신청 탭 ========== -->
 
-        <!-- ========== 시리얼 충전 탭 ========== -->
+        <!-- ========== 시리얼 충전 탭 (보조: 기존 캠페인에 추가) ========== -->
         <div class="admin-tab-content ${state.adminTab === 'serial' ? 'active' : ''}" data-tab-content="serial">
 
         <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">📤</span>시리얼 충전</div>
+          <div class="admin-card-title"><span class="admin-card-title-icon">📤</span>기존 캠페인에 시리얼 추가</div>
+
+          <!-- 안내 - 어떤 경우에 사용하는지 명확히 -->
+          <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 1px solid #FCD34D; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #78350F; font-weight: 700; line-height: 1.6;">
+            ⚠️ <b style="color: #78350F; font-weight: 900;">신규 캠페인은 [📨 캠페인 신청] 탭에서 만들어주세요</b><br/>
+            <span style="font-weight:600;display:block;margin-top:4px;">이 탭은 <b>이미 등록된 캠페인의 시리얼이 부족할 때</b> 추가하는 용도입니다.</span>
+          </div>
 
           <!-- 이번 달 발송 한도 게이지 -->
           <div style="background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border: 1px solid #86EFAC; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
@@ -6893,64 +6919,72 @@ function renderAdmin() {
             </div>
           </div>
 
-          <!-- 업로드 가이드 -->
-          <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 11px 13px; margin-bottom: 12px; font-size: 11px; color: #1E3A8A; font-weight: 600; line-height: 1.6;">
-            💡 <b style="color: #1E40DD; font-weight: 800;">엑셀 업로드 안내</b><br/>
-            POS사(트리플랫·CJ프레시웨이 등)에서 받은 시리얼 엑셀 파일을 업로드하세요.<br/>
-            형식: <code style="background:#FFFFFF;padding:1.5px 5px;border-radius:3px;font-size:10.5px;font-weight:800;color:#1E40DD;">[매장코드]-[6자리]</code> (예: NS001-A0F2K9)
+          <!-- 기존 캠페인 선택 (드롭다운) -->
+          <div class="admin-input-group" style="margin-bottom: 14px;">
+            <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
+              <span>📋 시리얼 추가할 캠페인 <span style="color:#DC2626;font-weight:800;">(필수)</span></span>
+            </label>
+            <select class="admin-input" id="serial-existing-campaign" style="cursor: pointer;">
+              <option value="">— 캠페인을 선택해주세요 —</option>
+              <option value="C001">5월 단골 컴백 25% · 잔여 200개 · 만료 2026-06-30</option>
+              <option value="C002">신규가입 환영 30% · 잔여 500개 · 만료 2026-12-31</option>
+              <option value="C003">평일 점심 5% · 잔여 800개 · 만료 2026-05-31</option>
+            </select>
+            <div style="margin-top: 6px; font-size: 10.5px; color: #6B7280; font-weight: 600;">
+              💡 선택한 캠페인에 시리얼이 추가됩니다. 할인율·유효기간은 자동으로 기존 설정 사용.
+            </div>
           </div>
 
-          <!-- 업로드 영역 (드래그앤드롭 zone) -->
-          <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 12px; padding: 28px 16px; text-align: center; margin-bottom: 12px; transition: border-color 0.15s, background 0.15s; cursor: pointer;" id="serial-upload-zone">
-            <div style="font-size: 36px; margin-bottom: 8px;">📤</div>
-            <div style="font-size: 13.5px; color: #181600; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.2px;">시리얼 엑셀 파일 업로드</div>
-            <div style="font-size: 11px; color: #6B7280; font-weight: 500; margin-bottom: 14px;">.xlsx · .xls · .csv 지원 · 최대 5MB</div>
-            <button type="button" id="serial-upload-btn" style="background: #1E40DD; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 12px; font-weight: 800; cursor: pointer; letter-spacing: -0.2px; box-shadow: 0 2px 4px rgba(30,64,221,0.2);">
+          <!-- 업로드 영역 -->
+          <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 12px; padding: 24px 16px; text-align: center; margin-bottom: 12px; transition: border-color 0.15s, background 0.15s; cursor: pointer;" id="serial-upload-zone">
+            <div style="font-size: 32px; margin-bottom: 6px;">📤</div>
+            <div style="font-size: 13px; color: #181600; font-weight: 800; margin-bottom: 2px; letter-spacing: -0.2px;" id="serial-upload-filename">추가 시리얼 엑셀 파일 선택</div>
+            <div style="font-size: 10.5px; color: #6B7280; font-weight: 500; margin-bottom: 14px;">.xlsx · .xls · .csv · 최대 5MB</div>
+            <button type="button" id="serial-upload-btn" style="background: #1E40DD; color: white; border: none; border-radius: 8px; padding: 9px 22px; font-size: 12px; font-weight: 800; cursor: pointer; letter-spacing: -0.2px; box-shadow: 0 2px 4px rgba(30,64,221,0.2);">
               📁 파일 선택
             </button>
             <input type="file" id="serial-upload-input" accept=".xlsx,.xls,.csv" style="display: none;" />
           </div>
 
           <!-- 자동 검증 안내 -->
-          <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: 8px; padding: 11px 13px; margin-bottom: 14px; font-size: 11px; color: #92400E; font-weight: 600; line-height: 1.65;">
-            🔍 <b style="color: #B45309; font-weight: 800;">자동 검증 항목</b><br/>
-            · 매장 prefix 일치 (NS001 매장 → <code style="background:#FFFFFF;padding:1px 4px;border-radius:3px;font-size:10px;">NS001-XXXXXX</code>만 등록)<br/>
-            · 본사 시리얼 풀과 중복 검사<br/>
-            · 형식 오류 행 자동 분리 (오류 리포트 제공)
+          <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 10.5px; color: #92400E; font-weight: 600; line-height: 1.6;">
+            🔍 <b style="color: #B45309; font-weight: 800;">자동 검증</b> · 매장 prefix 일치 / 풀 중복 / 형식 오류
           </div>
 
-          <!-- 최근 업로드 내역 -->
-          <div style="font-size: 12px; font-weight: 800; color: #181600; margin-bottom: 8px; letter-spacing: -0.2px;">
-            📋 최근 업로드 내역
+          <!-- 추가 신청 버튼 -->
+          <button id="serial-add-submit-btn" disabled style="width: 100%; background: #93A6BC; color: white; border: none; border-radius: 10px; padding: 13px; font-size: 13px; font-weight: 800; cursor: not-allowed; letter-spacing: -0.2px; transition: background 0.15s;">
+            본사 승인 요청
+          </button>
+          <div style="font-size: 10.5px; color: #5A6072; text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.5;">
+            ※ 캠페인 선택 + 파일 첨부 후 활성화됩니다
           </div>
+        </div>
+
+        <!-- 최근 업로드 내역 -->
+        <div class="admin-card">
+          <div class="admin-card-title"><span class="admin-card-title-icon">📋</span>최근 시리얼 업로드 내역</div>
           <div style="background: white; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden;">
             <div style="padding: 11px 13px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-05-08 14:32</div>
-                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 단골 컴백 25% · <b style="color:#16A34A;">1,000개</b> 시리얼</div>
+                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 단골 컴백 25% · <b style="color:#16A34A;">1,000개</b> · 신규 등록</div>
               </div>
               <div style="background: #DCFCE7; color: #15803D; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">✓ 승인</div>
             </div>
             <div style="padding: 11px 13px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-05-01 10:15</div>
-                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 신규 5% · <b style="color:#16A34A;">500개</b> 시리얼</div>
+                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 신규 5% · <b style="color:#16A34A;">500개</b> · 신규 등록</div>
               </div>
               <div style="background: #DCFCE7; color: #15803D; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">✓ 승인</div>
             </div>
             <div style="padding: 11px 13px; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-04-22 16:48</div>
-                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">4월 점심 7% · <b style="color:#D97706;">412개</b> 시리얼 (12개 중복 제외)</div>
+                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">4월 점심 7% · <b style="color:#D97706;">412개</b> · 추가 (12개 중복)</div>
               </div>
               <div style="background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">⚠ 부분</div>
             </div>
-          </div>
-
-          <!-- 안내 -->
-          <div style="margin-top: 14px; font-size: 10.5px; color: #6B7280; text-align: center; font-weight: 600; line-height: 1.5;">
-            ※ 업로드된 시리얼은 캠페인 신청 시 자동 사용됩니다<br/>
-            ※ 미사용 시리얼은 만료일까지 보관 (기본 60일)
           </div>
         </div>
 
@@ -7263,25 +7297,91 @@ function handleSerialFile(file) {
     return;
   }
 
+  // 파일명 표시
+  const fnEl = document.getElementById('serial-upload-filename');
+  if (fnEl) fnEl.textContent = `📄 ${file.name}`;
+
   // 시뮬레이션: 가짜 검증 결과 (실제로는 서버 응답)
   const branchCode = (typeof BRANCH !== 'undefined' && BRANCH.code) ? BRANCH.code : 'NS001';
-  const fakeTotal = 800 + Math.floor(Math.random() * 300);
-  const fakeDuplicates = Math.floor(Math.random() * 20);
+  const fakeTotal = 200 + Math.floor(Math.random() * 300);
+  const fakeDuplicates = Math.floor(Math.random() * 8);
+  const fakeFormatErrors = Math.floor(Math.random() * 3);
+  const fakeRegistered = fakeTotal - fakeDuplicates - fakeFormatErrors;
+
+  // 첨부 완료 상태 저장
+  state._serialFileReady = true;
+  state._serialFileMeta = { name: file.name, total: fakeTotal, registered: fakeRegistered };
+
+  // 활성화 버튼 업데이트
+  const existingCampaignSel = document.getElementById('serial-existing-campaign');
+  const serialAddBtn = document.getElementById('serial-add-submit-btn');
+  if (serialAddBtn && existingCampaignSel) {
+    const ready = existingCampaignSel.value && state._serialFileReady;
+    serialAddBtn.disabled = !ready;
+    serialAddBtn.style.background = ready ? '#1E40DD' : '#93A6BC';
+    serialAddBtn.style.cursor = ready ? 'pointer' : 'not-allowed';
+  }
+
+  try {
+    toast(`✅ ${fakeRegistered.toLocaleString()}개 시리얼 검증 완료 · 캠페인 선택 후 신청`);
+  } catch(e) {
+    alert(`✅ 시리얼 검증 완료\n\n전체: ${fakeTotal}개\n등록 가능: ${fakeRegistered}개\n중복: ${fakeDuplicates}개\n형식 오류: ${fakeFormatErrors}개\n\n※ 위에서 캠페인을 선택한 후 [본사 승인 요청]을 눌러주세요`);
+  }
+}
+
+// === 캠페인 신청 시리얼 첨부 핸들러 (v3) ===
+function handleCampaignSerialFile(file) {
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    try { toast('⚠️ 파일이 너무 큽니다 (최대 5MB)'); } catch(e) {}
+    return;
+  }
+
+  const validExt = /\.(xlsx|xls|csv)$/i;
+  if (!validExt.test(file.name)) {
+    try { toast('⚠️ 엑셀 또는 CSV 파일만 가능합니다'); } catch(e) {}
+    return;
+  }
+
+  // 파일명 + 검증 결과 표시
+  const filenameEl = document.getElementById('campaign-serial-filename');
+  const hintEl = document.getElementById('campaign-serial-hint');
+  const statusEl = document.getElementById('campaign-serial-status');
+  const resultEl = document.getElementById('campaign-serial-result');
+
+  if (filenameEl) filenameEl.textContent = `📄 ${file.name}`;
+  if (hintEl) hintEl.textContent = '클릭하여 다른 파일 선택';
+
+  // 시뮬레이션: 검증 결과
+  const fakeTotal = 200 + Math.floor(Math.random() * 800);
+  const fakeDuplicates = Math.floor(Math.random() * 15);
   const fakeFormatErrors = Math.floor(Math.random() * 5);
   const fakeRegistered = fakeTotal - fakeDuplicates - fakeFormatErrors;
 
-  const message = `✅ 업로드 검증 완료 (시뮬레이션)\n\n` +
-    `📁 파일: ${file.name}\n` +
-    `📦 매장: ${branchCode}\n\n` +
-    `📊 검증 결과:\n` +
-    `  · 전체: ${fakeTotal.toLocaleString()}개\n` +
-    `  · 등록 성공: ${fakeRegistered.toLocaleString()}개\n` +
-    `  · 중복 제외: ${fakeDuplicates}개\n` +
-    `  · 형식 오류: ${fakeFormatErrors}개\n\n` +
-    `※ 본사 검토 후 승인되면 캠페인에서 사용 가능합니다\n` +
-    `※ 비용은 본사 100% 부담`;
+  // state 저장 (캠페인 신청용)
+  state.adminDraft.serialFile = { name: file.name, total: fakeTotal, registered: fakeRegistered, duplicates: fakeDuplicates, errors: fakeFormatErrors };
 
-  alert(message);
+  // 상태 표시
+  if (statusEl) {
+    statusEl.textContent = `✓ ${fakeRegistered.toLocaleString()}개 등록 가능`;
+    statusEl.style.color = '#15803D';
+  }
+
+  // 결과 박스
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.style.background = '#DCFCE7';
+    resultEl.style.color = '#15803D';
+    resultEl.style.border = '1px solid #86EFAC';
+    resultEl.innerHTML = `
+      ✅ <b style="font-weight:900;">시리얼 검증 완료</b><br/>
+      <span style="font-weight:600;">· 전체: <b>${fakeTotal.toLocaleString()}개</b></span><br/>
+      <span style="font-weight:600;">· 등록 가능: <b style="color:#16A34A;">${fakeRegistered.toLocaleString()}개</b></span>${fakeDuplicates > 0 ? `<br/><span style="font-weight:600;">· 중복 제외: ${fakeDuplicates}개</span>` : ''}${fakeFormatErrors > 0 ? `<br/><span style="font-weight:600;">· 형식 오류: ${fakeFormatErrors}개</span>` : ''}
+    `;
+  }
+
+  try { toast(`✅ ${fakeRegistered.toLocaleString()}개 시리얼 첨부 완료`); } catch(e) {}
 }
 
 function bindAdmin() {
@@ -7333,6 +7433,56 @@ function bindAdmin() {
     }
     uploadInput.onchange = (e) => {
       if (e.target.files.length > 0) handleSerialFile(e.target.files[0]);
+    };
+  }
+
+  // === 시리얼 충전 탭: 캠페인 선택 + 파일 첨부 시 [본사 승인 요청] 활성화 ===
+  const existingCampaignSel = document.getElementById('serial-existing-campaign');
+  const serialAddBtn = document.getElementById('serial-add-submit-btn');
+  const updateSerialAddState = () => {
+    if (!serialAddBtn || !existingCampaignSel) return;
+    const ready = existingCampaignSel.value && state._serialFileReady;
+    serialAddBtn.disabled = !ready;
+    serialAddBtn.style.background = ready ? '#1E40DD' : '#93A6BC';
+    serialAddBtn.style.cursor = ready ? 'pointer' : 'not-allowed';
+  };
+  if (existingCampaignSel) {
+    existingCampaignSel.onchange = updateSerialAddState;
+  }
+  if (serialAddBtn) {
+    serialAddBtn.onclick = () => {
+      if (serialAddBtn.disabled) return;
+      const camp = existingCampaignSel.options[existingCampaignSel.selectedIndex].text;
+      try { toast(`📨 본사 승인 요청 전송: ${camp.split(' · ')[0]}`); } catch(e) {}
+      setTimeout(() => {
+        alert(`✅ 본사 승인 요청 전송 완료\n\n캠페인: ${camp.split(' · ')[0]}\n\n※ 본사 운영팀이 1영업일 이내 검토합니다\n※ 비용은 본사 100% 부담`);
+        state._serialFileReady = false;
+        existingCampaignSel.value = '';
+        const fnEl = document.getElementById('serial-upload-filename');
+        if (fnEl) fnEl.textContent = '추가 시리얼 엑셀 파일 선택';
+        updateSerialAddState();
+      }, 200);
+    };
+  }
+
+  // === 캠페인 신청 탭: 시리얼 첨부 핸들러 (v3) ===
+  const campaignSerialZone = document.getElementById('campaign-serial-zone');
+  const campaignSerialInput = document.getElementById('campaign-serial-input');
+  if (campaignSerialZone && campaignSerialInput) {
+    const triggerInput = (e) => { e.stopPropagation(); campaignSerialInput.click(); };
+    campaignSerialZone.onclick = triggerInput;
+    campaignSerialZone.ondragover = (e) => { e.preventDefault(); campaignSerialZone.style.borderColor = '#1E40DD'; campaignSerialZone.style.background = '#EFF6FF'; };
+    campaignSerialZone.ondragleave = () => { campaignSerialZone.style.borderColor = '#D1D5DB'; campaignSerialZone.style.background = '#F9FAFB'; };
+    campaignSerialZone.ondrop = (e) => {
+      e.preventDefault();
+      campaignSerialZone.style.borderColor = '#D1D5DB';
+      campaignSerialZone.style.background = '#F9FAFB';
+      if (e.dataTransfer.files.length > 0) {
+        handleCampaignSerialFile(e.dataTransfer.files[0]);
+      }
+    };
+    campaignSerialInput.onchange = (e) => {
+      if (e.target.files.length > 0) handleCampaignSerialFile(e.target.files[0]);
     };
   }
 
@@ -7406,6 +7556,14 @@ function bindAdmin() {
     }
     if (!draft.reason || draft.reason.trim().length < 5) {
       toast('신청 사유를 5자 이상 작성해주세요');
+      return;
+    }
+    // v3: 시리얼 첨부 필수 검증
+    if (!draft.serialFile) {
+      toast('📤 시리얼 엑셀 파일을 첨부해주세요');
+      // 시리얼 첨부 영역으로 스크롤
+      const zone = document.getElementById('campaign-serial-zone');
+      if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
     const targets = getTargetMembers(draft.target, draft.subFilter, draft.baseCoupon);
