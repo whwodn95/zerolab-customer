@@ -1522,6 +1522,40 @@
 
   .admin-content { padding: 16px 18px 32px; display: flex; flex-direction: column; gap: 14px; }
 
+  /* === 점주 모드 탭 === */
+  .admin-tabs {
+    display: flex; gap: 4px;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 4px;
+    position: sticky; top: 8px; z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .admin-tab {
+    flex: 1; padding: 9px 4px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 11px; font-weight: 700;
+    color: #6B7280;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+  }
+  .admin-tab.active {
+    background: #1E40DD;
+    color: white;
+    box-shadow: 0 2px 6px rgba(30,64,221,0.25);
+  }
+  .admin-tab:hover:not(.active) { background: #F3F4F6; color: #374151; }
+  .admin-tab-icon { display: block; font-size: 16px; margin-bottom: 2px; }
+  .admin-tab-content { display: none; flex-direction: column; gap: 14px; }
+  .admin-tab-content.active { display: flex; }
+
   .admin-card {
     background: white; border-radius: 14px; padding: 16px;
     border: 1px solid #E8EAEF;
@@ -4983,6 +5017,7 @@ const state = {
   timer: null,
   // admin 작업용
   adminDraft: { name: '', discount: 20, validMin: 30, target: 'all', subFilter: null, baseCoupon: null, reason: '', customMessage: '' },
+  adminTab: 'campaign',  // 'campaign' | 'dashboard' | 'serial'
 };
 
 // ============================================
@@ -6523,6 +6558,22 @@ function renderAdmin() {
           <div class="demo-guide-step">③ 발송 → <b>고객 모드로 전환</b>하면 NEW 쿠폰 알림 표시</div>
         </div>
 
+        <!-- 탭 헤더 -->
+        <div class="admin-tabs">
+          <button class="admin-tab ${state.adminTab === 'campaign' ? 'active' : ''}" data-tab="campaign" type="button">
+            <span class="admin-tab-icon">📨</span>캠페인 신청
+          </button>
+          <button class="admin-tab ${state.adminTab === 'serial' ? 'active' : ''}" data-tab="serial" type="button">
+            <span class="admin-tab-icon">📤</span>시리얼 충전
+          </button>
+          <button class="admin-tab ${state.adminTab === 'dashboard' ? 'active' : ''}" data-tab="dashboard" type="button">
+            <span class="admin-tab-icon">📊</span>매장 현황
+          </button>
+        </div>
+
+        <!-- ========== 매장 현황 탭 ========== -->
+        <div class="admin-tab-content ${state.adminTab === 'dashboard' ? 'active' : ''}" data-tab-content="dashboard">
+
         <div class="admin-card">
           <div class="admin-card-title"><span class="admin-card-title-icon">📊</span>회원 현황</div>
           <div class="admin-stats-grid">
@@ -6550,6 +6601,12 @@ function renderAdmin() {
             `).join('')}
           </div>
         </div>
+
+        </div>
+        <!-- ========== /매장 현황 탭 ========== -->
+
+        <!-- ========== 캠페인 신청 탭 ========== -->
+        <div class="admin-tab-content ${state.adminTab === 'campaign' ? 'active' : ''}" data-tab-content="campaign">
 
         <div class="admin-card">
           <div class="admin-card-title"><span class="admin-card-title-icon">📨</span>본사 캠페인 신청</div>
@@ -6586,21 +6643,25 @@ function renderAdmin() {
               <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
                 <span>📨 카톡 메시지 본문 <span style="font-weight:600;color:#5A6072;font-size:10.5px;">(선택 · 비워두면 기본 양식)</span></span>
                 <span class="msg-counter" id="admin-msg-counter" style="font-size: 10.5px; font-weight: 700; color: #5A6072;">
-                  <span id="admin-msg-count">0</span>/<b style="color:#1E40DD;">80</b>자 권장
+                  <span id="admin-msg-count">0</span><span style="color:#94A3B8;">/1,000자</span> · <b style="color:#1E40DD;">80자 권장</b>
                 </span>
               </label>
-              <textarea class="admin-input" id="admin-custom-message" rows="3" maxlength="200" placeholder="예) 평일 점심 단백질바 25% 할인! 12-14시 한정 · 30분 내 사용" style="resize: vertical; font-family: inherit;">${draft.customMessage || ''}</textarea>
+              <textarea class="admin-input" id="admin-custom-message" rows="3" maxlength="1000" placeholder="예) 평일 점심 단백질바 25% 할인! 12-14시 한정 · 30분 내 사용" style="resize: vertical; font-family: inherit;">${draft.customMessage || ''}</textarea>
               <div class="msg-cost-row" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
                 <div class="msg-cost-chip ok" id="admin-msg-status">
                   <span class="msg-cost-icon">✓</span>
                   <span id="admin-msg-status-text">친구톡(브랜드메시지) · 15원/건</span>
+                </div>
+                <div class="msg-cost-chip" style="background:#DCFCE7; color:#15803D; border-color:#86EFAC; font-weight:800;">
+                  <span class="msg-cost-icon">💰</span>
+                  본사 100% 부담
                 </div>
                 <div class="msg-cost-chip neutral">
                   <span class="msg-cost-icon">📊</span>
                   예상 발송: <b id="admin-msg-estimate-count" style="margin: 0 3px;">0건</b>
                 </div>
                 <div class="msg-cost-chip neutral">
-                  <span class="msg-cost-icon">💰</span>
+                  <span class="msg-cost-icon">💸</span>
                   예상 비용: <b id="admin-msg-estimate-cost" style="margin: 0 3px;">0원</b>
                 </div>
               </div>
@@ -6808,6 +6869,93 @@ function renderAdmin() {
           ※ 신청 후 본사 운영팀이 검토합니다 (보통 1영업일 이내)<br/>
           ※ 승인 즉시 자동 발송 · 비용은 본사 100% 부담
         </div>
+
+        </div>
+        <!-- ========== /캠페인 신청 탭 ========== -->
+
+        <!-- ========== 시리얼 충전 탭 ========== -->
+        <div class="admin-tab-content ${state.adminTab === 'serial' ? 'active' : ''}" data-tab-content="serial">
+
+        <div class="admin-card">
+          <div class="admin-card-title"><span class="admin-card-title-icon">📤</span>시리얼 충전</div>
+
+          <!-- 이번 달 발송 한도 게이지 -->
+          <div style="background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border: 1px solid #86EFAC; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+              <span style="font-size: 11.5px; color: #15803D; font-weight: 800; letter-spacing: -0.2px;">📊 이번 달 발송 가능</span>
+              <span style="font-size: 14px; color: #14532D; font-weight: 900; letter-spacing: -0.3px;">848 / 1,000건</span>
+            </div>
+            <div style="height: 8px; background: rgba(255,255,255,0.7); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);">
+              <div style="width: 84.8%; height: 100%; background: linear-gradient(90deg, #16A34A, #22C55E); border-radius: 4px;"></div>
+            </div>
+            <div style="margin-top: 8px; font-size: 10.5px; color: #15803D; font-weight: 700; line-height: 1.5;">
+              💡 한도 매월 1일 자동 갱신 · <b style="font-weight:900;">카톡 발송 비용 본사 100% 부담</b>
+            </div>
+          </div>
+
+          <!-- 업로드 가이드 -->
+          <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 11px 13px; margin-bottom: 12px; font-size: 11px; color: #1E3A8A; font-weight: 600; line-height: 1.6;">
+            💡 <b style="color: #1E40DD; font-weight: 800;">엑셀 업로드 안내</b><br/>
+            POS사(트리플랫·CJ프레시웨이 등)에서 받은 시리얼 엑셀 파일을 업로드하세요.<br/>
+            형식: <code style="background:#FFFFFF;padding:1.5px 5px;border-radius:3px;font-size:10.5px;font-weight:800;color:#1E40DD;">[매장코드]-[6자리]</code> (예: NS001-A0F2K9)
+          </div>
+
+          <!-- 업로드 영역 (드래그앤드롭 zone) -->
+          <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 12px; padding: 28px 16px; text-align: center; margin-bottom: 12px; transition: border-color 0.15s, background 0.15s; cursor: pointer;" id="serial-upload-zone">
+            <div style="font-size: 36px; margin-bottom: 8px;">📤</div>
+            <div style="font-size: 13.5px; color: #181600; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.2px;">시리얼 엑셀 파일 업로드</div>
+            <div style="font-size: 11px; color: #6B7280; font-weight: 500; margin-bottom: 14px;">.xlsx · .xls · .csv 지원 · 최대 5MB</div>
+            <button type="button" id="serial-upload-btn" style="background: #1E40DD; color: white; border: none; border-radius: 8px; padding: 10px 24px; font-size: 12px; font-weight: 800; cursor: pointer; letter-spacing: -0.2px; box-shadow: 0 2px 4px rgba(30,64,221,0.2);">
+              📁 파일 선택
+            </button>
+            <input type="file" id="serial-upload-input" accept=".xlsx,.xls,.csv" style="display: none;" />
+          </div>
+
+          <!-- 자동 검증 안내 -->
+          <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: 8px; padding: 11px 13px; margin-bottom: 14px; font-size: 11px; color: #92400E; font-weight: 600; line-height: 1.65;">
+            🔍 <b style="color: #B45309; font-weight: 800;">자동 검증 항목</b><br/>
+            · 매장 prefix 일치 (NS001 매장 → <code style="background:#FFFFFF;padding:1px 4px;border-radius:3px;font-size:10px;">NS001-XXXXXX</code>만 등록)<br/>
+            · 본사 시리얼 풀과 중복 검사<br/>
+            · 형식 오류 행 자동 분리 (오류 리포트 제공)
+          </div>
+
+          <!-- 최근 업로드 내역 -->
+          <div style="font-size: 12px; font-weight: 800; color: #181600; margin-bottom: 8px; letter-spacing: -0.2px;">
+            📋 최근 업로드 내역
+          </div>
+          <div style="background: white; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden;">
+            <div style="padding: 11px 13px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-05-08 14:32</div>
+                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 단골 컴백 25% · <b style="color:#16A34A;">1,000개</b> 시리얼</div>
+              </div>
+              <div style="background: #DCFCE7; color: #15803D; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">✓ 승인</div>
+            </div>
+            <div style="padding: 11px 13px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-05-01 10:15</div>
+                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 신규 5% · <b style="color:#16A34A;">500개</b> 시리얼</div>
+              </div>
+              <div style="background: #DCFCE7; color: #15803D; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">✓ 승인</div>
+            </div>
+            <div style="padding: 11px 13px; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-04-22 16:48</div>
+                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">4월 점심 7% · <b style="color:#D97706;">412개</b> 시리얼 (12개 중복 제외)</div>
+              </div>
+              <div style="background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">⚠ 부분</div>
+            </div>
+          </div>
+
+          <!-- 안내 -->
+          <div style="margin-top: 14px; font-size: 10.5px; color: #6B7280; text-align: center; font-weight: 600; line-height: 1.5;">
+            ※ 업로드된 시리얼은 캠페인 신청 시 자동 사용됩니다<br/>
+            ※ 미사용 시리얼은 만료일까지 보관 (기본 60일)
+          </div>
+        </div>
+
+        </div>
+        <!-- ========== /시리얼 충전 탭 ========== -->
       </div>
     </div>
   `;
@@ -7097,12 +7245,96 @@ function bind() {
   }
 }
 
+// === 시리얼 엑셀 업로드 시뮬레이션 ===
+// 실제 운영에선 서버로 파일 전송 → 검증 → DB 저장 (M3 백엔드에서 구현)
+function handleSerialFile(file) {
+  if (!file) return;
+
+  // 파일 사이즈 검증
+  if (file.size > 5 * 1024 * 1024) {
+    try { toast('⚠️ 파일이 너무 큽니다 (최대 5MB)'); } catch(e) { alert('파일이 너무 큽니다 (최대 5MB)'); }
+    return;
+  }
+
+  // 확장자 검증
+  const validExt = /\.(xlsx|xls|csv)$/i;
+  if (!validExt.test(file.name)) {
+    try { toast('⚠️ 엑셀(.xlsx/.xls) 또는 CSV 파일만 가능합니다'); } catch(e) { alert('엑셀 또는 CSV 파일만 가능합니다'); }
+    return;
+  }
+
+  // 시뮬레이션: 가짜 검증 결과 (실제로는 서버 응답)
+  const branchCode = (typeof BRANCH !== 'undefined' && BRANCH.code) ? BRANCH.code : 'NS001';
+  const fakeTotal = 800 + Math.floor(Math.random() * 300);
+  const fakeDuplicates = Math.floor(Math.random() * 20);
+  const fakeFormatErrors = Math.floor(Math.random() * 5);
+  const fakeRegistered = fakeTotal - fakeDuplicates - fakeFormatErrors;
+
+  const message = `✅ 업로드 검증 완료 (시뮬레이션)\n\n` +
+    `📁 파일: ${file.name}\n` +
+    `📦 매장: ${branchCode}\n\n` +
+    `📊 검증 결과:\n` +
+    `  · 전체: ${fakeTotal.toLocaleString()}개\n` +
+    `  · 등록 성공: ${fakeRegistered.toLocaleString()}개\n` +
+    `  · 중복 제외: ${fakeDuplicates}개\n` +
+    `  · 형식 오류: ${fakeFormatErrors}개\n\n` +
+    `※ 본사 검토 후 승인되면 캠페인에서 사용 가능합니다\n` +
+    `※ 비용은 본사 100% 부담`;
+
+  alert(message);
+}
+
 function bindAdmin() {
   attachClick('admin-back-btn', () => {
     state.mode = 'customer';
     if (state.screen !== 'welcome' && state.screen !== 'main' && state.screen !== 'mypage') state.screen = 'main';
     render();
   });
+
+  // === 탭 전환 ===
+  document.querySelectorAll('.admin-tab').forEach(btn => {
+    btn.onclick = () => {
+      const tab = btn.dataset.tab;
+      if (!tab) return;
+      state.adminTab = tab;
+      // 탭 활성화
+      document.querySelectorAll('.admin-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+      });
+      // 탭 컨텐츠 활성화
+      document.querySelectorAll('.admin-tab-content').forEach(c => {
+        c.classList.toggle('active', c.dataset.tabContent === tab);
+      });
+      // 화면 상단으로 스크롤
+      const adminContent = document.querySelector('.admin-content');
+      if (adminContent) adminContent.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  });
+
+  // === 시리얼 엑셀 업로드 (시뮬레이션) ===
+  const uploadBtn = document.getElementById('serial-upload-btn');
+  const uploadInput = document.getElementById('serial-upload-input');
+  const uploadZone = document.getElementById('serial-upload-zone');
+  if (uploadBtn && uploadInput) {
+    uploadBtn.onclick = (e) => { e.stopPropagation(); uploadInput.click(); };
+    if (uploadZone) {
+      uploadZone.onclick = () => uploadInput.click();
+      uploadZone.ondragover = (e) => { e.preventDefault(); uploadZone.style.borderColor = '#1E40DD'; uploadZone.style.background = '#EFF6FF'; };
+      uploadZone.ondragleave = () => { uploadZone.style.borderColor = '#D1D5DB'; uploadZone.style.background = '#F9FAFB'; };
+      uploadZone.ondrop = (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#D1D5DB';
+        uploadZone.style.background = '#F9FAFB';
+        if (e.dataTransfer.files.length > 0) {
+          handleSerialFile(e.dataTransfer.files[0]);
+        }
+      };
+    }
+    uploadInput.onchange = (e) => {
+      if (e.target.files.length > 0) handleSerialFile(e.target.files[0]);
+    };
+  }
 
   // 폼 입력 (성능: 매 키 입력마다 render()를 부르면 커서가 풀리므로 state만 업데이트)
   const nameEl = document.getElementById('admin-name');
@@ -7286,11 +7518,11 @@ function updateAdminMsgCost() {
   const text = (draft.customMessage || '');
   const len = text.length;
 
-  // 글자수 카운터 (가독성 권장 80자 기준)
+  // 글자수 카운터 (가독성 권장 80자, 한도 1,000자)
   const countEl = document.getElementById('admin-msg-count');
   if (countEl) {
     countEl.textContent = len;
-    countEl.style.color = len > 80 ? '#D97706' : (len > 60 ? '#1E40DD' : '#1E40DD');
+    countEl.style.color = len > 800 ? '#DC2626' : (len > 80 ? '#D97706' : '#1E40DD');
     countEl.style.fontWeight = '900';
   }
 
@@ -7337,10 +7569,10 @@ function updateAdminMsgCost() {
   const msgType = '친구톡(브랜드메시지)';
   let statusClass = 'ok', statusIcon = '✓', statusText = `${msgType} · ${unitCost}원/건`;
 
-  if (len > 200) {
+  if (len > 800) {
     statusClass = 'warn';
     statusIcon = '⚠';
-    statusText = `${msgType} · ${unitCost}원/건 · 너무 길어요 (가독성↓)`;
+    statusText = `${msgType} · ${unitCost}원/건 · 한도 근접 (1,000자)`;
   } else if (len > 80) {
     statusClass = 'neutral';
     statusIcon = 'ℹ';
