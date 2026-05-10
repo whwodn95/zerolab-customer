@@ -5040,7 +5040,10 @@ let MEMBERS = [
 // 전체가능(type:'all') 쿠폰을 1회 사용하면 일정 시간 동안 다시 사용 불가
 // 비회원은 브라우저 세션 단위로 추적 (실서비스: 디바이스 핑거프린트 또는 IP 기반)
 // 회원은 member.couponCooldowns 객체에 저장 (서버 동기화)
-const COOLDOWN_SECONDS = 30; // 데모: 30초 / 실서비스 권장: 86400 (24시간)
+// === 본사 정책 변수 (M2 본사 시스템에서 변경 가능) ===
+// 데모 테스트: 30초 / 실서비스 권장: 86400 (24시간)
+// 점주 미팅 시연 시 30초로 두면 쿨다운 동작 빠르게 확인 가능
+const COOLDOWN_SECONDS = 30;
 const guestSession = {
   guestId: 'guest_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
   couponCooldowns: {}, // { [campaignId]: unlockTimestamp }
@@ -5074,7 +5077,7 @@ const state = {
     customMessage: '',
     serialFile: null,
   },
-  adminTab: 'campaign',  // 'campaign' | 'dashboard' | 'serial'
+  adminTab: 'campaign',  // 'campaign' | 'manage' | 'dashboard'
 };
 
 // ============================================
@@ -5217,6 +5220,13 @@ const api = {
     if (!member.receivedCampaigns) member.receivedCampaigns = [];
     if (!member.receivedCampaigns.includes(campaign.id)) {
       member.receivedCampaigns.push(campaign.id);
+    }
+    // v6: 회원전용 캠페인 사용 시 → 메인 화면에서 영구 숨김
+    if (campaign.type === 'member') {
+      if (!member.usedMemberCampaigns) member.usedMemberCampaigns = [];
+      if (!member.usedMemberCampaigns.includes(campaign.id)) {
+        member.usedMemberCampaigns.push(campaign.id);
+      }
     }
   },
   // 본사 - 새 캠페인 만들고 타겟에게 푸시
@@ -5674,7 +5684,9 @@ function openKakaoAlimtalkModal(c, serial, onContinue) {
 // === 회원전용 쿠폰 전체 보기 모달 ===
 function openMemberCouponsModal() {
   const isMember = !!state.member;
-  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly);
+  // v6: 사용한 회원전용 쿠폰 숨김
+  const usedMemberIds = (isMember && state.member.usedMemberCampaigns) || [];
+  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly && !usedMemberIds.includes(c.id));
   const colors = ['orange', 'blue', 'purple'];
   const illusts = [ZL_ASSETS.illustProteinBar, ZL_ASSETS.illustDrink, ZL_ASSETS.illustGift, ZL_ASSETS.illustExtra1, ZL_ASSETS.illustExtra2];
 
@@ -6057,9 +6069,11 @@ window.closeNewsletterDetail = function() {
 
 function renderMain() {
   const isMember = !!state.member;
-  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly);
+  // v6: 회원전용 사용 후 메인에서 영구 숨김
+  const usedMemberIds = (isMember && state.member.usedMemberCampaigns) || [];
+  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly && !usedMemberIds.includes(c.id));
   const allCamps = CAMPAIGNS.filter(c => c.active && c.type === 'all');
-  const pushedCamps = isMember ? getPushedCampaignsForMember(state.member) : [];
+  const pushedCamps = isMember ? getPushedCampaignsForMember(state.member).filter(c => !usedMemberIds.includes(c.id)) : [];
 
   // 회원전용 카드 - 색상 + 일러스트 매핑 (순환)
   const memberColors = ['orange', 'blue', 'purple'];
@@ -6632,8 +6646,8 @@ function renderAdmin() {
           <button class="admin-tab ${state.adminTab === 'campaign' ? 'active' : ''}" data-tab="campaign" type="button">
             <span class="admin-tab-icon">📨</span>캠페인 신청
           </button>
-          <button class="admin-tab ${state.adminTab === 'serial' ? 'active' : ''}" data-tab="serial" type="button">
-            <span class="admin-tab-icon">📤</span>시리얼 충전
+          <button class="admin-tab ${state.adminTab === 'manage' ? 'active' : ''}" data-tab="manage" type="button">
+            <span class="admin-tab-icon">📋</span>캠페인 관리
           </button>
           <button class="admin-tab ${state.adminTab === 'dashboard' ? 'active' : ''}" data-tab="dashboard" type="button">
             <span class="admin-tab-icon">📊</span>매장 현황
@@ -7051,103 +7065,85 @@ function renderAdmin() {
         </div>
         <!-- ========== /캠페인 신청 탭 ========== -->
 
-        <!-- ========== 시리얼 충전 탭 (보조: 기존 캠페인에 추가) ========== -->
-        <div class="admin-tab-content ${state.adminTab === 'serial' ? 'active' : ''}" data-tab-content="serial">
+        <!-- ========== 캠페인 관리 탭 (v6) ========== -->
+        <div class="admin-tab-content ${state.adminTab === 'manage' ? 'active' : ''}" data-tab-content="manage">
 
         <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">📤</span>기존 캠페인에 시리얼 추가</div>
+          <div class="admin-card-title"><span class="admin-card-title-icon">📋</span>내 캠페인 목록</div>
 
-          <!-- 안내 - 어떤 경우에 사용하는지 명확히 -->
-          <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 1px solid #FCD34D; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #78350F; font-weight: 700; line-height: 1.6;">
-            ⚠️ <b style="color: #78350F; font-weight: 900;">신규 캠페인은 [📨 캠페인 신청] 탭에서 만들어주세요</b><br/>
-            <span style="font-weight:600;display:block;margin-top:4px;">이 탭은 <b>이미 등록된 캠페인의 시리얼이 부족할 때</b> 추가하는 용도입니다.</span>
+          <!-- 안내 -->
+          <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #92400E; font-weight: 700; line-height: 1.6;">
+            ⚠️ <b style="color: #B45309; font-weight: 900;">수정 가능 항목 제한</b><br/>
+            <span style="font-weight:600;display:block;margin-top:3px;">· <b style="color:#16A34A;">수정 가능</b>: 캠페인 이름, 신청 사유 (메모)<br/>· <b style="color:#DC2626;">수정 불가</b>: 할인율, 사용기간, 최소금액, 시리얼, 종류<br/>※ 이미 발급된 쿠폰의 조건이라 변경 시 사고 발생</span>
           </div>
 
-          <!-- 이번 달 발송 한도 게이지 -->
-          <div style="background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border: 1px solid #86EFAC; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-              <span style="font-size: 11.5px; color: #15803D; font-weight: 800; letter-spacing: -0.2px;">📊 이번 달 발송 가능</span>
-              <span style="font-size: 14px; color: #14532D; font-weight: 900; letter-spacing: -0.3px;">848 / 1,000건</span>
-            </div>
-            <div style="height: 8px; background: rgba(255,255,255,0.7); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);">
-              <div style="width: 84.8%; height: 100%; background: linear-gradient(90deg, #16A34A, #22C55E); border-radius: 4px;"></div>
-            </div>
-            <div style="margin-top: 8px; font-size: 10.5px; color: #15803D; font-weight: 700; line-height: 1.5;">
-              💡 한도 매월 1일 자동 갱신 · <b style="font-weight:900;">카톡 발송 비용 본사 100% 부담</b>
-            </div>
-          </div>
+          <!-- 캠페인 목록 -->
+          <div style="display: flex; flex-direction: column; gap: 10px;">
 
-          <!-- 기존 캠페인 선택 (드롭다운) -->
-          <div class="admin-input-group" style="margin-bottom: 14px;">
-            <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
-              <span>📋 시리얼 추가할 캠페인 <span style="color:#DC2626;font-weight:800;">(필수)</span></span>
-            </label>
-            <select class="admin-input" id="serial-existing-campaign" style="cursor: pointer;">
-              <option value="">— 캠페인을 선택해주세요 —</option>
-              <option value="C001">5월 단골 컴백 25% · 잔여 200개 · 만료 2026-06-30</option>
-              <option value="C002">신규가입 환영 30% · 잔여 500개 · 만료 2026-12-31</option>
-              <option value="C003">평일 점심 5% · 잔여 800개 · 만료 2026-05-31</option>
-            </select>
-            <div style="margin-top: 6px; font-size: 10.5px; color: #6B7280; font-weight: 600;">
-              💡 선택한 캠페인에 시리얼이 추가됩니다. 할인율·유효기간은 자동으로 기존 설정 사용.
-            </div>
-          </div>
-
-          <!-- 업로드 영역 -->
-          <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 12px; padding: 24px 16px; text-align: center; margin-bottom: 12px; transition: border-color 0.15s, background 0.15s; cursor: pointer;" id="serial-upload-zone">
-            <div style="font-size: 32px; margin-bottom: 6px;">📤</div>
-            <div style="font-size: 13px; color: #181600; font-weight: 800; margin-bottom: 2px; letter-spacing: -0.2px;" id="serial-upload-filename">추가 시리얼 엑셀 파일 선택</div>
-            <div style="font-size: 10.5px; color: #6B7280; font-weight: 500; margin-bottom: 14px;">.xlsx · .xls · .csv · 최대 5MB</div>
-            <button type="button" id="serial-upload-btn" style="background: #1E40DD; color: white; border: none; border-radius: 8px; padding: 9px 22px; font-size: 12px; font-weight: 800; cursor: pointer; letter-spacing: -0.2px; box-shadow: 0 2px 4px rgba(30,64,221,0.2);">
-              📁 파일 선택
-            </button>
-            <input type="file" id="serial-upload-input" accept=".xlsx,.xls,.csv" style="display: none;" />
-          </div>
-
-          <!-- 자동 검증 안내 -->
-          <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 10.5px; color: #92400E; font-weight: 600; line-height: 1.6;">
-            🔍 <b style="color: #B45309; font-weight: 800;">자동 검증</b> · 형식 일치 (XXXX-XXXX-XXXX-XXXX) / 풀 중복 / 헤더 행 자동 분리
-          </div>
-
-          <!-- 추가 신청 버튼 -->
-          <button id="serial-add-submit-btn" disabled style="width: 100%; background: #93A6BC; color: white; border: none; border-radius: 10px; padding: 13px; font-size: 13px; font-weight: 800; cursor: not-allowed; letter-spacing: -0.2px; transition: background 0.15s;">
-            본사 승인 요청
-          </button>
-          <div style="font-size: 10.5px; color: #5A6072; text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.5;">
-            ※ 캠페인 선택 + 파일 첨부 후 활성화됩니다
-          </div>
-        </div>
-
-        <!-- 최근 업로드 내역 -->
-        <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">📋</span>최근 시리얼 업로드 내역</div>
-          <div style="background: white; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden;">
-            <div style="padding: 11px 13px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-05-08 14:32</div>
-                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 단골 컴백 25% · <b style="color:#16A34A;">1,000개</b> · 신규 등록</div>
+            <!-- 진행 중 캠페인 -->
+            <div style="background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 14px; font-weight: 800; color: #181600; margin-bottom: 6px; letter-spacing: -0.2px;">5월 단골 컴백 25%</div>
+                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
+                    <span style="background: #DCFCE7; color: #15803D; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">✓ 진행 중</span>
+                    <span style="background: #DBEAFE; color: #1E40DD; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">📨 즉석 캠페인</span>
+                  </div>
+                  <div style="font-size: 11px; color: #6B7280; font-weight: 600; line-height: 1.55;">할인 25% · 잔여 <b style="color:#181600;">200/1,000개</b><br/>사용기간: 2026-05-15 ~ 2026-06-30</div>
+                </div>
+                <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                  <button class="btn-edit-campaign" data-cid="DEMO-C001" data-cname="5월 단골 컴백 25%" type="button" style="background: white; border: 1px solid #BFDBFE; color: #1E40DD; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">✏️ 수정</button>
+                  <button class="btn-delete-campaign" data-cid="DEMO-C001" data-cname="5월 단골 컴백 25%" type="button" style="background: white; border: 1px solid #FCA5A5; color: #DC2626; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">🗑 삭제</button>
+                </div>
               </div>
-              <div style="background: #DCFCE7; color: #15803D; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">✓ 승인</div>
             </div>
-            <div style="padding: 11px 13px; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-05-01 10:15</div>
-                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">5월 신규 5% · <b style="color:#16A34A;">500개</b> · 신규 등록</div>
+
+            <!-- 본사 검토 중 (대기) 캠페인 -->
+            <div style="background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 14px; font-weight: 800; color: #181600; margin-bottom: 6px; letter-spacing: -0.2px;">신규 환영 30%</div>
+                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
+                    <span style="background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">⏳ 본사 검토 중</span>
+                    <span style="background: #DCFCE7; color: #047857; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">🎫 상시 쿠폰</span>
+                  </div>
+                  <div style="font-size: 11px; color: #6B7280; font-weight: 600; line-height: 1.55;">할인 30% · 시리얼 풀 <b style="color:#181600;">500개</b><br/>신청일: 2026-05-09 · 검토 중</div>
+                </div>
+                <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                  <button class="btn-edit-campaign" data-cid="DEMO-C002" data-cname="신규 환영 30%" type="button" style="background: white; border: 1px solid #BFDBFE; color: #1E40DD; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">✏️ 수정</button>
+                  <button class="btn-delete-campaign" data-cid="DEMO-C002" data-cname="신규 환영 30%" type="button" style="background: white; border: 1px solid #FCA5A5; color: #DC2626; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">🗑 삭제</button>
+                </div>
               </div>
-              <div style="background: #DCFCE7; color: #15803D; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">✓ 승인</div>
             </div>
-            <div style="padding: 11px 13px; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-size: 11.5px; font-weight: 800; color: #181600; letter-spacing: -0.2px;">2026-04-22 16:48</div>
-                <div style="font-size: 10.5px; color: #6B7280; font-weight: 600; margin-top: 2px;">4월 점심 7% · <b style="color:#D97706;">412개</b> · 추가 (12개 중복)</div>
+
+            <!-- 완료 캠페인 (수정 불가) -->
+            <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px; opacity: 0.7;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 14px; font-weight: 800; color: #6B7280; margin-bottom: 6px; letter-spacing: -0.2px; text-decoration: line-through;">4월 점심 7%</div>
+                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
+                    <span style="background: #F3F4F6; color: #6B7280; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">📦 완료</span>
+                    <span style="background: #F3F4F6; color: #6B7280; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">📨 즉석 캠페인</span>
+                  </div>
+                  <div style="font-size: 11px; color: #9CA3AF; font-weight: 600; line-height: 1.55;">사용 412/412개 (100%)<br/>종료일: 2026-04-30</div>
+                </div>
+                <div style="display: flex; gap: 6px; flex-shrink: 0; align-items: center;">
+                  <span style="font-size: 10px; color: #9CA3AF; font-weight: 700;">수정 불가</span>
+                </div>
               </div>
-              <div style="background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 800; letter-spacing: -0.2px;">⚠ 부분</div>
             </div>
+
+          </div>
+
+          <!-- 안내 -->
+          <div style="margin-top: 14px; font-size: 10.5px; color: #6B7280; text-align: center; font-weight: 600; line-height: 1.5;">
+            ※ 삭제 시 남은 시리얼은 회수되어 본사가 폐기 처리합니다<br/>
+            ※ 종료된 캠페인은 히스토리 보존을 위해 수정·삭제 불가
           </div>
         </div>
 
         </div>
-        <!-- ========== /시리얼 충전 탭 ========== -->
+        <!-- ========== /캠페인 관리 탭 ========== -->
       </div>
     </div>
   `;
@@ -7439,53 +7435,8 @@ function bind() {
 
 // === 시리얼 엑셀 업로드 시뮬레이션 ===
 // 실제 운영에선 서버로 파일 전송 → 검증 → DB 저장 (M3 백엔드에서 구현)
-function handleSerialFile(file) {
-  if (!file) return;
-
-  // 파일 사이즈 검증
-  if (file.size > 5 * 1024 * 1024) {
-    try { toast('⚠️ 파일이 너무 큽니다 (최대 5MB)'); } catch(e) { alert('파일이 너무 큽니다 (최대 5MB)'); }
-    return;
-  }
-
-  // 확장자 검증
-  const validExt = /\.(xlsx|xls|csv)$/i;
-  if (!validExt.test(file.name)) {
-    try { toast('⚠️ 엑셀(.xlsx/.xls) 또는 CSV 파일만 가능합니다'); } catch(e) { alert('엑셀 또는 CSV 파일만 가능합니다'); }
-    return;
-  }
-
-  // 파일명 표시
-  const fnEl = document.getElementById('serial-upload-filename');
-  if (fnEl) fnEl.textContent = `📄 ${file.name}`;
-
-  // 시뮬레이션: 가짜 검증 결과 (실제로는 서버 응답)
-  const branchCode = (typeof BRANCH !== 'undefined' && BRANCH.code) ? BRANCH.code : 'NS001';
-  const fakeTotal = 200 + Math.floor(Math.random() * 300);
-  const fakeDuplicates = Math.floor(Math.random() * 8);
-  const fakeFormatErrors = Math.floor(Math.random() * 3);
-  const fakeRegistered = fakeTotal - fakeDuplicates - fakeFormatErrors;
-
-  // 첨부 완료 상태 저장
-  state._serialFileReady = true;
-  state._serialFileMeta = { name: file.name, total: fakeTotal, registered: fakeRegistered };
-
-  // 활성화 버튼 업데이트
-  const existingCampaignSel = document.getElementById('serial-existing-campaign');
-  const serialAddBtn = document.getElementById('serial-add-submit-btn');
-  if (serialAddBtn && existingCampaignSel) {
-    const ready = existingCampaignSel.value && state._serialFileReady;
-    serialAddBtn.disabled = !ready;
-    serialAddBtn.style.background = ready ? '#1E40DD' : '#93A6BC';
-    serialAddBtn.style.cursor = ready ? 'pointer' : 'not-allowed';
-  }
-
-  try {
-    toast(`✅ ${fakeRegistered.toLocaleString()}개 시리얼 검증 완료 · 캠페인 선택 후 신청`);
-  } catch(e) {
-    alert(`✅ 시리얼 검증 완료\n\n전체: ${fakeTotal}개\n등록 가능: ${fakeRegistered}개\n중복: ${fakeDuplicates}개\n형식 오류: ${fakeFormatErrors}개\n\n※ 위에서 캠페인을 선택한 후 [본사 승인 요청]을 눌러주세요`);
-  }
-}
+// v6: 시리얼 충전 탭 폐기 → handleSerialFile 함수 제거됨
+// 캠페인 신청 시 시리얼 첨부는 handleCampaignSerialFile 사용
 
 // === 캠페인 신청 시리얼 첨부 핸들러 (v3) ===
 function handleCampaignSerialFile(file) {
@@ -7594,58 +7545,37 @@ function bindAdmin() {
   // 초기 1회 호출
   updateCampaignTypeUI();
 
-  // === 시리얼 엑셀 업로드 (시뮬레이션) ===
-  const uploadBtn = document.getElementById('serial-upload-btn');
-  const uploadInput = document.getElementById('serial-upload-input');
-  const uploadZone = document.getElementById('serial-upload-zone');
-  if (uploadBtn && uploadInput) {
-    uploadBtn.onclick = (e) => { e.stopPropagation(); uploadInput.click(); };
-    if (uploadZone) {
-      uploadZone.onclick = () => uploadInput.click();
-      uploadZone.ondragover = (e) => { e.preventDefault(); uploadZone.style.borderColor = '#1E40DD'; uploadZone.style.background = '#EFF6FF'; };
-      uploadZone.ondragleave = () => { uploadZone.style.borderColor = '#D1D5DB'; uploadZone.style.background = '#F9FAFB'; };
-      uploadZone.ondrop = (e) => {
-        e.preventDefault();
-        uploadZone.style.borderColor = '#D1D5DB';
-        uploadZone.style.background = '#F9FAFB';
-        if (e.dataTransfer.files.length > 0) {
-          handleSerialFile(e.dataTransfer.files[0]);
+  // === v6: 캠페인 관리 (이름 수정 / 삭제) ===
+  document.querySelectorAll('.btn-edit-campaign').forEach(btn => {
+    btn.onclick = () => {
+      const cname = btn.dataset.cname;
+      const newName = prompt(`캠페인 이름 수정\n\n현재: ${cname}\n\n※ 할인율·사용기간·시리얼은 수정 불가\n새 이름:`, cname);
+      if (newName && newName.trim() && newName.trim() !== cname) {
+        // 화면상 이름 즉시 변경 (데모용 - 실제론 본사 승인 후 반영)
+        const cardName = btn.closest('div').parentElement.querySelector('div[style*="font-size: 14px"]');
+        if (cardName) cardName.textContent = newName.trim();
+        btn.dataset.cname = newName.trim();
+        const deleteBtn = btn.parentElement.querySelector('.btn-delete-campaign');
+        if (deleteBtn) deleteBtn.dataset.cname = newName.trim();
+        try { toast(`✓ 이름 변경 신청: ${newName.trim()} (본사 승인 대기)`); } catch(e) {}
+      }
+    };
+  });
+  document.querySelectorAll('.btn-delete-campaign').forEach(btn => {
+    btn.onclick = () => {
+      const cname = btn.dataset.cname;
+      const ok = confirm(`'${cname}' 캠페인을 삭제하시겠습니까?\n\n· 남은 시리얼은 본사가 회수\n· 사용 이력은 보존\n· 본사 승인 후 즉시 폐기 처리`);
+      if (ok) {
+        const item = btn.closest('div').parentElement.parentElement;
+        if (item) {
+          item.style.transition = 'opacity 0.3s';
+          item.style.opacity = '0.3';
+          item.style.pointerEvents = 'none';
         }
-      };
-    }
-    uploadInput.onchange = (e) => {
-      if (e.target.files.length > 0) handleSerialFile(e.target.files[0]);
+        try { toast(`✓ 삭제 신청 전송: ${cname}`); } catch(e) {}
+      }
     };
-  }
-
-  // === 시리얼 충전 탭: 캠페인 선택 + 파일 첨부 시 [본사 승인 요청] 활성화 ===
-  const existingCampaignSel = document.getElementById('serial-existing-campaign');
-  const serialAddBtn = document.getElementById('serial-add-submit-btn');
-  const updateSerialAddState = () => {
-    if (!serialAddBtn || !existingCampaignSel) return;
-    const ready = existingCampaignSel.value && state._serialFileReady;
-    serialAddBtn.disabled = !ready;
-    serialAddBtn.style.background = ready ? '#1E40DD' : '#93A6BC';
-    serialAddBtn.style.cursor = ready ? 'pointer' : 'not-allowed';
-  };
-  if (existingCampaignSel) {
-    existingCampaignSel.onchange = updateSerialAddState;
-  }
-  if (serialAddBtn) {
-    serialAddBtn.onclick = () => {
-      if (serialAddBtn.disabled) return;
-      const camp = existingCampaignSel.options[existingCampaignSel.selectedIndex].text;
-      try { toast(`📨 본사 승인 요청 전송: ${camp.split(' · ')[0]}`); } catch(e) {}
-      setTimeout(() => {
-        alert(`✅ 본사 승인 요청 전송 완료\n\n캠페인: ${camp.split(' · ')[0]}\n\n※ 본사 운영팀이 1영업일 이내 검토합니다\n※ 비용은 본사 100% 부담`);
-        state._serialFileReady = false;
-        existingCampaignSel.value = '';
-        const fnEl = document.getElementById('serial-upload-filename');
-        if (fnEl) fnEl.textContent = '추가 시리얼 엑셀 파일 선택';
-        updateSerialAddState();
-      }, 200);
-    };
-  }
+  });
 
   // === 캠페인 신청 탭: 시리얼 첨부 핸들러 (v3) ===
   const campaignSerialZone = document.getElementById('campaign-serial-zone');
