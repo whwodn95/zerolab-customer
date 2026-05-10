@@ -5034,6 +5034,8 @@ let MEMBERS = [
   { phone: '01033334444', kakaoNickname: '민수', gender: 'M', age: 32, kakaoConnected: true, signupDate: new Date(Date.now()-15*86400000).toISOString().slice(0,10), signupBranch: BRANCH.code, usageHistory: [], receivedCampaigns: [] },
   { phone: '01055556666', kakaoNickname: '수진', gender: 'F', age: 22, kakaoConnected: true, signupDate: new Date(Date.now()-5*86400000).toISOString().slice(0,10), signupBranch: BRANCH.code, usageHistory: [{couponId:'C001', name:'회원 전용 단백질바 25%', discount:25, type:'member', sentAt: new Date(Date.now()-3*86400000).toISOString(), branchCode:BRANCH.code, branchName:BRANCH.name, serial:'NS001-0002-XXXX-XXXX', channel:'kakao'}], receivedCampaigns: ['C001'] },
   { phone: '01077778888', kakaoNickname: '준호', gender: 'M', age: 41, kakaoConnected: true, signupDate: new Date(Date.now()-60*86400000).toISOString().slice(0,10), signupBranch: BRANCH.code, usageHistory: [], receivedCampaigns: [] },
+  // v7: 다른 매장 회원 (자동 필터 검증용 — 점주 화면에 안 보여야 함)
+  { phone: '01099990000', kakaoNickname: '영희', gender: 'F', age: 28, kakaoConnected: true, signupDate: new Date(Date.now()-10*86400000).toISOString().slice(0,10), signupBranch: 'BS-HD-01', usageHistory: [{couponId:'C001', name:'회원 전용 단백질바 25%', discount:25, type:'member', sentAt: new Date(Date.now()-5*86400000).toISOString(), branchCode:'BS-HD-01', branchName:'부산 해운대점', serial:'BS01-0001-XXXX-XXXX', channel:'kakao'}], receivedCampaigns: ['C001'] },
 ];
 
 // === 쿠폰 쿨다운 시스템 ===
@@ -5115,6 +5117,25 @@ function ageGroup(age) {
   if (age < 30) return '20s';
   if (age < 40) return '30s';
   return '40s+';
+}
+
+// === v7: 매장 단골 회원 정의 ===
+// 정의: 카톡 연동 + 그 매장에서 1회 이상 쿠폰 사용한 회원
+// 다른 지역 회원이 점주 매장에서 카톡 받지 않게 하는 핵심 정책
+function isStoreMember(member, branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  if (!member || !member.kakaoConnected) return false;
+  if (!member.usageHistory || member.usageHistory.length === 0) return false;
+  return member.usageHistory.some(h => h.branchCode === branchCode);
+}
+function getStoreMembers(branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  return MEMBERS.filter(m => isStoreMember(m, branchCode));
+}
+function getStoreVisitCount(member, branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  if (!member.usageHistory) return 0;
+  return member.usageHistory.filter(h => h.branchCode === branchCode).length;
 }
 
 // 회원이 캠페인을 받을 수 있는지 판단
@@ -5266,7 +5287,9 @@ const api = {
 // 타겟팅 로직
 // ============================================
 function getTargetMembers(target, subFilter, baseCouponId) {
-  let result = MEMBERS.filter(m => m.kakaoConnected);
+  // v7: 점주는 자기 매장 단골만 (1회 이상 그 매장에서 쿠폰 사용 회원)
+  // 본사 모드는 추후 별도 함수 (M2 hq.zerolab.kr)
+  let result = getStoreMembers(BRANCH.code);
   if (target === 'gender' && subFilter) {
     result = result.filter(m => m.gender === subFilter);
   } else if (target === 'age' && subFilter) {
@@ -6617,8 +6640,14 @@ function renderMypage() {
 // ============================================
 function renderAdmin() {
   const draft = state.adminDraft;
-  const totalMembers = MEMBERS.filter(m => m.kakaoConnected).length;
-  const totalIssued = MEMBERS.reduce((a, m) => a + (m.usageHistory?.length || 0), 0);
+  // v7: 매장 단골만 표시 (전체 카톡 연동 회원 X)
+  const storeMembers = getStoreMembers(BRANCH.code);
+  const totalMembers = storeMembers.length;
+  // 누적 발급: 이 매장에서 발급된 것만
+  const totalIssued = MEMBERS.reduce((a, m) => {
+    if (!m.usageHistory) return a;
+    return a + m.usageHistory.filter(h => h.branchCode === BRANCH.code).length;
+  }, 0);
   const targetCount = getTargetMembers(draft.target, draft.subFilter, draft.baseCoupon).length;
   const memberCampList = CAMPAIGNS.filter(c => c.type === 'member' && !c.pushOnly);
 
@@ -6636,9 +6665,9 @@ function renderAdmin() {
 
         <div class="demo-guide">
           <div class="demo-guide-title">📌 데모 시나리오</div>
-          <div class="demo-guide-step">① <b>고객 모드</b>에서 가입 → 회원전용 쿠폰 받기</div>
-          <div class="demo-guide-step">② 본사 모드에서 새 캠페인 만들기 → 타겟 선정</div>
-          <div class="demo-guide-step">③ 발송 → <b>고객 모드로 전환</b>하면 NEW 쿠폰 알림 표시</div>
+          <div class="demo-guide-step">① <b>고객 모드</b>에서 가입 → 쿠폰 받기 → <b>사용 완료</b> (= 매장 단골 등록)</div>
+          <div class="demo-guide-step">② 본사 모드 → 매장 현황 탭에서 단골 확인</div>
+          <div class="demo-guide-step">③ 캠페인 신청 → 단골에게만 카톡 자동 발송</div>
         </div>
 
         <!-- 탭 헤더 -->
@@ -6658,31 +6687,49 @@ function renderAdmin() {
         <div class="admin-tab-content ${state.adminTab === 'dashboard' ? 'active' : ''}" data-tab-content="dashboard">
 
         <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">📊</span>회원 현황</div>
+          <div class="admin-card-title"><span class="admin-card-title-icon">📊</span>이 매장 단골 현황</div>
+
+          <!-- v7: 매장 단골 정의 안내 -->
+          <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 11px 13px; margin-bottom: 12px; font-size: 11px; color: #1E3A8A; font-weight: 600; line-height: 1.6;">
+            💡 <b style="color: #1E40DD; font-weight: 800;">매장 단골 정의</b><br/>
+            카톡 연동 + <b>이 매장에서 1회 이상 쿠폰 사용</b>한 회원만 표시.<br/>
+            다른 지역 회원은 안 보입니다 (카톡 발송 비용 낭비 방지)
+          </div>
+
           <div class="admin-stats-grid">
-            <div class="admin-stat"><div class="admin-stat-num">${totalMembers}</div><div class="admin-stat-label">카톡 연동 회원</div></div>
+            <div class="admin-stat"><div class="admin-stat-num">${totalMembers}</div><div class="admin-stat-label">매장 단골</div></div>
             <div class="admin-stat"><div class="admin-stat-num">${totalIssued}</div><div class="admin-stat-label">누적 발급</div></div>
             <div class="admin-stat"><div class="admin-stat-num">${CAMPAIGNS.filter(c=>c.pushOnly).length}</div><div class="admin-stat-label">진행중 푸시</div></div>
           </div>
         </div>
 
         <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">👥</span>회원 리스트 (${MEMBERS.length}명)</div>
-          <div class="admin-member-list">
-            ${MEMBERS.map(m => `
-              <div class="admin-member-item">
-                <div class="admin-member-avatar">${(m.kakaoNickname || '?')[0]}</div>
-                <div class="admin-member-info">
-                  <div class="admin-member-name">${maskName(m.kakaoNickname)} · ${m.gender === 'M' ? '남' : '여'} ${m.age}세</div>
-                  <div class="admin-member-meta">${m.phone.slice(0,3)}-****-${m.phone.slice(-4)} · 발급 ${m.usageHistory?.length || 0}건</div>
+          <div class="admin-card-title"><span class="admin-card-title-icon">👥</span>매장 단골 (${storeMembers.length}명)</div>
+          ${storeMembers.length === 0 ? `
+            <div style="text-align: center; padding: 32px 20px; background: #F9FAFB; border-radius: 10px; border: 1px dashed #D1D5DB;">
+              <div style="font-size: 36px; margin-bottom: 8px;">📭</div>
+              <div style="font-size: 13px; font-weight: 800; color: #181600; margin-bottom: 6px; letter-spacing: -0.2px;">아직 매장 단골이 없습니다</div>
+              <div style="font-size: 11px; color: #6B7280; font-weight: 600; line-height: 1.55;">카톡 연동 회원이 이 매장에서<br/><b style="color:#1E40DD;">한 번이라도 쿠폰을 사용</b>하면 단골이 됩니다</div>
+            </div>
+          ` : `
+            <div class="admin-member-list">
+              ${storeMembers.map(m => {
+                const visits = getStoreVisitCount(m, BRANCH.code);
+                return `
+                <div class="admin-member-item">
+                  <div class="admin-member-avatar">${(m.kakaoNickname || '?')[0]}</div>
+                  <div class="admin-member-info">
+                    <div class="admin-member-name">${maskName(m.kakaoNickname)} · ${m.gender === 'M' ? '남' : '여'} ${m.age}세</div>
+                    <div class="admin-member-meta">${m.phone.slice(0,3)}-****-${m.phone.slice(-4)} · 발급 ${m.usageHistory?.length || 0}건</div>
+                  </div>
+                  <div class="admin-member-tags">
+                    <span class="admin-member-tag kakao">💬 카톡</span>
+                    <span class="admin-member-tag received" style="background:#DCFCE7;color:#15803D;">📍 ${visits}회 방문</span>
+                  </div>
                 </div>
-                <div class="admin-member-tags">
-                  ${m.kakaoConnected ? '<span class="admin-member-tag kakao">💬 카톡</span>' : ''}
-                  ${(m.receivedCampaigns || []).length > 0 ? `<span class="admin-member-tag received">${m.receivedCampaigns.length}개 수령</span>` : ''}
-                </div>
-              </div>
-            `).join('')}
-          </div>
+              `;}).join('')}
+            </div>
+          `}
         </div>
 
         </div>
@@ -6870,14 +6917,21 @@ function renderAdmin() {
 
         <div class="admin-card" data-only-type="push">
           <div class="admin-card-title"><span class="admin-card-title-icon">🎯</span>타겟 선정</div>
+
+          <!-- v7: 매장 단골 자동 필터 안내 -->
+          <div style="background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border: 1px solid #86EFAC; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; font-size: 11px; color: #15803D; font-weight: 700; line-height: 1.55;">
+            ✅ <b style="color: #14532D; font-weight: 900;">자동: 이 매장 단골에게만 발송</b><br/>
+            <span style="font-weight:600;">아래 어떤 옵션을 선택해도 다른 지역 회원은 자동 제외됩니다.<br/>(본사 카톡 비용 75% 절감)</span>
+          </div>
+
           <div class="target-section">
             <div class="target-title">발송 대상 조건</div>
             <div class="target-options">
               <div class="target-option ${draft.target === 'all' ? 'active' : ''}" data-target="all">
                 <div class="target-radio"></div>
                 <div class="target-text">
-                  <div class="target-label">모든 회원</div>
-                  <div class="target-desc">카톡 연동된 전 회원에게 발송</div>
+                  <div class="target-label">매장 단골 전체</div>
+                  <div class="target-desc">이 매장에서 1회 이상 사용한 회원에게 발송</div>
                 </div>
               </div>
 
