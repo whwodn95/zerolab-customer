@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>ZERO 연구소 — 카카오채널 디지털 쿠폰 v3</title>
+<title>ZERO 연구소 — 카카오채널 디지털 쿠폰 v42</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
@@ -1522,79 +1522,6 @@
 
   .admin-content { padding: 16px 18px 32px; display: flex; flex-direction: column; gap: 14px; }
 
-  /* === 점주 모드 탭 === */
-  .admin-tabs {
-    display: flex; gap: 4px;
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 4px;
-    margin-bottom: 4px;
-    position: sticky; top: 8px; z-index: 10;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  }
-  .admin-tab {
-    flex: 1; padding: 9px 4px;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 11px; font-weight: 700;
-    color: #6B7280;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    transition: background 0.15s, color 0.15s;
-    line-height: 1.3;
-    letter-spacing: -0.2px;
-  }
-  .admin-tab.active {
-    background: #1E40DD;
-    color: white;
-    box-shadow: 0 2px 6px rgba(30,64,221,0.25);
-  }
-  .admin-tab:hover:not(.active) { background: #F3F4F6; color: #374151; }
-  .admin-tab-icon { display: block; font-size: 16px; margin-bottom: 2px; }
-  .admin-tab-content { display: none; flex-direction: column; gap: 14px; }
-  .admin-tab-content.active { display: flex; }
-
-  /* === v5: 캠페인 종류 선택 === */
-  .campaign-type-selector {
-    display: flex; flex-direction: column; gap: 8px;
-    margin-bottom: 14px;
-  }
-  .campaign-type-option {
-    display: flex; align-items: center; gap: 10px;
-    background: white;
-    border: 2px solid #E5E7EB;
-    border-radius: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .campaign-type-option:hover { border-color: #BFDBFE; background: #F8FAFF; }
-  .campaign-type-option input[type="radio"] {
-    width: 18px; height: 18px;
-    accent-color: #1E40DD;
-    flex-shrink: 0;
-    cursor: pointer;
-  }
-  .campaign-type-option.selected {
-    border-color: #1E40DD;
-    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-    box-shadow: 0 2px 6px rgba(30,64,221,0.10);
-  }
-  .campaign-type-content { flex: 1; min-width: 0; }
-  .campaign-type-title {
-    font-size: 13px; font-weight: 800; color: #181600;
-    letter-spacing: -0.2px;
-    margin-bottom: 2px;
-  }
-  .campaign-type-desc {
-    font-size: 10.5px; color: #6B7280; font-weight: 600;
-    line-height: 1.5;
-  }
-  /* 선택된 종류 강조 */
-  .campaign-type-option.selected .campaign-type-title { color: #1E40DD; }
-
   .admin-card {
     background: white; border-radius: 14px; padding: 16px;
     border: 1px solid #E8EAEF;
@@ -2530,7 +2457,14 @@
   .v28-top-info {
     flex: 1; min-width: 0;
     display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    padding: 4px 6px;
+    margin: -4px -6px;
+    border-radius: 10px;
+    transition: background .15s;
   }
+  .v28-top-info:hover { background: rgba(30, 64, 221, 0.06); }
+  .v28-top-info:active { background: rgba(30, 64, 221, 0.10); }
   .v28-top-icon {
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -4860,13 +4794,324 @@
   /* === TOAST === */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0A0A0A; color: white; padding: 13px 20px; border-radius: 24px; font-size: 13px; font-weight: 600; z-index: 200; opacity: 0; pointer-events: none; transition: opacity .25s; max-width: 90%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
   .toast.show { opacity: 1; }
+
+  /* === STORE CONFIRM MODAL (매장 확인 팝업 v42) === */
+  .sc-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(10, 12, 30, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9000;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    animation: sc-fade-in .25s ease-out;
+  }
+  .sc-backdrop.show { display: flex; }
+  @keyframes sc-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .sc-card {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FAFBFF 100%);
+    border-radius: 24px;
+    padding: 28px 22px 22px;
+    width: 100%; max-width: 340px;
+    box-shadow: 0 24px 60px rgba(30, 64, 221, 0.25), 0 8px 20px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.6);
+    animation: sc-pop-in .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+  @keyframes sc-pop-in {
+    from { transform: scale(0.85) translateY(20px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .sc-icon-wrap {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #DBEAFE 0%, #C7D2FE 100%);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 28px;
+    box-shadow: 0 6px 16px rgba(30,64,221,0.20), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .sc-title {
+    font-size: 19px; font-weight: 900;
+    color: #0A0A0A; text-align: center;
+    letter-spacing: -0.4px;
+    margin-bottom: 6px;
+  }
+  .sc-subtitle {
+    font-size: 12px; color: #5A6072;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .sc-store-box {
+    background: linear-gradient(135deg, #F0F4FF 0%, #E5EBFF 100%);
+    border: 1.5px solid #C7D2FE;
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .sc-store-box::before {
+    content: '★ 선택된 매장';
+    position: absolute;
+    top: -9px; left: 14px;
+    background: #1E40DD;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+  }
+  .sc-store-name {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1E40DD;
+    margin-bottom: 6px;
+    margin-top: 2px;
+    letter-spacing: -0.3px;
+  }
+  .sc-store-address {
+    font-size: 12px;
+    color: #3A4050;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 4px;
+  }
+  .sc-store-hours {
+    font-size: 11px;
+    color: #6A7080;
+    font-weight: 500;
+  }
+  .sc-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sc-btn {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .2s;
+    letter-spacing: -0.2px;
+  }
+  .sc-btn:active { transform: scale(0.98); }
+  .sc-btn-primary {
+    background: linear-gradient(135deg, #1E40DD 0%, #2451E5 100%);
+    color: white;
+    box-shadow: 0 6px 16px rgba(30, 64, 221, 0.30);
+  }
+  .sc-btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(30, 64, 221, 0.40);
+  }
+  .sc-btn-secondary {
+    background: white;
+    color: #5A6072;
+    border: 1.5px solid #DDE4F5;
+  }
+  .sc-btn-secondary:hover {
+    background: #F8F9FB;
+    border-color: #1E40DD;
+    color: #1E40DD;
+  }
+  .sc-warn {
+    font-size: 11px;
+    color: #B45309;
+    text-align: center;
+    margin-top: 12px;
+    font-weight: 600;
+    background: #FEF3C7;
+    padding: 8px 12px;
+    border-radius: 10px;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
+<button class="mode-toggle" id="mode-toggle">🔧 데모: 본사모드</button>
 <div class="toast" id="toast"></div>
 
+<!-- ============================================ -->
+<!-- STORE CONFIRM MODAL (매장 확인 팝업 v42) -->
+<!-- ============================================ -->
+<div class="sc-backdrop" id="sc-backdrop" role="dialog" aria-modal="true" aria-labelledby="sc-title">
+  <div class="sc-card">
+    <div class="sc-icon-wrap">📍</div>
+    <div class="sc-title" id="sc-title">이 매장이 맞나요?</div>
+    <div class="sc-subtitle">쿠폰은 선택한 매장에서만 사용 가능합니다.<br>매장이 다르면 변경 후 진행해주세요.</div>
+    <div class="sc-store-box">
+      <div class="sc-store-name" id="sc-store-name">매장명</div>
+      <div class="sc-store-address" id="sc-store-address">매장 주소</div>
+      <div class="sc-store-hours" id="sc-store-hours">영업시간</div>
+    </div>
+    <div class="sc-actions">
+      <button class="sc-btn sc-btn-primary" id="sc-btn-confirm">✓ 네, 이 매장에서 사용할게요</button>
+      <button class="sc-btn sc-btn-secondary" id="sc-btn-change">매장 다시 선택</button>
+    </div>
+    <div class="sc-warn">⚠️ 잘못된 매장 선택 시 쿠폰이 무효 처리될 수 있어요</div>
+  </div>
+</div>
+
 <script>
+// ============================================
+// SECURITY GUARD v42 (보안 1단계 가드 - 환경 안전)
+// ============================================
+try {
+  // 1. 우클릭 차단
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+  });
+
+  // 2. F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C 차단
+  document.addEventListener('keydown', function(e) {
+    var key = e.key;
+    if (
+      key === 'F12' ||
+      (e.ctrlKey && key.toLowerCase() === 'u') ||
+      (e.ctrlKey && key.toLowerCase() === 's') ||
+      (e.ctrlKey && e.shiftKey && ['i','j','c','I','J','C'].includes(key))
+    ) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // 3. 텍스트 드래그/선택 차단 (input/textarea 제외)
+  document.addEventListener('selectstart', function(e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag !== 'input' && tag !== 'textarea') {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // 4. 이미지 드래그 차단
+  document.addEventListener('dragstart', function(e) {
+    if ((e.target.tagName || '').toLowerCase() === 'img') {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // 5. 콘솔 경고 메시지 (각 단계 try-catch로 보호)
+  var devToolsWarn = function() {
+    try {
+      if (typeof console !== 'undefined') {
+        try { if (typeof console.clear === 'function') console.clear(); } catch(e) {}
+        try {
+          console.log('%c⚠️ ZERO 연구소 — 무단 복제 금지', 'color:#FF3B30;font-size:24px;font-weight:900;');
+          console.log('%c© 2026 ZERO 연구소 (제로연구소). All rights reserved.', 'color:#5A6072;font-size:13px;');
+          console.log('%c본 페이지의 코드·디자인·이미지는 저작권법으로 보호됩니다.\n무단 복제·재배포 시 법적 조치를 받을 수 있습니다.', 'color:#5A6072;font-size:12px;');
+        } catch(e) {}
+      }
+    } catch(e) {}
+  };
+  try { devToolsWarn(); } catch(e) {}
+  try { setInterval(devToolsWarn, 3000); } catch(e) {}
+} catch(e) {
+  // 보안 가드가 어떤 이유로 실패해도 본 앱은 정상 동작
+}
+
+// ============================================
+// STORE CONFIRM HELPER v42 (매장 확인 헬퍼)
+// ============================================
+// 세션당 1회만 묻기. 매장 변경 시 자동 초기화.
+function isStoreConfirmedThisSession() {
+  try {
+    var code = getCurrentBranchCode();
+    return sessionStorage.getItem('zerolab_store_confirmed_' + code) === '1';
+  } catch(e) { return false; }
+}
+
+function markStoreConfirmed() {
+  try {
+    var code = getCurrentBranchCode();
+    sessionStorage.setItem('zerolab_store_confirmed_' + code, '1');
+  } catch(e) {}
+}
+
+function clearStoreConfirmation() {
+  try {
+    // 모든 매장 확인 키 삭제 (매장 변경 시 호출)
+    var keys = [];
+    for (var i = 0; i < sessionStorage.length; i++) {
+      var k = sessionStorage.key(i);
+      if (k && k.indexOf('zerolab_store_confirmed_') === 0) keys.push(k);
+    }
+    keys.forEach(function(k) { sessionStorage.removeItem(k); });
+  } catch(e) {}
+}
+
+// 매장 확인 모달 띄우기 + 콜백 실행
+function withStoreConfirm(callback) {
+  // 이미 이 세션에서 확인했으면 즉시 콜백
+  if (isStoreConfirmedThisSession()) {
+    callback();
+    return;
+  }
+  // 그렇지 않으면 모달 띄움
+  openStoreConfirmModal(callback);
+}
+
+function openStoreConfirmModal(onConfirm) {
+  var branch = getCurrentBranch();
+  var backdrop = document.getElementById('sc-backdrop');
+  if (!backdrop) { onConfirm(); return; } // 안전장치
+  
+  // 매장 정보 채우기
+  document.getElementById('sc-store-name').textContent = branch.name;
+  document.getElementById('sc-store-address').textContent = branch.address;
+  document.getElementById('sc-store-hours').textContent = branch.hours;
+  
+  // 표시
+  backdrop.classList.add('show');
+  
+  // [네, 맞아요] 버튼
+  var btnConfirm = document.getElementById('sc-btn-confirm');
+  var btnChange = document.getElementById('sc-btn-change');
+  
+  // 기존 핸들러 제거 위해 클론으로 교체
+  var newConfirm = btnConfirm.cloneNode(true);
+  var newChange = btnChange.cloneNode(true);
+  btnConfirm.parentNode.replaceChild(newConfirm, btnConfirm);
+  btnChange.parentNode.replaceChild(newChange, btnChange);
+  
+  newConfirm.addEventListener('click', function() {
+    markStoreConfirmed();
+    backdrop.classList.remove('show');
+    setTimeout(function() { onConfirm(); }, 150);
+  });
+  
+  newChange.addEventListener('click', function() {
+    backdrop.classList.remove('show');
+    // 매장 선택 모달 즉시 띄움 (가장 확실한 동선)
+    setTimeout(function() {
+      try {
+        if (typeof openBranchSelector === 'function') {
+          openBranchSelector();
+        } else {
+          // 폴백: DOM 직접 조작
+          var branchOverlay = document.getElementById('branch-modal-overlay');
+          if (branchOverlay) branchOverlay.classList.add('open');
+        }
+      } catch(e) {}
+    }, 200);
+  });
+  
+  // ESC 키로 닫기 차단 (실수 방지) — 명시적 선택만 받음
+}
+
 // ============================================
 // MOCK DATA
 // ============================================
@@ -4968,7 +5213,14 @@ function getCurrentBranchCode() {
 }
 
 function setCurrentBranchCode(code) {
-  try { localStorage.setItem('zerolab_current_branch', code); } catch(e) {}
+  try {
+    const prev = localStorage.getItem('zerolab_current_branch');
+    localStorage.setItem('zerolab_current_branch', code);
+    // 매장이 실제로 바뀌었으면 이전 매장 확인 기록 초기화 (v42)
+    if (prev && prev !== code && typeof clearStoreConfirmation === 'function') {
+      clearStoreConfirmation();
+    }
+  } catch(e) {}
 }
 
 function getCurrentBranch() {
@@ -5034,18 +5286,13 @@ let MEMBERS = [
   { phone: '01033334444', kakaoNickname: '민수', gender: 'M', age: 32, kakaoConnected: true, signupDate: new Date(Date.now()-15*86400000).toISOString().slice(0,10), signupBranch: BRANCH.code, usageHistory: [], receivedCampaigns: [] },
   { phone: '01055556666', kakaoNickname: '수진', gender: 'F', age: 22, kakaoConnected: true, signupDate: new Date(Date.now()-5*86400000).toISOString().slice(0,10), signupBranch: BRANCH.code, usageHistory: [{couponId:'C001', name:'회원 전용 단백질바 25%', discount:25, type:'member', sentAt: new Date(Date.now()-3*86400000).toISOString(), branchCode:BRANCH.code, branchName:BRANCH.name, serial:'NS001-0002-XXXX-XXXX', channel:'kakao'}], receivedCampaigns: ['C001'] },
   { phone: '01077778888', kakaoNickname: '준호', gender: 'M', age: 41, kakaoConnected: true, signupDate: new Date(Date.now()-60*86400000).toISOString().slice(0,10), signupBranch: BRANCH.code, usageHistory: [], receivedCampaigns: [] },
-  // v7: 다른 매장 회원 (자동 필터 검증용 — 점주 화면에 안 보여야 함)
-  { phone: '01099990000', kakaoNickname: '영희', gender: 'F', age: 28, kakaoConnected: true, signupDate: new Date(Date.now()-10*86400000).toISOString().slice(0,10), signupBranch: 'BS-HD-01', usageHistory: [{couponId:'C001', name:'회원 전용 단백질바 25%', discount:25, type:'member', sentAt: new Date(Date.now()-5*86400000).toISOString(), branchCode:'BS-HD-01', branchName:'부산 해운대점', serial:'BS01-0001-XXXX-XXXX', channel:'kakao'}], receivedCampaigns: ['C001'] },
 ];
 
 // === 쿠폰 쿨다운 시스템 ===
 // 전체가능(type:'all') 쿠폰을 1회 사용하면 일정 시간 동안 다시 사용 불가
 // 비회원은 브라우저 세션 단위로 추적 (실서비스: 디바이스 핑거프린트 또는 IP 기반)
 // 회원은 member.couponCooldowns 객체에 저장 (서버 동기화)
-// === 본사 정책 변수 (M2 본사 시스템에서 변경 가능) ===
-// 데모 테스트: 30초 / 실서비스 권장: 86400 (24시간)
-// 점주 미팅 시연 시 30초로 두면 쿨다운 동작 빠르게 확인 가능
-const COOLDOWN_SECONDS = 30;
+const COOLDOWN_SECONDS = 30; // 데모: 30초 / 실서비스 권장: 86400 (24시간)
 const guestSession = {
   guestId: 'guest_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
   couponCooldowns: {}, // { [campaignId]: unlockTimestamp }
@@ -5059,27 +5306,8 @@ const state = {
   activeSerial: null,
   secondsLeft: 0,
   timer: null,
-  // admin 작업용 (v4: POS 양식 1:1 일치, v5: 캠페인 종류 분리)
-  adminDraft: {
-    campaignType: 'push',  // 'qr' (상시 쿠폰) | 'push' (즉석 캠페인 카톡 발송)
-    name: '',
-    discount: 20,
-    // POS 사용기간 (기간 모드)
-    startDate: '',  // YYYY-MM-DD
-    endDate: '',    // YYYY-MM-DD
-    // POS 결제 조건
-    minOrderAmount: 0,    // 최소 결제금액 (0 = 제한 없음)
-    maxDiscountAmount: 0, // 최대 할인금액 (0 = 본사 고정 제한 없음)
-    // 원단위: 본사 고정 '올림' (점주 변경 불가)
-    // 1회 사용 소멸: 고정 '사용'
-    target: 'all',
-    subFilter: null,
-    baseCoupon: null,
-    reason: '',
-    customMessage: '',
-    serialFile: null,
-  },
-  adminTab: 'campaign',  // 'campaign' | 'manage' | 'dashboard'
+  // admin 작업용
+  adminDraft: { name: '', discount: 20, validMin: 30, target: 'all', subFilter: null, baseCoupon: null, reason: '', customMessage: '' },
 };
 
 // ============================================
@@ -5117,25 +5345,6 @@ function ageGroup(age) {
   if (age < 30) return '20s';
   if (age < 40) return '30s';
   return '40s+';
-}
-
-// === v7: 매장 단골 회원 정의 ===
-// 정의: 카톡 연동 + 그 매장에서 1회 이상 쿠폰 사용한 회원
-// 다른 지역 회원이 점주 매장에서 카톡 받지 않게 하는 핵심 정책
-function isStoreMember(member, branchCode) {
-  branchCode = branchCode || BRANCH.code;
-  if (!member || !member.kakaoConnected) return false;
-  if (!member.usageHistory || member.usageHistory.length === 0) return false;
-  return member.usageHistory.some(h => h.branchCode === branchCode);
-}
-function getStoreMembers(branchCode) {
-  branchCode = branchCode || BRANCH.code;
-  return MEMBERS.filter(m => isStoreMember(m, branchCode));
-}
-function getStoreVisitCount(member, branchCode) {
-  branchCode = branchCode || BRANCH.code;
-  if (!member.usageHistory) return 0;
-  return member.usageHistory.filter(h => h.branchCode === branchCode).length;
 }
 
 // 회원이 캠페인을 받을 수 있는지 판단
@@ -5242,38 +5451,19 @@ const api = {
     if (!member.receivedCampaigns.includes(campaign.id)) {
       member.receivedCampaigns.push(campaign.id);
     }
-    // v6: 회원전용 캠페인 사용 시 → 메인 화면에서 영구 숨김
-    if (campaign.type === 'member') {
-      if (!member.usedMemberCampaigns) member.usedMemberCampaigns = [];
-      if (!member.usedMemberCampaigns.includes(campaign.id)) {
-        member.usedMemberCampaigns.push(campaign.id);
-      }
-    }
   },
   // 본사 - 새 캠페인 만들고 타겟에게 푸시
   createPushCampaign(draft, targetPhones) {
     const id = 'P' + Math.floor(Math.random() * 9000 + 1000);
-    // v4: 사용기간 모드 → 종료일까지 남은 분으로 validMin 계산 (호환용)
-    let validMin = 9999;
-    if (draft.endDate) {
-      const endTs = new Date(draft.endDate + 'T23:59:59').getTime();
-      const nowTs = Date.now();
-      validMin = Math.max(60, Math.floor((endTs - nowTs) / 60000));
-    }
     const newCampaign = {
       id: id,
       name: draft.name,
       discount: parseInt(draft.discount),
-      validMin: validMin,
-      // v4: POS 양식 필드
-      startDate: draft.startDate || '',
-      endDate: draft.endDate || '',
-      minOrderAmount: draft.minOrderAmount || 0,
-      maxDiscountAmount: draft.maxDiscountAmount || 0,
+      validMin: parseInt(draft.validMin),
       type: 'member',
       active: true,
       pushOnly: true,
-      totalSerials: (draft.serialFile && draft.serialFile.registered) || 999,
+      totalSerials: 999,
       usedSerials: 0,
       pushedTo: [...targetPhones],
       createdAt: new Date().toISOString(),
@@ -5287,9 +5477,7 @@ const api = {
 // 타겟팅 로직
 // ============================================
 function getTargetMembers(target, subFilter, baseCouponId) {
-  // v7: 점주는 자기 매장 단골만 (1회 이상 그 매장에서 쿠폰 사용 회원)
-  // 본사 모드는 추후 별도 함수 (M2 hq.zerolab.kr)
-  let result = getStoreMembers(BRANCH.code);
+  let result = MEMBERS.filter(m => m.kakaoConnected);
   if (target === 'gender' && subFilter) {
     result = result.filter(m => m.gender === subFilter);
   } else if (target === 'age' && subFilter) {
@@ -5435,9 +5623,13 @@ function renderWelcome() {
       <div class="v5-bg-deco drink-bl"><img src="${ZL_ASSETS.drink}" alt="" /></div>
       <div class="v5-bg-deco fire-br"><img src="${ZL_ASSETS.fire}" alt="" /></div>
 
-      <!-- 상단: 로고 -->
+      <!-- 상단: 로고 + 매장·본사모드 버튼 -->
       <div class="v5-header">
         <img class="v5-header-logo-img" src="${ZL_ASSETS.logoDark}" alt="ZERO 연구소" />
+        <button class="v5-mode-btn" id="mode-toggle">
+          <span class="v5-mode-btn-icon">${renderPinSVG()}</span>
+          <span>매장·본사모드</span>
+        </button>
       </div>
 
       <!-- 매장 정보 카드 (클릭 → 매장 선택 모달) -->
@@ -5707,9 +5899,7 @@ function openKakaoAlimtalkModal(c, serial, onContinue) {
 // === 회원전용 쿠폰 전체 보기 모달 ===
 function openMemberCouponsModal() {
   const isMember = !!state.member;
-  // v6: 사용한 회원전용 쿠폰 숨김
-  const usedMemberIds = (isMember && state.member.usedMemberCampaigns) || [];
-  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly && !usedMemberIds.includes(c.id));
+  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly);
   const colors = ['orange', 'blue', 'purple'];
   const illusts = [ZL_ASSETS.illustProteinBar, ZL_ASSETS.illustDrink, ZL_ASSETS.illustGift, ZL_ASSETS.illustExtra1, ZL_ASSETS.illustExtra2];
 
@@ -5769,18 +5959,20 @@ function openMemberCouponsModal() {
         } else {
           const alreadyClaimed = (state.member.receivedCampaigns || []).includes(c.id);
           if (alreadyClaimed) { toast('이미 발급받은 쿠폰입니다'); return; }
-          const serial = api.issueSerial(id);
-          if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-          state.member.receivedCampaigns = state.member.receivedCampaigns || [];
-          state.member.receivedCampaigns.push(c.id);
-          persistMember(state.member);
-          openKakaoAlimtalkModal(c, serial, () => {
-            state.selectedCampaign = c;
-            state.activeSerial = serial;
-            state.secondsLeft = c.validMin * 60;
-            state.screen = 'coupon';
-            startTimer();
-            render();
+          withStoreConfirm(() => {
+            const serial = api.issueSerial(id);
+            if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+            state.member.receivedCampaigns = state.member.receivedCampaigns || [];
+            state.member.receivedCampaigns.push(c.id);
+            persistMember(state.member);
+            openKakaoAlimtalkModal(c, serial, () => {
+              state.selectedCampaign = c;
+              state.activeSerial = serial;
+              state.secondsLeft = c.validMin * 60;
+              state.screen = 'coupon';
+              startTimer();
+              render();
+            });
           });
         }
       }, 280);
@@ -5807,7 +5999,7 @@ function renderBranchSelectorModal() {
         <div class="branch-modal-header">
           <div>
             <div class="branch-modal-title">🏪 매장 선택</div>
-            <div class="branch-modal-sub">회원 정보는 모든 매장 공유</div>
+            <div class="branch-modal-sub">전국 ${BRANCHES.length}개 매장 · 회원 정보는 모든 매장 공유</div>
           </div>
           <button class="branch-modal-close" id="branch-modal-close">✕</button>
         </div>
@@ -5820,7 +6012,7 @@ function renderBranchSelectorModal() {
         <div class="branch-modal-list" id="branch-modal-list">
           ${Object.keys(grouped).map(region => `
             <div class="branch-region-group">
-              <div class="branch-region-label">${region}</div>
+              <div class="branch-region-label">${region} <span>(${grouped[region].length})</span></div>
               ${grouped[region].map(b => `
                 <button class="branch-item ${b.code === currentCode ? 'selected' : ''}" data-code="${b.code}" type="button">
                   <div class="branch-item-icon">${b.code === currentCode ? '✓' : '🏪'}</div>
@@ -6092,11 +6284,9 @@ window.closeNewsletterDetail = function() {
 
 function renderMain() {
   const isMember = !!state.member;
-  // v6: 회원전용 사용 후 메인에서 영구 숨김
-  const usedMemberIds = (isMember && state.member.usedMemberCampaigns) || [];
-  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly && !usedMemberIds.includes(c.id));
+  const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly);
   const allCamps = CAMPAIGNS.filter(c => c.active && c.type === 'all');
-  const pushedCamps = isMember ? getPushedCampaignsForMember(state.member).filter(c => !usedMemberIds.includes(c.id)) : [];
+  const pushedCamps = isMember ? getPushedCampaignsForMember(state.member) : [];
 
   // 회원전용 카드 - 색상 + 일러스트 매핑 (순환)
   const memberColors = ['orange', 'blue', 'purple'];
@@ -6109,10 +6299,10 @@ function renderMain() {
       <div class="v28-top">
         <div class="v28-top-left">
           <button class="v28-back-btn" id="back-to-welcome" aria-label="처음 화면으로">←</button>
-          <div class="v28-top-info">
+          <div class="v28-top-info" id="v28-store-info" role="button" tabindex="0" aria-label="매장 변경">
             <div class="v28-top-icon"><img src="${ZL_ASSETS.logoCircle}" alt="제로연구소" /></div>
             <div class="v28-top-text">
-              <div class="v28-top-name">${BRANCH.name}</div>
+              <div class="v28-top-name">${BRANCH.name} <span style="color:#1E40DD;font-size:11px;font-weight:700;margin-left:2px;">▾</span></div>
               <div class="v28-top-sub">
                 ${isMember ? `${maskName(state.member.kakaoNickname)}님 · 카톡 연동` : '비회원으로 둘러보는 중'}
               </div>
@@ -6121,9 +6311,7 @@ function renderMain() {
         </div>
         ${isMember
           ? `<button class="v28-top-mode" id="mypage-btn"><span class="v28-top-mode-icon">⚡</span>내 기록</button>`
-          : (state.mode === 'admin'
-              ? `<button class="v28-top-mode admin" id="mode-toggle"><span class="v28-top-mode-icon">⚡</span>고객모드</button>`
-              : ``)
+          : `<button class="v28-top-mode" id="mode-toggle"><span class="v28-top-mode-icon">⚡</span>${state.adminMode ? '고객모드' : '본사모드'}</button>`
         }
       </div>
 
@@ -6640,14 +6828,8 @@ function renderMypage() {
 // ============================================
 function renderAdmin() {
   const draft = state.adminDraft;
-  // v7: 매장 단골만 표시 (전체 카톡 연동 회원 X)
-  const storeMembers = getStoreMembers(BRANCH.code);
-  const totalMembers = storeMembers.length;
-  // 누적 발급: 이 매장에서 발급된 것만
-  const totalIssued = MEMBERS.reduce((a, m) => {
-    if (!m.usageHistory) return a;
-    return a + m.usageHistory.filter(h => h.branchCode === BRANCH.code).length;
-  }, 0);
+  const totalMembers = MEMBERS.filter(m => m.kakaoConnected).length;
+  const totalIssued = MEMBERS.reduce((a, m) => a + (m.usageHistory?.length || 0), 0);
   const targetCount = getTargetMembers(draft.target, draft.subFilter, draft.baseCoupon).length;
   const memberCampList = CAMPAIGNS.filter(c => c.type === 'member' && !c.pushOnly);
 
@@ -6665,78 +6847,38 @@ function renderAdmin() {
 
         <div class="demo-guide">
           <div class="demo-guide-title">📌 데모 시나리오</div>
-          <div class="demo-guide-step">① <b>고객 모드</b>에서 가입 → 쿠폰 받기 → <b>사용 완료</b> (= 매장 단골 등록)</div>
-          <div class="demo-guide-step">② 본사 모드 → 매장 현황 탭에서 단골 확인</div>
-          <div class="demo-guide-step">③ 캠페인 신청 → 단골에게만 카톡 자동 발송</div>
+          <div class="demo-guide-step">① <b>고객 모드</b>에서 가입 → 회원전용 쿠폰 받기</div>
+          <div class="demo-guide-step">② 본사 모드에서 새 캠페인 만들기 → 타겟 선정</div>
+          <div class="demo-guide-step">③ 발송 → <b>고객 모드로 전환</b>하면 NEW 쿠폰 알림 표시</div>
         </div>
-
-        <!-- 탭 헤더 -->
-        <div class="admin-tabs">
-          <button class="admin-tab ${state.adminTab === 'campaign' ? 'active' : ''}" data-tab="campaign" type="button">
-            <span class="admin-tab-icon">📨</span>캠페인 신청
-          </button>
-          <button class="admin-tab ${state.adminTab === 'manage' ? 'active' : ''}" data-tab="manage" type="button">
-            <span class="admin-tab-icon">📋</span>캠페인 관리
-          </button>
-          <button class="admin-tab ${state.adminTab === 'dashboard' ? 'active' : ''}" data-tab="dashboard" type="button">
-            <span class="admin-tab-icon">📊</span>매장 현황
-          </button>
-        </div>
-
-        <!-- ========== 매장 현황 탭 ========== -->
-        <div class="admin-tab-content ${state.adminTab === 'dashboard' ? 'active' : ''}" data-tab-content="dashboard">
 
         <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">📊</span>이 매장 단골 현황</div>
-
-          <!-- v7: 매장 단골 정의 안내 -->
-          <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 11px 13px; margin-bottom: 12px; font-size: 11px; color: #1E3A8A; font-weight: 600; line-height: 1.6;">
-            💡 <b style="color: #1E40DD; font-weight: 800;">매장 단골 정의</b><br/>
-            카톡 연동 + <b>이 매장에서 1회 이상 쿠폰 사용</b>한 회원만 표시.<br/>
-            다른 지역 회원은 안 보입니다 (카톡 발송 비용 낭비 방지)
-          </div>
-
+          <div class="admin-card-title"><span class="admin-card-title-icon">📊</span>회원 현황</div>
           <div class="admin-stats-grid">
-            <div class="admin-stat"><div class="admin-stat-num">${totalMembers}</div><div class="admin-stat-label">매장 단골</div></div>
+            <div class="admin-stat"><div class="admin-stat-num">${totalMembers}</div><div class="admin-stat-label">카톡 연동 회원</div></div>
             <div class="admin-stat"><div class="admin-stat-num">${totalIssued}</div><div class="admin-stat-label">누적 발급</div></div>
             <div class="admin-stat"><div class="admin-stat-num">${CAMPAIGNS.filter(c=>c.pushOnly).length}</div><div class="admin-stat-label">진행중 푸시</div></div>
           </div>
         </div>
 
         <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">👥</span>매장 단골 (${storeMembers.length}명)</div>
-          ${storeMembers.length === 0 ? `
-            <div style="text-align: center; padding: 32px 20px; background: #F9FAFB; border-radius: 10px; border: 1px dashed #D1D5DB;">
-              <div style="font-size: 36px; margin-bottom: 8px;">📭</div>
-              <div style="font-size: 13px; font-weight: 800; color: #181600; margin-bottom: 6px; letter-spacing: -0.2px;">아직 매장 단골이 없습니다</div>
-              <div style="font-size: 11px; color: #6B7280; font-weight: 600; line-height: 1.55;">카톡 연동 회원이 이 매장에서<br/><b style="color:#1E40DD;">한 번이라도 쿠폰을 사용</b>하면 단골이 됩니다</div>
-            </div>
-          ` : `
-            <div class="admin-member-list">
-              ${storeMembers.map(m => {
-                const visits = getStoreVisitCount(m, BRANCH.code);
-                return `
-                <div class="admin-member-item">
-                  <div class="admin-member-avatar">${(m.kakaoNickname || '?')[0]}</div>
-                  <div class="admin-member-info">
-                    <div class="admin-member-name">${maskName(m.kakaoNickname)} · ${m.gender === 'M' ? '남' : '여'} ${m.age}세</div>
-                    <div class="admin-member-meta">${m.phone.slice(0,3)}-****-${m.phone.slice(-4)} · 발급 ${m.usageHistory?.length || 0}건</div>
-                  </div>
-                  <div class="admin-member-tags">
-                    <span class="admin-member-tag kakao">💬 카톡</span>
-                    <span class="admin-member-tag received" style="background:#DCFCE7;color:#15803D;">📍 ${visits}회 방문</span>
-                  </div>
+          <div class="admin-card-title"><span class="admin-card-title-icon">👥</span>회원 리스트 (${MEMBERS.length}명)</div>
+          <div class="admin-member-list">
+            ${MEMBERS.map(m => `
+              <div class="admin-member-item">
+                <div class="admin-member-avatar">${(m.kakaoNickname || '?')[0]}</div>
+                <div class="admin-member-info">
+                  <div class="admin-member-name">${maskName(m.kakaoNickname)} · ${m.gender === 'M' ? '남' : '여'} ${m.age}세</div>
+                  <div class="admin-member-meta">${m.phone.slice(0,3)}-****-${m.phone.slice(-4)} · 발급 ${m.usageHistory?.length || 0}건</div>
                 </div>
-              `;}).join('')}
-            </div>
-          `}
+                <div class="admin-member-tags">
+                  ${m.kakaoConnected ? '<span class="admin-member-tag kakao">💬 카톡</span>' : ''}
+                  ${(m.receivedCampaigns || []).length > 0 ? `<span class="admin-member-tag received">${m.receivedCampaigns.length}개 수령</span>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
-
-        </div>
-        <!-- ========== /매장 현황 탭 ========== -->
-
-        <!-- ========== 캠페인 신청 탭 ========== -->
-        <div class="admin-tab-content ${state.adminTab === 'campaign' ? 'active' : ''}" data-tab-content="campaign">
 
         <div class="admin-card">
           <div class="admin-card-title"><span class="admin-card-title-icon">📨</span>본사 캠페인 신청</div>
@@ -6748,148 +6890,46 @@ function renderAdmin() {
           <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: 8px; padding: 9px 11px; margin-bottom: 12px; font-size: 10.5px; color: #92400E; font-weight: 600; line-height: 1.5;">
             📌 점주는 <b style="color: #B45309; font-weight: 800;">회원전용 쿠폰 (10~30%)</b>만 신청 가능 · 전체가능 쿠폰은 본사 직접 운영
           </div>
-
-          <!-- v5: 캠페인 종류 선택 -->
-          <div style="font-size: 12px; font-weight: 800; color: #181600; margin-bottom: 8px; letter-spacing: -0.2px;">📌 캠페인 종류 선택</div>
-          <div class="campaign-type-selector">
-            <label class="campaign-type-option ${(draft.campaignType || 'push') === 'push' ? 'selected' : ''}" data-type="push">
-              <input type="radio" name="campaignType" value="push" ${(draft.campaignType || 'push') === 'push' ? 'checked' : ''} />
-              <div class="campaign-type-content">
-                <div class="campaign-type-title">📨 즉석 캠페인 (카톡 발송)</div>
-                <div class="campaign-type-desc">기존 회원에게 카톡 메시지 발송 · 본사 비용 부담<br/>월 1,000건 한도 · 발송 인원만큼 시리얼 필요</div>
-              </div>
-            </label>
-            <label class="campaign-type-option ${draft.campaignType === 'qr' ? 'selected' : ''}" data-type="qr">
-              <input type="radio" name="campaignType" value="qr" ${draft.campaignType === 'qr' ? 'checked' : ''} />
-              <div class="campaign-type-content">
-                <div class="campaign-type-title">🎫 상시 쿠폰 (QR · 회원가입 유도)</div>
-                <div class="campaign-type-desc">QR 스캔 → 회원가입 시 자동 지급 · 카톡 발송 X<br/>회원당 1회 사용 후 소멸 (재발급 불가)</div>
-              </div>
-            </label>
-          </div>
-
-          <!-- v5: QR 타입 안내 배너 (qr 선택 시만 표시) -->
-          <div data-only-type="qr" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px solid #6EE7B7; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #065F46; font-weight: 700; line-height: 1.6; display:none;">
-            🎫 <b style="color: #047857; font-weight: 900;">상시 쿠폰 (QR형) 안내</b><br/>
-            <span style="font-weight:600;display:block;margin-top:3px;">· 신규 회원이 QR로 가입할 때마다 시스템이 자동으로 시리얼 1개 지급<br/>· 한 번 사용한 회원은 다시 못 받음 (회원 ID 단위 소멸)<br/>· 카톡 발송 없음 → 본사 카톡 비용 0원<br/>· 신청 후 본사 승인 시 즉시 활성화 (만료일까지 자동 분배)</span>
-          </div>
           <div class="admin-form-group">
             <div class="admin-input-group">
               <label class="admin-input-label">캠페인 이름</label>
               <input class="admin-input" id="admin-name" type="text" placeholder="예: 5월 단골 컴백 25%" value="${draft.name}" />
             </div>
-            <!-- v4: POS 시스템 입력 안내 배너 -->
-            <div style="background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); border: 1px solid #FCA5A5; border-radius: 8px; padding: 11px 13px; margin: 14px 0 12px; font-size: 11px; color: #991B1B; font-weight: 700; line-height: 1.6;">
-              ⚠️ <b style="color: #B91C1C; font-weight: 900;">POS 시스템에 동일하게 입력 필수</b><br/>
-              <span style="font-weight:600;display:block;margin-top:3px;">아래 입력값은 POS 시스템 [쿠폰관리] 화면에 그대로 다시 입력하셔야 합니다. 신청 완료 시 자동 가이드 제공됩니다.</span>
-            </div>
-
-            <!-- 대상 + 쿠폰종류 (고정) -->
             <div class="admin-input-row">
               <div class="admin-input-group">
-                <label class="admin-input-label">대상</label>
-                <div data-only-type="push" style="background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #374151;">비고객 <span style="font-weight:500;color:#9CA3AF;font-size:10.5px;">(점주 신청 고정)</span></div>
-                <div data-only-type="qr" style="background: #ECFDF5; border: 1px solid #6EE7B7; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #065F46; display:none;">신규 회원 <span style="font-weight:500;color:#10B981;font-size:10.5px;">(가입 시 자동 지급)</span></div>
+                <label class="admin-input-label">할인율 (10~30%)</label>
+                <input class="admin-input" id="admin-discount" type="number" min="10" max="30" value="${draft.discount}" />
               </div>
               <div class="admin-input-group">
-                <label class="admin-input-label">쿠폰종류</label>
-                <div style="background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #374151;">할인쿠폰 <span style="font-weight:500;color:#9CA3AF;font-size:10.5px;">(고정)</span></div>
+                <label class="admin-input-label">유효시간 (분)</label>
+                <input class="admin-input" id="admin-validMin" type="number" min="5" max="120" value="${draft.validMin}" />
               </div>
             </div>
-
-            <!-- 할인율 -->
-            <div class="admin-input-group" style="margin-top: 10px;">
-              <label class="admin-input-label">할인율 (10~30%)</label>
-              <input class="admin-input" id="admin-discount" type="number" min="10" max="30" value="${draft.discount}" />
-            </div>
-
-            <!-- 사용기간 (날짜 picker) -->
-            <div class="admin-input-group" style="margin-top: 10px;">
-              <label class="admin-input-label">사용기간 (시작일 ~ 종료일)</label>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <input class="admin-input" id="admin-startDate" type="date" value="${draft.startDate || ''}" style="flex: 1;" />
-                <span style="color: #6B7280; font-weight: 700;">~</span>
-                <input class="admin-input" id="admin-endDate" type="date" value="${draft.endDate || ''}" style="flex: 1;" />
-              </div>
-              <div style="margin-top: 4px; font-size: 10.5px; color: #6B7280; font-weight: 600;">※ POS 시스템 [기간] 모드와 동일</div>
-            </div>
-
-            <!-- 최소 결제금액 / 최대 할인금액 -->
-            <div class="admin-input-row" style="margin-top: 10px;">
-              <div class="admin-input-group">
-                <label class="admin-input-label">최소 결제금액 (원)</label>
-                <input class="admin-input" id="admin-minOrderAmount" type="number" min="0" step="100" value="${draft.minOrderAmount || 0}" placeholder="0" />
-                <div style="margin-top: 4px; font-size: 10px; color: #6B7280; font-weight: 600;">0 = 제한 없음</div>
-              </div>
-              <div class="admin-input-group">
-                <label class="admin-input-label">최대 할인금액 (원)</label>
-                <div style="background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #374151;">제한 없음 <span style="font-weight:500;color:#9CA3AF;font-size:10.5px;">(본사 일괄)</span></div>
-                <div style="margin-top: 4px; font-size: 10px; color: #6B7280; font-weight: 600;">최대 할인 무제한</div>
-              </div>
-            </div>
-
-            <!-- 원단위 + 1회 사용시 소멸 (고정) -->
-            <div class="admin-input-row" style="margin-top: 10px;">
-              <div class="admin-input-group">
-                <label class="admin-input-label">원단위</label>
-                <div style="background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #374151;">올림 <span style="font-weight:500;color:#9CA3AF;font-size:10.5px;">(본사 일괄)</span></div>
-              </div>
-              <div class="admin-input-group">
-                <label class="admin-input-label">1회 사용시 소멸</label>
-                <div data-only-type="push" style="background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #374151;">사용 <span style="font-weight:500;color:#9CA3AF;font-size:10.5px;">(고정)</span></div>
-                <div data-only-type="qr" style="background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 8px; padding: 11px 13px; font-size: 12px; font-weight: 700; color: #78350F; display:none;">회원당 1회 <span style="font-weight:500;color:#B45309;font-size:10.5px;">(고정)</span></div>
-              </div>
-            </div>
-
             <div class="admin-input-group" style="margin-top: 10px;">
               <label class="admin-input-label">신청 사유 (본사 심사용)</label>
               <textarea class="admin-input" id="admin-reason" rows="2" placeholder="예: 평일 오후 매출 저조하여 단골 회원 컴백 유도 필요" style="resize: vertical; font-family: inherit;">${draft.reason || ''}</textarea>
             </div>
 
-            <!-- v3: 시리얼 엑셀 첨부 (캠페인 신청 통합) -->
+            <!-- v38 커스텀 메시지 (알림톡 본문) -->
             <div class="admin-input-group" style="margin-top: 14px;">
-              <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
-                <span>📤 시리얼 엑셀 첨부 <span style="color:#DC2626;font-weight:800;">(필수)</span></span>
-                <span id="campaign-serial-status" style="font-size: 10.5px; font-weight: 700; color: #6B7280;">미첨부</span>
-              </label>
-              <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 10.5px; color: #1E3A8A; font-weight: 600; line-height: 1.55;">
-                💡 POS사에서 받은 시리얼 엑셀을 첨부하세요.<br/>
-                형식: <code style="background:#FFFFFF;padding:1px 4px;border-radius:3px;font-size:10px;font-weight:800;color:#1E40DD;">XXXX-XXXX-XXXX-XXXX</code> (예: 0056-FE4D-3D84-BBCB)<br/>
-                <b style="color:#1E40DD;font-weight:800;">이 시리얼들은 모두 위 캠페인 (${draft.discount || 0}%) 으로 자동 매핑됩니다.</b>
-              </div>
-              <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 10px; padding: 18px 14px; text-align: center; cursor: pointer; transition: all 0.15s;" id="campaign-serial-zone">
-                <div style="font-size: 24px; margin-bottom: 6px;">📁</div>
-                <div style="font-size: 12px; color: #181600; font-weight: 800; margin-bottom: 2px; letter-spacing: -0.2px;" id="campaign-serial-filename">시리얼 엑셀 파일 선택</div>
-                <div style="font-size: 10px; color: #6B7280; font-weight: 500;" id="campaign-serial-hint">.xlsx · .xls · .csv · 최대 5MB</div>
-                <input type="file" id="campaign-serial-input" accept=".xlsx,.xls,.csv" style="display: none;" />
-              </div>
-              <div id="campaign-serial-result" style="display:none; margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; line-height: 1.55;"></div>
-            </div>
-
-            <!-- v38 커스텀 메시지 (알림톡 본문) — push 타입만 -->
-            <div class="admin-input-group" data-only-type="push" style="margin-top: 14px;">
               <label class="admin-input-label" style="display: flex; align-items: center; justify-content: space-between;">
                 <span>📨 카톡 메시지 본문 <span style="font-weight:600;color:#5A6072;font-size:10.5px;">(선택 · 비워두면 기본 양식)</span></span>
                 <span class="msg-counter" id="admin-msg-counter" style="font-size: 10.5px; font-weight: 700; color: #5A6072;">
-                  <span id="admin-msg-count">0</span><span style="color:#94A3B8;">/1,000자</span> · <b style="color:#1E40DD;">80자 권장</b>
+                  <span id="admin-msg-count">0</span>/<b style="color:#1E40DD;">80</b>자 권장
                 </span>
               </label>
-              <textarea class="admin-input" id="admin-custom-message" rows="3" maxlength="1000" placeholder="예) 평일 점심 단백질바 25% 할인! 12-14시 한정 · 30분 내 사용" style="resize: vertical; font-family: inherit;">${draft.customMessage || ''}</textarea>
+              <textarea class="admin-input" id="admin-custom-message" rows="3" maxlength="200" placeholder="예) 평일 점심 단백질바 25% 할인! 12-14시 한정 · 30분 내 사용" style="resize: vertical; font-family: inherit;">${draft.customMessage || ''}</textarea>
               <div class="msg-cost-row" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
                 <div class="msg-cost-chip ok" id="admin-msg-status">
                   <span class="msg-cost-icon">✓</span>
                   <span id="admin-msg-status-text">친구톡(브랜드메시지) · 15원/건</span>
-                </div>
-                <div class="msg-cost-chip" style="background:#DCFCE7; color:#15803D; border-color:#86EFAC; font-weight:800;">
-                  <span class="msg-cost-icon">💰</span>
-                  본사 100% 부담
                 </div>
                 <div class="msg-cost-chip neutral">
                   <span class="msg-cost-icon">📊</span>
                   예상 발송: <b id="admin-msg-estimate-count" style="margin: 0 3px;">0건</b>
                 </div>
                 <div class="msg-cost-chip neutral">
-                  <span class="msg-cost-icon">💸</span>
+                  <span class="msg-cost-icon">💰</span>
                   예상 비용: <b id="admin-msg-estimate-cost" style="margin: 0 3px;">0원</b>
                 </div>
               </div>
@@ -6915,23 +6955,16 @@ function renderAdmin() {
           </div>
         </div>
 
-        <div class="admin-card" data-only-type="push">
+        <div class="admin-card">
           <div class="admin-card-title"><span class="admin-card-title-icon">🎯</span>타겟 선정</div>
-
-          <!-- v7: 매장 단골 자동 필터 안내 -->
-          <div style="background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border: 1px solid #86EFAC; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; font-size: 11px; color: #15803D; font-weight: 700; line-height: 1.55;">
-            ✅ <b style="color: #14532D; font-weight: 900;">자동: 이 매장 단골에게만 발송</b><br/>
-            <span style="font-weight:600;">아래 어떤 옵션을 선택해도 다른 지역 회원은 자동 제외됩니다.<br/>(본사 카톡 비용 75% 절감)</span>
-          </div>
-
           <div class="target-section">
             <div class="target-title">발송 대상 조건</div>
             <div class="target-options">
               <div class="target-option ${draft.target === 'all' ? 'active' : ''}" data-target="all">
                 <div class="target-radio"></div>
                 <div class="target-text">
-                  <div class="target-label">매장 단골 전체</div>
-                  <div class="target-desc">이 매장에서 1회 이상 사용한 회원에게 발송</div>
+                  <div class="target-label">모든 회원</div>
+                  <div class="target-desc">카톡 연동된 전 회원에게 발송</div>
                 </div>
               </div>
 
@@ -7009,7 +7042,7 @@ function renderAdmin() {
           </div>
         </div>
 
-        <div class="admin-card" data-only-type="push">
+        <div class="admin-card">
           <div class="admin-card-title"><span class="admin-card-title-icon">📱</span>카톡 메시지 미리보기</div>
 
           <!-- v40 메시지 구조 안내 (점주가 어떤 부분 입력하는지) -->
@@ -7081,7 +7114,7 @@ function renderAdmin() {
 
                   <!-- 자동 (시스템 정보) -->
                   <div class="msg-zone msg-zone-auto" data-zone="시스템 자동 (매장 정보)">
-                    <div class="kakao-msg-text">📅 사용기간: <b id="preview-period">${(draft.startDate && draft.endDate) ? draft.startDate + ' ~ ' + draft.endDate : '미입력'}</b><br/>📍 매장: <b>${BRANCH.name}</b></div>
+                    <div class="kakao-msg-text">⏱ 유효시간: 발급 후 <b id="preview-validMin">${draft.validMin}</b>분<br/>📍 매장: <b>${BRANCH.name}</b></div>
                   </div>
 
                   <!-- 자동 (버튼) -->
@@ -7097,107 +7130,13 @@ function renderAdmin() {
           </div>
         </div>
 
-        <!-- push 타입: 발송 인원 표시 -->
-        <button class="admin-send-btn" id="admin-send-btn" data-only-type="push" ${(targetCount === 0 || !draft.name) ? 'disabled' : ''}>
+        <button class="admin-send-btn" id="admin-send-btn" ${(targetCount === 0 || !draft.name) ? 'disabled' : ''}>
           📨 본사 승인 요청 (<span id="preview-target-count">${targetCount}</span>명 발송 예정)
         </button>
-        <div data-only-type="push" style="font-size: 10.5px; color: #5A6072; text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.5;">
+        <div style="font-size: 10.5px; color: #5A6072; text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.5;">
           ※ 신청 후 본사 운영팀이 검토합니다 (보통 1영업일 이내)<br/>
           ※ 승인 즉시 자동 발송 · 비용은 본사 100% 부담
         </div>
-
-        <!-- qr 타입: QR 자동 지급 -->
-        <button class="admin-send-btn" id="admin-send-btn-qr" data-only-type="qr" style="display:none;" ${!draft.name ? 'disabled' : ''}>
-          🎫 본사 승인 요청 (QR 자동 지급 활성화)
-        </button>
-        <div data-only-type="qr" style="font-size: 10.5px; color: #5A6072; text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.5; display:none;">
-          ※ 본사 승인 시 QR 진입 신규 회원에게 자동 지급<br/>
-          ※ 카톡 발송 없음 · 본사 카톡 비용 0원<br/>
-          ※ 회원당 1회 사용 후 자동 소멸
-        </div>
-
-        </div>
-        <!-- ========== /캠페인 신청 탭 ========== -->
-
-        <!-- ========== 캠페인 관리 탭 (v6) ========== -->
-        <div class="admin-tab-content ${state.adminTab === 'manage' ? 'active' : ''}" data-tab-content="manage">
-
-        <div class="admin-card">
-          <div class="admin-card-title"><span class="admin-card-title-icon">📋</span>내 캠페인 목록</div>
-
-          <!-- 안내 -->
-          <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #92400E; font-weight: 700; line-height: 1.6;">
-            ⚠️ <b style="color: #B45309; font-weight: 900;">수정 가능 항목 제한</b><br/>
-            <span style="font-weight:600;display:block;margin-top:3px;">· <b style="color:#16A34A;">수정 가능</b>: 캠페인 이름, 신청 사유 (메모)<br/>· <b style="color:#DC2626;">수정 불가</b>: 할인율, 사용기간, 최소금액, 시리얼, 종류<br/>※ 이미 발급된 쿠폰의 조건이라 변경 시 사고 발생</span>
-          </div>
-
-          <!-- 캠페인 목록 -->
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-
-            <!-- 진행 중 캠페인 -->
-            <div style="background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px;">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 0;">
-                  <div style="font-size: 14px; font-weight: 800; color: #181600; margin-bottom: 6px; letter-spacing: -0.2px;">5월 단골 컴백 25%</div>
-                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
-                    <span style="background: #DCFCE7; color: #15803D; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">✓ 진행 중</span>
-                    <span style="background: #DBEAFE; color: #1E40DD; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">📨 즉석 캠페인</span>
-                  </div>
-                  <div style="font-size: 11px; color: #6B7280; font-weight: 600; line-height: 1.55;">할인 25% · 잔여 <b style="color:#181600;">200/1,000개</b><br/>사용기간: 2026-05-15 ~ 2026-06-30</div>
-                </div>
-                <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                  <button class="btn-edit-campaign" data-cid="DEMO-C001" data-cname="5월 단골 컴백 25%" type="button" style="background: white; border: 1px solid #BFDBFE; color: #1E40DD; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">✏️ 수정</button>
-                  <button class="btn-delete-campaign" data-cid="DEMO-C001" data-cname="5월 단골 컴백 25%" type="button" style="background: white; border: 1px solid #FCA5A5; color: #DC2626; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">🗑 삭제</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 본사 검토 중 (대기) 캠페인 -->
-            <div style="background: white; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px;">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 0;">
-                  <div style="font-size: 14px; font-weight: 800; color: #181600; margin-bottom: 6px; letter-spacing: -0.2px;">신규 환영 30%</div>
-                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
-                    <span style="background: #FEF3C7; color: #B45309; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">⏳ 본사 검토 중</span>
-                    <span style="background: #DCFCE7; color: #047857; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">🎫 상시 쿠폰</span>
-                  </div>
-                  <div style="font-size: 11px; color: #6B7280; font-weight: 600; line-height: 1.55;">할인 30% · 시리얼 풀 <b style="color:#181600;">500개</b><br/>신청일: 2026-05-09 · 검토 중</div>
-                </div>
-                <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                  <button class="btn-edit-campaign" data-cid="DEMO-C002" data-cname="신규 환영 30%" type="button" style="background: white; border: 1px solid #BFDBFE; color: #1E40DD; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">✏️ 수정</button>
-                  <button class="btn-delete-campaign" data-cid="DEMO-C002" data-cname="신규 환영 30%" type="button" style="background: white; border: 1px solid #FCA5A5; color: #DC2626; padding: 6px 12px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; font-family: inherit; letter-spacing: -0.2px;">🗑 삭제</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- 완료 캠페인 (수정 불가) -->
-            <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px; opacity: 0.7;">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 0;">
-                  <div style="font-size: 14px; font-weight: 800; color: #6B7280; margin-bottom: 6px; letter-spacing: -0.2px; text-decoration: line-through;">4월 점심 7%</div>
-                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px;">
-                    <span style="background: #F3F4F6; color: #6B7280; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">📦 완료</span>
-                    <span style="background: #F3F4F6; color: #6B7280; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800;">📨 즉석 캠페인</span>
-                  </div>
-                  <div style="font-size: 11px; color: #9CA3AF; font-weight: 600; line-height: 1.55;">사용 412/412개 (100%)<br/>종료일: 2026-04-30</div>
-                </div>
-                <div style="display: flex; gap: 6px; flex-shrink: 0; align-items: center;">
-                  <span style="font-size: 10px; color: #9CA3AF; font-weight: 700;">수정 불가</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- 안내 -->
-          <div style="margin-top: 14px; font-size: 10.5px; color: #6B7280; text-align: center; font-weight: 600; line-height: 1.5;">
-            ※ 삭제 시 남은 시리얼은 회수되어 본사가 폐기 처리합니다<br/>
-            ※ 종료된 캠페인은 히스토리 보존을 위해 수정·삭제 불가
-          </div>
-        </div>
-
-        </div>
-        <!-- ========== /캠페인 관리 탭 ========== -->
       </div>
     </div>
   `;
@@ -7207,24 +7146,15 @@ function renderAdmin() {
 // EVENT BIND
 // ============================================
 function bind() {
-  // 모드 토글 - admin → customer 전환 시 점주 인증 세션 종료
+  // 모드 토글 - welcome 안의 토글이거나 body 끝의 토글이거나 동일 ID로 처리
+  // (welcome일 땐 body 끝이 hidden, 그 외엔 body 끝이 보임)
   const modeToggles = document.querySelectorAll('#mode-toggle');
   modeToggles.forEach(el => {
     el.onclick = () => {
-      const goingToCustomer = state.mode === 'admin';
       state.mode = state.mode === 'admin' ? 'customer' : 'admin';
       if (state.mode === 'admin') {
         stopTimer();
       } else {
-        // 점주 모드 → 고객 모드로 전환 시 인증 세션 종료
-        if (goingToCustomer) {
-          try {
-            sessionStorage.removeItem('zerolab_owner_auth');
-            const url = new URL(window.location.href);
-            url.searchParams.delete('role');
-            window.history.replaceState({}, '', url.toString());
-          } catch(e) {}
-        }
         if (state.screen !== 'welcome' && state.screen !== 'main') state.screen = 'main';
       }
       render();
@@ -7242,6 +7172,7 @@ function bind() {
   attachClick('kakao-login-btn', () => openKakaoLoginModal());
   attachClick('guest-btn', () => { state.screen = 'main'; render(); });
   attachClick('branch-selector-btn', () => openBranchSelector());
+  attachClick('v28-store-info', () => openBranchSelector());
 
   // welcome 화면의 쿠폰 티켓 클릭 → 바로 발급 흐름 진입 (v2/v3 디자인 모두 지원)
   document.querySelectorAll('.hero-ticket, .v3-ticket, .v4-ticket, .v5-ticket').forEach(el => {
@@ -7264,14 +7195,16 @@ function bind() {
       }
 
       // 시리얼 발급 → 즉시 사용 화면
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
-      state.secondsLeft = c.validMin * 60;
-      state.screen = 'coupon';
-      startTimer();
-      render();
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = c.validMin * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
     });
   });
   attachClick('header-signup-btn', () => openKakaoConnectModal());
@@ -7306,19 +7239,21 @@ function bind() {
         return;
       }
       // 발급
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.member.receivedCampaigns = state.member.receivedCampaigns || [];
-      state.member.receivedCampaigns.push(c.id);
-      persistMember(state.member);  // 받은 쿠폰 영속화
-      // 카톡 알림톡 시뮬레이션 후 쿠폰 화면으로
-      openKakaoAlimtalkModal(c, serial, () => {
-        state.selectedCampaign = c;
-        state.activeSerial = serial;
-        state.secondsLeft = c.validMin * 60;
-        state.screen = 'coupon';
-        startTimer();
-        render();
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.member.receivedCampaigns = state.member.receivedCampaigns || [];
+        state.member.receivedCampaigns.push(c.id);
+        persistMember(state.member);  // 받은 쿠폰 영속화
+        // 카톡 알림톡 시뮬레이션 후 쿠폰 화면으로
+        openKakaoAlimtalkModal(c, serial, () => {
+          state.selectedCampaign = c;
+          state.activeSerial = serial;
+          state.secondsLeft = c.validMin * 60;
+          state.screen = 'coupon';
+          startTimer();
+          render();
+        });
       });
     });
   });
@@ -7336,14 +7271,16 @@ function bind() {
         toast(`🔒 ${formatCooldown(cooldownMs)} 후에 다시 사용할 수 있어요`);
         return;
       }
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
-      state.secondsLeft = c.validMin * 60;
-      state.screen = 'coupon';
-      startTimer();
-      render();
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = c.validMin * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
     });
   });
 
@@ -7359,14 +7296,16 @@ function bind() {
         toast(`🔒 ${formatCooldown(cooldownMs)} 후에 다시 사용할 수 있어요`);
         return;
       }
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
-      state.secondsLeft = c.validMin * 60;
-      state.screen = 'coupon';
-      startTimer();
-      render();
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = c.validMin * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
     });
   });
 
@@ -7425,28 +7364,30 @@ function bind() {
       }
 
       // 시리얼 발급
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
 
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
 
-      if (c.type === 'all') {
-        // 전체가능 → 앱 내 즉시 사용
-        state.secondsLeft = c.validMin * 60;
-        state.screen = 'coupon';
-        startTimer();
-        render();
-      } else {
-        // 회원전용 또는 push → 카톡 발송
-        state.screen = 'sending';
-        render();
-        setTimeout(() => {
-          api.recordUsage(state.member, c, serial, 'kakao');
-          state.screen = 'success';
+        if (c.type === 'all') {
+          // 전체가능 → 앱 내 즉시 사용
+          state.secondsLeft = c.validMin * 60;
+          state.screen = 'coupon';
+          startTimer();
           render();
-        }, 1800);
-      }
+        } else {
+          // 회원전용 또는 push → 카톡 발송
+          state.screen = 'sending';
+          render();
+          setTimeout(() => {
+            api.recordUsage(state.member, c, serial, 'kakao');
+            state.screen = 'success';
+            render();
+          }, 1800);
+        }
+      });
     });
   });
 
@@ -7487,71 +7428,6 @@ function bind() {
   }
 }
 
-// === 시리얼 엑셀 업로드 시뮬레이션 ===
-// 실제 운영에선 서버로 파일 전송 → 검증 → DB 저장 (M3 백엔드에서 구현)
-// v6: 시리얼 충전 탭 폐기 → handleSerialFile 함수 제거됨
-// 캠페인 신청 시 시리얼 첨부는 handleCampaignSerialFile 사용
-
-// === 캠페인 신청 시리얼 첨부 핸들러 (v3) ===
-function handleCampaignSerialFile(file) {
-  if (!file) return;
-
-  if (file.size > 5 * 1024 * 1024) {
-    try { toast('⚠️ 파일이 너무 큽니다 (최대 5MB)'); } catch(e) {}
-    return;
-  }
-
-  const validExt = /\.(xlsx|xls|csv)$/i;
-  if (!validExt.test(file.name)) {
-    try { toast('⚠️ 엑셀 또는 CSV 파일만 가능합니다'); } catch(e) {}
-    return;
-  }
-
-  // 파일명 + 검증 결과 표시
-  const filenameEl = document.getElementById('campaign-serial-filename');
-  const hintEl = document.getElementById('campaign-serial-hint');
-  const statusEl = document.getElementById('campaign-serial-status');
-  const resultEl = document.getElementById('campaign-serial-result');
-
-  if (filenameEl) filenameEl.textContent = `📄 ${file.name}`;
-  if (hintEl) hintEl.textContent = '클릭하여 다른 파일 선택';
-
-  // v4: 시뮬레이션 — 실제 POS 양식 (XXXX-XXXX-XXXX-XXXX) 검증 결과
-  // 실제로는 서버에서 파일 파싱 + 정규식 검증 + 풀 중복 검사
-  const fakeTotal = 200 + Math.floor(Math.random() * 800);
-  const fakeFormatErrors = Math.floor(Math.random() * 3);  // 헤더 행 등
-  const fakeDuplicates = Math.floor(Math.random() * 8);    // 본사 풀과 중복
-  const fakeRegistered = fakeTotal - fakeDuplicates - fakeFormatErrors;
-
-  // state 저장 (캠페인 신청용)
-  state.adminDraft.serialFile = { name: file.name, total: fakeTotal, registered: fakeRegistered, duplicates: fakeDuplicates, errors: fakeFormatErrors };
-
-  // 상태 표시 — 쿠폰 발행 수 명확히 (POS와 매칭)
-  if (statusEl) {
-    statusEl.textContent = `✓ ${fakeRegistered.toLocaleString()}개 등록 가능`;
-    statusEl.style.color = '#15803D';
-  }
-
-  // 결과 박스 — POS 매칭 안내 강화
-  if (resultEl) {
-    resultEl.style.display = 'block';
-    resultEl.style.background = '#DCFCE7';
-    resultEl.style.color = '#15803D';
-    resultEl.style.border = '1px solid #86EFAC';
-    resultEl.innerHTML = `
-      ✅ <b style="font-weight:900;">시리얼 검증 완료</b><br/>
-      <span style="font-weight:600;">· 전체: <b>${fakeTotal.toLocaleString()}개</b></span><br/>
-      <span style="font-weight:600;">· 등록 가능: <b style="color:#16A34A;font-size:13px;">${fakeRegistered.toLocaleString()}개</b></span>${fakeDuplicates > 0 ? `<br/><span style="font-weight:600;">· 풀 중복 제외: ${fakeDuplicates}개</span>` : ''}${fakeFormatErrors > 0 ? `<br/><span style="font-weight:600;">· 헤더/형식 오류 제외: ${fakeFormatErrors}개</span>` : ''}
-      <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #86EFAC;">
-        ⚠️ <b style="color:#B45309;">POS 시스템에도 동일한 ${fakeRegistered.toLocaleString()}개 쿠폰을 발행해야 합니다.</b><br/>
-        <span style="font-weight:600;color:#15803D;font-size:10.5px;">신청 후 자동 가이드 제공됩니다.</span>
-      </div>
-    `;
-  }
-
-  try { toast(`✅ ${fakeRegistered.toLocaleString()}개 시리얼 첨부 완료`); } catch(e) {}
-}
-
 function bindAdmin() {
   attachClick('admin-back-btn', () => {
     state.mode = 'customer';
@@ -7559,113 +7435,14 @@ function bindAdmin() {
     render();
   });
 
-  // === 탭 전환 ===
-  document.querySelectorAll('.admin-tab').forEach(btn => {
-    btn.onclick = () => {
-      const tab = btn.dataset.tab;
-      if (!tab) return;
-      state.adminTab = tab;
-      document.querySelectorAll('.admin-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.tab === tab);
-      });
-      document.querySelectorAll('.admin-tab-content').forEach(c => {
-        c.classList.toggle('active', c.dataset.tabContent === tab);
-      });
-      const adminContent = document.querySelector('.admin-content');
-      if (adminContent) adminContent.scrollTop = 0;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-  });
-
-  // === v5: 캠페인 종류 라디오 ===
-  const updateCampaignTypeUI = () => {
-    const type = state.adminDraft.campaignType || 'push';
-    // 종류별 영역 표시/숨김
-    document.querySelectorAll('[data-only-type]').forEach(el => {
-      const wantType = el.dataset.onlyType;
-      el.style.display = (wantType === type) ? '' : 'none';
-    });
-    // 라디오 라벨 강조
-    document.querySelectorAll('.campaign-type-option').forEach(label => {
-      label.classList.toggle('selected', label.dataset.type === type);
-    });
-  };
-  document.querySelectorAll('input[name="campaignType"]').forEach(radio => {
-    radio.onchange = (e) => {
-      state.adminDraft.campaignType = e.target.value;
-      updateCampaignTypeUI();
-    };
-  });
-  // 초기 1회 호출
-  updateCampaignTypeUI();
-
-  // === v6: 캠페인 관리 (이름 수정 / 삭제) ===
-  document.querySelectorAll('.btn-edit-campaign').forEach(btn => {
-    btn.onclick = () => {
-      const cname = btn.dataset.cname;
-      const newName = prompt(`캠페인 이름 수정\n\n현재: ${cname}\n\n※ 할인율·사용기간·시리얼은 수정 불가\n새 이름:`, cname);
-      if (newName && newName.trim() && newName.trim() !== cname) {
-        // 화면상 이름 즉시 변경 (데모용 - 실제론 본사 승인 후 반영)
-        const cardName = btn.closest('div').parentElement.querySelector('div[style*="font-size: 14px"]');
-        if (cardName) cardName.textContent = newName.trim();
-        btn.dataset.cname = newName.trim();
-        const deleteBtn = btn.parentElement.querySelector('.btn-delete-campaign');
-        if (deleteBtn) deleteBtn.dataset.cname = newName.trim();
-        try { toast(`✓ 이름 변경 신청: ${newName.trim()} (본사 승인 대기)`); } catch(e) {}
-      }
-    };
-  });
-  document.querySelectorAll('.btn-delete-campaign').forEach(btn => {
-    btn.onclick = () => {
-      const cname = btn.dataset.cname;
-      const ok = confirm(`'${cname}' 캠페인을 삭제하시겠습니까?\n\n· 남은 시리얼은 본사가 회수\n· 사용 이력은 보존\n· 본사 승인 후 즉시 폐기 처리`);
-      if (ok) {
-        const item = btn.closest('div').parentElement.parentElement;
-        if (item) {
-          item.style.transition = 'opacity 0.3s';
-          item.style.opacity = '0.3';
-          item.style.pointerEvents = 'none';
-        }
-        try { toast(`✓ 삭제 신청 전송: ${cname}`); } catch(e) {}
-      }
-    };
-  });
-
-  // === 캠페인 신청 탭: 시리얼 첨부 핸들러 (v3) ===
-  const campaignSerialZone = document.getElementById('campaign-serial-zone');
-  const campaignSerialInput = document.getElementById('campaign-serial-input');
-  if (campaignSerialZone && campaignSerialInput) {
-    const triggerInput = (e) => { e.stopPropagation(); campaignSerialInput.click(); };
-    campaignSerialZone.onclick = triggerInput;
-    campaignSerialZone.ondragover = (e) => { e.preventDefault(); campaignSerialZone.style.borderColor = '#1E40DD'; campaignSerialZone.style.background = '#EFF6FF'; };
-    campaignSerialZone.ondragleave = () => { campaignSerialZone.style.borderColor = '#D1D5DB'; campaignSerialZone.style.background = '#F9FAFB'; };
-    campaignSerialZone.ondrop = (e) => {
-      e.preventDefault();
-      campaignSerialZone.style.borderColor = '#D1D5DB';
-      campaignSerialZone.style.background = '#F9FAFB';
-      if (e.dataTransfer.files.length > 0) {
-        handleCampaignSerialFile(e.dataTransfer.files[0]);
-      }
-    };
-    campaignSerialInput.onchange = (e) => {
-      if (e.target.files.length > 0) handleCampaignSerialFile(e.target.files[0]);
-    };
-  }
-
   // 폼 입력 (성능: 매 키 입력마다 render()를 부르면 커서가 풀리므로 state만 업데이트)
   const nameEl = document.getElementById('admin-name');
   const discountEl = document.getElementById('admin-discount');
-  const startDateEl = document.getElementById('admin-startDate');
-  const endDateEl = document.getElementById('admin-endDate');
-  const minOrderEl = document.getElementById('admin-minOrderAmount');
-  const maxDiscountEl = document.getElementById('admin-maxDiscountAmount');
+  const validMinEl = document.getElementById('admin-validMin');
   const reasonEl = document.getElementById('admin-reason');
   if (nameEl) nameEl.oninput = (e) => { state.adminDraft.name = e.target.value; updateAdminPreview(); };
   if (discountEl) discountEl.oninput = (e) => { state.adminDraft.discount = e.target.value; updateAdminPreview(); };
-  if (startDateEl) startDateEl.onchange = (e) => { state.adminDraft.startDate = e.target.value; };
-  if (endDateEl) endDateEl.onchange = (e) => { state.adminDraft.endDate = e.target.value; };
-  if (minOrderEl) minOrderEl.oninput = (e) => { state.adminDraft.minOrderAmount = parseInt(e.target.value) || 0; };
-  // maxDiscountAmount는 v5에서 본사 고정 (제한 없음 = 0)
+  if (validMinEl) validMinEl.oninput = (e) => { state.adminDraft.validMin = e.target.value; updateAdminPreview(); };
   if (reasonEl) reasonEl.oninput = (e) => { state.adminDraft.reason = e.target.value; };
 
   // v38 커스텀 메시지 핸들러
@@ -7718,210 +7495,80 @@ function bindAdmin() {
   });
 
   // 본사 승인 요청 (점주가 신청)
-  attachClick('admin-send-btn', () => sendAdminRequest());
-  attachClick('admin-send-btn-qr', () => sendAdminRequest());
-}
-
-// v5: 종류별 검증 분기
-function sendAdminRequest() {
+  attachClick('admin-send-btn', () => {
     const draft = state.adminDraft;
-    const type = draft.campaignType || 'push';
-
-    // 공통 검증
     if (!draft.name) { toast('캠페인 이름을 입력하세요'); return; }
     const discount = parseInt(draft.discount);
     if (!discount || discount < DISCOUNT_POLICY.member.min || discount > DISCOUNT_POLICY.member.max) {
       toast(`회원전용 캠페인은 ${DISCOUNT_POLICY.member.min}~${DISCOUNT_POLICY.member.max}% 범위여야 합니다`);
       return;
     }
-    if (!draft.startDate || !draft.endDate) {
-      toast('사용기간(시작일~종료일)을 입력해주세요');
-      return;
-    }
-    if (draft.startDate > draft.endDate) {
-      toast('종료일이 시작일보다 빨라요');
-      return;
-    }
     if (!draft.reason || draft.reason.trim().length < 5) {
       toast('신청 사유를 5자 이상 작성해주세요');
       return;
     }
-    if (!draft.serialFile) {
-      toast('📤 시리얼 엑셀 파일을 첨부해주세요');
-      const zone = document.getElementById('campaign-serial-zone');
-      if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
+    const targets = getTargetMembers(draft.target, draft.subFilter, draft.baseCoupon);
+    if (targets.length === 0) { toast('발송 대상이 없습니다'); return; }
 
-    // 종류별 추가 검증
-    let targetCount = 0;
-    if (type === 'push') {
-      // push: 타겟 발송 인원 검증
-      const targets = getTargetMembers(draft.target, draft.subFilter, draft.baseCoupon);
-      if (targets.length === 0) { toast('발송 대상이 없습니다'); return; }
-      targetCount = targets.length;
-    } else {
-      // qr: 시리얼 풀 크기 = 자동 분배 가능 인원
-      targetCount = (draft.serialFile && draft.serialFile.registered) || 0;
-    }
-
-    showApprovalRequestModal(draft, targetCount);
+    // 본사 승인 대기로 전송 (실제 발송은 본사 승인 후)
+    showApprovalRequestModal(draft, targets.length);
+  });
 }
 
 // 본사 승인 요청 완료 모달
 function showApprovalRequestModal(draft, targetCount) {
-  const type = draft.campaignType || 'push';
   // === 정확한 단가: 친구톡(브랜드메시지) 15원/건 ===
+  // 쿠폰 마케팅은 카카오 정책상 광고성 메시지 → 친구톡 영역
+  // 글자수 1,000자까지 동일 단가
   const unitCost = 15;
   const msgType = '친구톡(브랜드메시지)';
-  // qr 타입은 카톡 발송 없음 → 비용 0
-  const totalCost = type === 'push' ? targetCount * unitCost : 0;
-  const serialCount = (draft.serialFile && draft.serialFile.registered) || 0;
-
-  // POS 입력 가이드용 정리
-  const posData = {
-    target: type === 'push' ? '비고객' : '비고객 (신규 회원 자동 지급)',
-    couponType: '할인쿠폰',
-    couponName: draft.name,
-    periodMode: '기간',
-    period: `${draft.startDate} ~ ${draft.endDate}`,
-    rounding: '올림',
-    discount: `${draft.discount}%`,
-    minOrder: (draft.minOrderAmount || 0).toLocaleString() + '원',
-    maxDiscount: '제한 없음',
-    status: '사용',
-    consumeOnUse: type === 'qr' ? '사용 (회원당 1회)' : '사용',
-    issuedCount: serialCount.toLocaleString() + '개',
-  };
-
-  // 캠페인 정보 요약 — 타입별 다름
-  const summaryHTML = type === 'push' ? `
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
-          <span style="color:#5A6072;font-weight:600;">캠페인</span>
-          <span style="font-weight:800;color:#181600;">${draft.name}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
-          <span style="color:#5A6072;font-weight:600;">종류</span>
-          <span style="font-weight:800;color:#1E40DD;">📨 즉석 캠페인 (카톡 발송)</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
-          <span style="color:#5A6072;font-weight:600;">발송 예정</span>
-          <span style="font-weight:800;">${targetCount}명 × ${unitCost}원</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;border-top:1px dashed #E8EBF1;margin-top:4px;padding-top:6px;">
-          <span style="color:#5A6072;font-weight:600;">예상 비용 (본사 부담)</span>
-          <span style="font-weight:900;color:#DC2626;">${totalCost.toLocaleString()}원</span>
-        </div>
-  ` : `
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
-          <span style="color:#5A6072;font-weight:600;">캠페인</span>
-          <span style="font-weight:800;color:#181600;">${draft.name}</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
-          <span style="color:#5A6072;font-weight:600;">종류</span>
-          <span style="font-weight:800;color:#16A34A;">🎫 상시 쿠폰 (QR)</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
-          <span style="color:#5A6072;font-weight:600;">시리얼 풀</span>
-          <span style="font-weight:800;">${serialCount.toLocaleString()}개 (자동 분배)</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;border-top:1px dashed #E8EBF1;margin-top:4px;padding-top:6px;">
-          <span style="color:#5A6072;font-weight:600;">카톡 발송 비용</span>
-          <span style="font-weight:900;color:#16A34A;">0원 (발송 없음)</span>
-        </div>
-  `;
-
-  // 추가 안내 — qr 타입 전용
-  const qrExtraHTML = type === 'qr' ? `
-      <div style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:1px solid #6EE7B7;border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:11px;color:#065F46;font-weight:700;line-height:1.55;text-align:left;">
-        🎫 <b style="color:#047857;font-weight:900;">QR 자동 지급 흐름</b><br/>
-        <span style="font-weight:600;display:block;margin-top:3px;">· 본사 승인 후 즉시 활성화<br/>· 손님 QR 스캔 → 회원가입 → 시스템이 자동 지급<br/>· 한 번 사용한 회원은 다시 못 받음 (회원 ID 단위 소멸)<br/>· 시리얼 풀 소진 시 자동 종료</span>
-      </div>
-  ` : '';
+  const totalCost = targetCount * unitCost;
 
   const modal = document.createElement('div');
   modal.className = 'modal-backdrop';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(10,10,10,0.55);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;';
   modal.innerHTML = `
-    <div style="background:white;border-radius:18px;max-width:460px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.30);max-height:90vh;overflow-y:auto;">
-      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,${type === 'push' ? '#1E3AA8,#2563EB' : '#047857,#10B981'});margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 8px 24px ${type === 'push' ? 'rgba(30,64,221,0.30)' : 'rgba(16,185,129,0.30)'};">${type === 'push' ? '📨' : '🎫'}</div>
-      <div style="font-size:17px;font-weight:900;color:#0A0A0A;letter-spacing:-0.4px;margin-bottom:6px;">본사로 승인 요청 전송됨</div>
-      <div style="font-size:12px;color:#5A6072;line-height:1.6;margin-bottom:16px;font-weight:500;">
+    <div style="background:white;border-radius:18px;max-width:420px;width:100%;padding:28px 24px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.30);">
+      <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#1E3AA8,#2563EB);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 8px 24px rgba(30,64,221,0.30);">📨</div>
+      <div style="font-size:18px;font-weight:900;color:#0A0A0A;letter-spacing:-0.4px;margin-bottom:6px;">본사로 승인 요청 전송됨</div>
+      <div style="font-size:12.5px;color:#5A6072;line-height:1.6;margin-bottom:18px;font-weight:500;">
         본사 운영팀이 <b style="color:#181600;">최대 1영업일 이내</b> 검토합니다<br/>
-        ${type === 'push' ? '승인 시 자동 발송 · 반려 시 사유와 함께 안내' : '승인 시 즉시 활성화 · QR 진입 신규 회원에게 자동 지급'}
+        승인 시 자동 발송 · 반려 시 사유와 함께 안내
       </div>
-
-      ${qrExtraHTML}
-
-      <!-- 캠페인 정보 요약 -->
-      <div style="background:#F8F9FB;border-radius:10px;padding:12px 14px;text-align:left;margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:800;color:#181600;margin-bottom:8px;letter-spacing:-0.2px;">${type === 'push' ? '📨' : '🎫'} 신청 캠페인 정보</div>
-        ${summaryHTML}
-      </div>
-
-      <!-- v4: POS 입력 가이드 -->
-      <div style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:2px solid #FCA5A5;border-radius:12px;padding:14px;margin-bottom:14px;text-align:left;">
-        <div style="font-size:12px;font-weight:900;color:#991B1B;margin-bottom:4px;letter-spacing:-0.2px;">⚠️ POS 시스템 [쿠폰관리]에 그대로 입력하세요</div>
-        <div style="font-size:10.5px;color:#7F1D1D;font-weight:600;margin-bottom:10px;line-height:1.55;">
-          본사 승인 따로 ↔ POS 쿠폰 발행 따로 진행됩니다.<br/>
-          아래 값을 POS 화면에 동일하게 입력해야 손님 결제 시 시리얼 검증됩니다.
+      <div style="background:#F8F9FB;border-radius:10px;padding:14px;text-align:left;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;">
+          <span style="color:#5A6072;font-weight:600;">캠페인</span>
+          <span style="font-weight:800;">${draft.name}</span>
         </div>
-        <div id="pos-guide-table" style="background:white;border-radius:8px;padding:10px 12px;font-size:11px;color:#181600;line-height:1.7;">
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 대상</span><b>${posData.target}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 쿠폰종류</span><b>${posData.couponType}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 쿠폰명</span><b style="color:#1E40DD;">${posData.couponName}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 사용기간설정</span><b>${posData.periodMode}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 사용기간</span><b style="color:#1E40DD;">${posData.period}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 원단위</span><b>${posData.rounding}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 할인율</span><b style="color:#1E40DD;">${posData.discount}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 최소</span><b>${posData.minOrder} 이상 결제 시</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 최대</span><b>${posData.maxDiscount}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 상태</span><b>${posData.status}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #F3F4F6;"><span style="color:#6B7280;font-weight:600;">* 1회 사용시 소멸</span><b>${posData.consumeOnUse}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:3px 0;"><span style="color:#6B7280;font-weight:600;">* 쿠폰 발행 수</span><b style="color:#16A34A;">${posData.issuedCount} (시리얼과 일치)</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;">
+          <span style="color:#5A6072;font-weight:600;">할인율</span>
+          <span style="font-weight:800;color:#1E40DD;">${draft.discount}%</span>
         </div>
-        <button onclick="window.copyPOSGuide&&window.copyPOSGuide()" style="margin-top:10px;width:100%;padding:9px;background:#181600;color:white;border:none;border-radius:8px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-0.2px;">
-          📋 POS 입력값 복사 (붙여넣기 가능)
-        </button>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;">
+          <span style="color:#5A6072;font-weight:600;">메시지 타입</span>
+          <span style="font-weight:800;">${msgType}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;">
+          <span style="color:#5A6072;font-weight:600;">발송 예정</span>
+          <span style="font-weight:800;">${targetCount}명 × ${unitCost}원</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-top:1px dashed #E8EBF1;margin-top:4px;padding-top:8px;">
+          <span style="color:#5A6072;font-weight:600;">예상 비용 (본사 부담)</span>
+          <span style="font-weight:900;color:#DC2626;font-size:14px;">${totalCost.toLocaleString()}원</span>
+        </div>
       </div>
 
       <!-- 반려 가능성 안내 -->
-      <div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:1px solid #FCD34D;border-radius:10px;padding:10px 12px;margin-bottom:16px;font-size:10.5px;color:#78350F;font-weight:700;line-height:1.5;text-align:left;">
+      <div style="background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:1px solid #FCD34D;border-radius:10px;padding:11px 13px;margin-bottom:18px;font-size:11px;color:#78350F;font-weight:700;line-height:1.5;text-align:left;">
         ⚠️ <b style="color:#78350F;font-weight:900;">반려될 수 있어요</b><br/>
-        <span style="font-weight:600;">ROI가 낮거나 가이드 위반 시 반려. 사유와 함께 재신청 안내됨.</span>
+        <span style="font-weight:600;">비용은 본사 100% 부담이기 때문에, ROI가 낮거나 카카오 가이드에 어긋나면 반려됩니다. 반려 시 사유와 함께 재신청 가이드 제공.</span>
       </div>
-
-      <button onclick="this.closest('.modal-backdrop').remove();window.afterApprovalRequest&&window.afterApprovalRequest();" style="width:100%;padding:13px;background:linear-gradient(135deg,${type === 'push' ? '#1E40DD,#3B82F6' : '#047857,#10B981'});color:white;border:none;border-radius:11px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px ${type === 'push' ? 'rgba(30,64,221,0.30)' : 'rgba(16,185,129,0.30)'};">확인</button>
+      <button onclick="this.closest('.modal-backdrop').remove();window.afterApprovalRequest&&window.afterApprovalRequest();" style="width:100%;padding:14px;background:linear-gradient(135deg,#1E40DD,#3B82F6);color:white;border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(30,64,221,0.30);">확인</button>
     </div>
   `;
   document.body.appendChild(modal);
-
-  // POS 입력값 복사 함수
-  window.copyPOSGuide = () => {
-    const text = `[POS 쿠폰 입력값]\n` +
-      `대상: ${posData.target}\n` +
-      `쿠폰종류: ${posData.couponType}\n` +
-      `쿠폰명: ${posData.couponName}\n` +
-      `사용기간설정: ${posData.periodMode}\n` +
-      `사용기간: ${posData.period}\n` +
-      `원단위: ${posData.rounding}\n` +
-      `할인율: ${posData.discount}\n` +
-      `최소: ${posData.minOrder} 이상 결제 시\n` +
-      `최대: ${posData.maxDiscount}\n` +
-      `상태: ${posData.status}\n` +
-      `1회 사용시 소멸: ${posData.consumeOnUse}\n` +
-      `쿠폰 발행 수: ${posData.issuedCount}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        try { toast('✅ POS 입력값이 클립보드에 복사됐습니다'); } catch(e) { alert('복사 완료'); }
-      });
-    } else {
-      try { toast('클립보드 지원 안 함'); } catch(e) {}
-    }
-  };
-
   window.afterApprovalRequest = () => {
-    state.adminDraft = { campaignType: 'push', name: '', discount: 20, startDate: '', endDate: '', minOrderAmount: 0, maxDiscountAmount: 0, target: 'all', subFilter: null, baseCoupon: null, reason: '', customMessage: '', serialFile: null };
+    state.adminDraft = { name: '', discount: 20, validMin: 30, target: 'all', subFilter: null, baseCoupon: null, reason: '', customMessage: '' };
     render();
   };
 }
@@ -7933,12 +7580,12 @@ function updateAdminPreview() {
   if (previewName) previewName.textContent = draft.name || '(캠페인 이름)';
   const previewDiscount = document.getElementById('preview-discount');
   if (previewDiscount) previewDiscount.innerHTML = `${draft.discount}<span class="kakao-campaign-discount-unit">% 할인</span>`;
-  const previewPeriod = document.getElementById('preview-period');
-  if (previewPeriod) previewPeriod.textContent = (draft.startDate && draft.endDate) ? `${draft.startDate} ~ ${draft.endDate}` : '미입력';
+  const previewValidMin = document.getElementById('preview-validMin');
+  if (previewValidMin) previewValidMin.textContent = draft.validMin;
   const sendBtn = document.getElementById('admin-send-btn');
   if (sendBtn) {
     const discount = parseInt(draft.discount);
-    const valid = draft.name && discount >= 10 && discount <= 30 && draft.startDate && draft.endDate;
+    const valid = draft.name && discount >= 10 && discount <= 30;
     sendBtn.disabled = !valid;
   }
   // 미리보기 안에 커스텀 메시지가 있으면 노출 / 없으면 placeholder
@@ -7970,11 +7617,11 @@ function updateAdminMsgCost() {
   const text = (draft.customMessage || '');
   const len = text.length;
 
-  // 글자수 카운터 (가독성 권장 80자, 한도 1,000자)
+  // 글자수 카운터 (가독성 권장 80자 기준)
   const countEl = document.getElementById('admin-msg-count');
   if (countEl) {
     countEl.textContent = len;
-    countEl.style.color = len > 800 ? '#DC2626' : (len > 80 ? '#D97706' : '#1E40DD');
+    countEl.style.color = len > 80 ? '#D97706' : (len > 60 ? '#1E40DD' : '#1E40DD');
     countEl.style.fontWeight = '900';
   }
 
@@ -7983,7 +7630,7 @@ function updateAdminMsgCost() {
   const branchName = (typeof BRANCH !== 'undefined' && BRANCH.name) ? BRANCH.name : '나사렛대점';
   const baseTemplate = `🎁 새 쿠폰이 도착했어요! 안녕하세요, ${branchName}에서 한정 쿠폰을 발송해드립니다.`;
   // 시스템 자동: "⏱ 유효시간: 발급 후 [N]분 📍 매장: [매장명]"
-  const systemPart = `📅 사용기간: ${draft.startDate || ''} ~ ${draft.endDate || ''} 📍 매장: ${branchName}`;
+  const systemPart = `⏱ 유효시간: 발급 후 ${draft.validMin || 30}분 📍 매장: ${branchName}`;
   // 폼 입력: 캠페인 이름 + 할인율
   const campaignPart = `${draft.name || ''} ${draft.discount || 0}% 할인`;
   // 점주 입력
@@ -8021,10 +7668,10 @@ function updateAdminMsgCost() {
   const msgType = '친구톡(브랜드메시지)';
   let statusClass = 'ok', statusIcon = '✓', statusText = `${msgType} · ${unitCost}원/건`;
 
-  if (len > 800) {
+  if (len > 200) {
     statusClass = 'warn';
     statusIcon = '⚠';
-    statusText = `${msgType} · ${unitCost}원/건 · 한도 근접 (1,000자)`;
+    statusText = `${msgType} · ${unitCost}원/건 · 너무 길어요 (가독성↓)`;
   } else if (len > 80) {
     statusClass = 'neutral';
     statusIcon = 'ℹ';
@@ -8537,41 +8184,6 @@ function toast(msg) {
     }
   } catch(e) {}
 })();
-
-// ============================================
-// 점주 모드 보안 진입 (URL ?role=owner + 비밀번호)
-// 임시 조치 — M3에서 store.zerolab.kr 정식 분리 시 대체
-// ============================================
-(function ownerModeEntry() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('role') !== 'owner') return;
-    
-    // 이미 인증 세션 있으면 바로 진입
-    const sessionAuth = sessionStorage.getItem('zerolab_owner_auth');
-    if (sessionAuth === 'authorized') {
-      state.mode = 'admin';
-      return;
-    }
-    
-    // 비밀번호 입력
-    const STORE_PASSWORD = 'zero-store-2026'; // ⚠️ M3에서 매장별 비밀번호로 변경
-    const pw = prompt('🔒 점주 모드 진입\n\n점주 비밀번호를 입력해주세요');
-    
-    if (pw === STORE_PASSWORD) {
-      sessionStorage.setItem('zerolab_owner_auth', 'authorized');
-      state.mode = 'admin';
-      console.log('[ZeroLab] 점주 모드 진입');
-    } else if (pw !== null) {
-      alert('비밀번호가 올바르지 않습니다.\n본사에 문의해주세요.');
-      // URL 파라미터 제거 (재시도 차단)
-      const url = new URL(window.location.href);
-      url.searchParams.delete('role');
-      window.history.replaceState({}, '', url.toString());
-    }
-  } catch(e) { console.error(e); }
-})();
-
 render();
 </script>
 </body>
