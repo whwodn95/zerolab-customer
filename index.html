@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>ZERO 연구소 — 카카오채널 디지털 쿠폰 v44</title>
+<title>ZERO 연구소 — 카카오채널 디지털 쿠폰 v45</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
@@ -5112,6 +5112,515 @@
     user-drag: none;
     pointer-events: auto;
   }
+
+  /* ============================================
+     v45: 카톡 알림 수신 토글 (정보통신망법 50조)
+     - visual hierarchy: 보조 영역 위치 (메인 콘텐츠 아님)
+     - 단, 가독성/조작성은 법적 요건이므로 유지
+     ============================================ */
+  .v45-marketing-section {
+    background: #F8F9FB;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 24px;
+    margin-bottom: 14px;
+    border: 1px solid #ECEEF2;
+  }
+  .v45-marketing-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .v45-marketing-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .v45-marketing-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #181600;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .v45-marketing-desc {
+    font-size: 11px;
+    color: #5A6072;
+    line-height: 1.4;
+  }
+  .v45-marketing-switch {
+    position: relative;
+    width: 48px;
+    height: 28px;
+    background: #D1D5DB;
+    border-radius: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+    border: none;
+    padding: 0;
+  }
+  .v45-marketing-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .v45-marketing-switch.on {
+    background: #1E40DD;
+  }
+  .v45-marketing-switch.on::after {
+    transform: translateX(20px);
+  }
+  .v45-marketing-notice {
+    font-size: 10px;
+    color: #8B92A1;
+    text-align: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #DDE1E8;
+    line-height: 1.4;
+  }
+  .v45-marketing-status {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 8px;
+    margin-left: 4px;
+  }
+  .v45-marketing-status.on {
+    background: #DBEAFE;
+    color: #1E40DD;
+  }
+  .v45-marketing-status.off {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+
+  /* ============================================
+     v45: 내 쿠폰함 (마이페이지)
+     - 회원전용 쿠폰만 표시 (전체가능은 쿨다운 시스템)
+     - 3가지 상태: 사용 가능 / 만료 임박 / 사용 완료
+     ============================================ */
+  .v45-mycoupons {
+    margin-bottom: 18px;
+  }
+  .v45-mycoupons-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 4px;
+    background: #F0F2F5;
+    border-radius: 10px;
+  }
+  .v45-mycoupons-tab {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5A6072;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+  .v45-mycoupons-tab.active {
+    background: white;
+    color: #1E40DD;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .v45-mycoupons-tab-count {
+    display: inline-block;
+    margin-left: 3px;
+    padding: 1px 6px;
+    background: #E5E7EB;
+    color: #5A6072;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .v45-mycoupons-tab.active .v45-mycoupons-tab-count {
+    background: #DBEAFE;
+    color: #1E40DD;
+  }
+  .v45-mycoupon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .v45-mycoupon-card {
+    position: relative;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-left: 4px solid #15803D;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .v45-mycoupon-card.urgent {
+    border-left-color: #DC2626;
+    background: #FFFBFA;
+  }
+  .v45-mycoupon-card.used,
+  .v45-mycoupon-card.expired {
+    border-left-color: #D1D5DB;
+    background: #FAFBFC;
+    opacity: 0.85;
+  }
+  .v45-mycoupon-discount {
+    flex-shrink: 0;
+    text-align: center;
+    min-width: 50px;
+  }
+  .v45-mycoupon-discount-num {
+    font-size: 22px;
+    font-weight: 900;
+    color: #1E40DD;
+    line-height: 1;
+  }
+  .v45-mycoupon-card.urgent .v45-mycoupon-discount-num {
+    color: #DC2626;
+  }
+  .v45-mycoupon-card.used .v45-mycoupon-discount-num,
+  .v45-mycoupon-card.expired .v45-mycoupon-discount-num {
+    color: #9CA3AF;
+    text-decoration: line-through;
+  }
+  .v45-mycoupon-discount-label {
+    font-size: 10px;
+    color: #8B92A1;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .v45-mycoupon-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .v45-mycoupon-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #181600;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .v45-mycoupon-card.used .v45-mycoupon-name,
+  .v45-mycoupon-card.expired .v45-mycoupon-name {
+    color: #6B7280;
+  }
+  .v45-mycoupon-meta {
+    font-size: 11px;
+    color: #5A6072;
+    line-height: 1.4;
+  }
+  .v45-mycoupon-meta .meta-sep {
+    margin: 0 5px;
+    color: #C9CED9;
+  }
+  .v45-mycoupon-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 7px;
+  }
+  .v45-mycoupon-badge.available {
+    background: #DCFCE7;
+    color: #15803D;
+  }
+  .v45-mycoupon-badge.urgent {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .v45-mycoupon-badge.used {
+    background: #E5E7EB;
+    color: #6B7280;
+  }
+  .v45-mycoupon-badge.expired {
+    background: #F3F4F6;
+    color: #9CA3AF;
+  }
+  .v45-mycoupons-empty {
+    text-align: center;
+    padding: 28px 16px;
+    background: #FAFBFC;
+    border-radius: 10px;
+    color: #8B92A1;
+    font-size: 12px;
+  }
+  .v45-mycoupons-empty-emoji {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+
+  /* ============================================
+     v45: 비회원 가입 유도 강화
+     - welcome 강조 카드 (카카오 CTA 위)
+     - 가입 모달 쿠폰 미리보기
+     ============================================ */
+  .v45-perk-card {
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+    border: 1.5px solid #FCD34D;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin: 0 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+  }
+  .v45-perk-card-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .v45-perk-card-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .v45-perk-card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #92400E;
+    line-height: 1.35;
+    margin-bottom: 2px;
+  }
+  .v45-perk-card-title b {
+    color: #B45309;
+    font-size: 14px;
+  }
+  .v45-perk-card-sub {
+    font-size: 11px;
+    color: #B45309;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* 모달 - 가입 시 받을 쿠폰 미리보기 */
+  .v45-signup-preview {
+    background: #F8F9FB;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid #E5E7EB;
+  }
+  .v45-signup-preview-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #181600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .v45-signup-preview-title-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .v45-signup-preview-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: #DBEAFE;
+    color: #1E40DD;
+    padding: 2px 7px;
+    border-radius: 8px;
+  }
+  .v45-signup-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .v45-signup-preview-item {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .v45-signup-preview-item-discount {
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 900;
+    color: #1E40DD;
+    min-width: 40px;
+    text-align: center;
+  }
+  .v45-signup-preview-item-name {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+    color: #181600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .v45-signup-preview-item-check {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: #15803D;
+    background: #DCFCE7;
+    padding: 3px 7px;
+    border-radius: 6px;
+  }
+  .v45-signup-preview-more {
+    text-align: center;
+    font-size: 10px;
+    color: #8B92A1;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* ============================================
+     v45: 매장 변경 시각 효과
+     - 헤더 노란색 깜빡임 (1.5초)
+     - "변경됨" 배지 (3초 후 자동 사라짐)
+     - 매장 오발급 사고 방지
+     ============================================ */
+  @keyframes v45-branch-flash {
+    0%   { background: transparent; }
+    15%  { background: rgba(254, 229, 0, 0.55); }
+    35%  { background: rgba(254, 229, 0, 0.30); }
+    65%  { background: rgba(254, 229, 0, 0.15); }
+    100% { background: transparent; }
+  }
+  .v45-branch-flash {
+    animation: v45-branch-flash 1.5s ease-out;
+    border-radius: 12px;
+  }
+  @keyframes v45-badge-pop {
+    0%   { transform: scale(0); opacity: 0; }
+    50%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes v45-badge-fadeout {
+    0%   { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-4px); }
+  }
+  .v45-branch-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    background: #DC2626;
+    padding: 2px 7px;
+    border-radius: 8px;
+    margin-left: 6px;
+    vertical-align: middle;
+    animation:
+      v45-badge-pop 0.35s ease-out,
+      v45-badge-fadeout 0.5s ease-in 2.5s forwards;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+  }
+  .v45-branch-badge::before {
+    content: '✓';
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  /* ============================================
+     v45: 친구 초대 (회원 자연 증식 / 점주 셀링 카드)
+     - 마이페이지 쿠폰함과 사용 기록 사이
+     - Web Share API + 클립보드 폴백
+     ============================================ */
+  .v45-referral-section {
+    margin: 4px 0 18px;
+  }
+  .v45-referral-card {
+    background: linear-gradient(135deg, #EBF1FF 0%, #DBEAFE 100%);
+    border: 1.5px solid #BFDBFE;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(30, 64, 221, 0.08);
+  }
+  .v45-referral-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .v45-referral-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .v45-referral-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #1E40DD;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+  .v45-referral-sub {
+    font-size: 11px;
+    color: #1E40DD;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+  .v45-referral-sub b {
+    font-size: 13px;
+    font-weight: 900;
+  }
+  .v45-referral-btn {
+    flex-shrink: 0;
+    background: #1E40DD;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 6px rgba(30, 64, 221, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .v45-referral-btn:hover {
+    background: #1936B8;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(30, 64, 221, 0.35);
+  }
+  .v45-referral-btn:active {
+    transform: translateY(0);
+  }
 </style>
 </head>
 <body>
@@ -5345,6 +5854,9 @@ const state = {
   activeSerial: null,
   secondsLeft: 0,
   timer: null,
+  mypageCouponTab: 'active',  // v45: 마이페이지 쿠폰함 탭 ('active' | 'past')
+  branchJustChangedAt: null,  // v45: 매장 변경 시각 (3초 이내면 헤더에 시각 효과)
+  branchChangeFlashTimer: null,  // v45: 매장 변경 시각 효과 자동 해제 타이머
   // admin 작업용 (v4: POS 양식 1:1 일치, v5: 캠페인 종류 분리)
   adminDraft: {
     campaignType: 'push',  // 'qr' (상시 쿠폰) | 'push' (즉석 캠페인 카톡 발송)
@@ -5592,6 +6104,8 @@ const api = {
       usageHistory: [],
       receivedCampaigns: [],
       couponCooldowns: {},
+      kakaoMarketingOptIn: true,  // v45: 정보통신망법 50조 - 기본 동의, 마이페이지에서 해지 가능
+      referralCount: 0,  // v45: 친구 초대 횟수 (회원 자연 증식 추적)
     };
     MEMBERS.push(member);
     return { member, isNew: true };
@@ -5625,6 +6139,83 @@ const api = {
         member.usedMemberCampaigns.push(campaign.id);
       }
     }
+    // v45: 쿠폰함 메타데이터 - 사용 완료 시각 기록
+    if (!member.receivedCampaignsMeta) member.receivedCampaignsMeta = {};
+    if (!member.receivedCampaignsMeta[campaign.id]) {
+      member.receivedCampaignsMeta[campaign.id] = {};
+    }
+    member.receivedCampaignsMeta[campaign.id].usedAt = new Date().toISOString();
+    member.receivedCampaignsMeta[campaign.id].usedBranchName = BRANCH.name;
+  },
+  // v45: 쿠폰 발급 시 메타데이터 기록 (마이페이지 쿠폰함용)
+  // 사용 위치: 회원전용 쿠폰 발급 흐름 2곳 (메인 카드 + 모달)
+  recordIssuance(member, campaign, serial) {
+    if (!member || !campaign) return;
+    if (!member.receivedCampaignsMeta) member.receivedCampaignsMeta = {};
+    const validMin = campaign.validMin || 30;
+    const now = Date.now();
+    member.receivedCampaignsMeta[campaign.id] = {
+      issuedAt: new Date(now).toISOString(),
+      expiresAt: new Date(now + validMin * 60 * 1000).toISOString(),
+      serial: serial,
+      issuedBranchName: BRANCH.name,
+      issuedBranchCode: BRANCH.code,
+    };
+  },
+  // v45: 친구 초대 공유 (Web Share API + 클립보드 폴백)
+  // 데모 단계: 클릭만으로 카운트 +1 (실제 가입 추적은 M3 백엔드)
+  shareReferral(member) {
+    if (!member) return Promise.resolve({ success: false, reason: 'no-member' });
+    // 익명화 ref: 매장코드 + phone 끝 4자리 (M3에서 정식 회원 ID로 교체)
+    const phoneTail = (member.phone || '').slice(-4);
+    const ref = `${member.signupBranch || BRANCH.code}-${phoneTail}`;
+    const storeCode = BRANCH.code;
+    const shareUrl = `https://app.zerolab.kr/?store=${encodeURIComponent(storeCode)}&ref=${encodeURIComponent(ref)}`;
+    const shareText = `ZERO 연구소 무인편의점\n카톡으로 1초 가입하면 즉시 쿠폰 받기!`;
+    const shareData = {
+      title: 'ZERO 연구소',
+      text: shareText,
+      url: shareUrl,
+    };
+
+    // 1순위: Web Share API (모바일 네이티브 공유 시트)
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      return navigator.share(shareData)
+        .then(() => ({ success: true, method: 'native', url: shareUrl }))
+        .catch(err => {
+          // 사용자가 취소한 경우 (AbortError)는 실패로 카운트 X
+          if (err && err.name === 'AbortError') {
+            return { success: false, reason: 'cancelled' };
+          }
+          // 그 외 에러 → 클립보드 폴백
+          return this._copyToClipboard(shareUrl + '\n' + shareText)
+            .then(() => ({ success: true, method: 'clipboard', url: shareUrl }));
+        });
+    }
+
+    // 2순위: 클립보드 복사 폴백 (PC / 데스크탑 브라우저)
+    return this._copyToClipboard(shareUrl + '\n' + shareText)
+      .then(() => ({ success: true, method: 'clipboard', url: shareUrl }))
+      .catch(() => ({ success: false, reason: 'clipboard-failed', url: shareUrl }));
+  },
+  _copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    // Legacy 폴백 (구형 브라우저)
+    return new Promise((resolve, reject) => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error('execCommand failed'));
+      } catch (e) { reject(e); }
+    });
   },
   // 본사 - 새 캠페인 만들고 타겟에게 푸시
   createPushCampaign(draft, targetPhones) {
@@ -5675,6 +6266,9 @@ function getTargetMembers(target, subFilter, baseCouponId) {
   } else if (target === 'not-received' && baseCouponId) {
     result = result.filter(m => !(m.receivedCampaigns || []).includes(baseCouponId));
   }
+  // v45: 카톡 수신 거부 회원 자동 제외 (정보통신망법 50조 / 본사 카톡 비용 절감)
+  // kakaoMarketingOptIn === false 만 제외 (undefined/true는 동의로 간주 — 기존 회원 호환)
+  result = result.filter(m => m.kakaoMarketingOptIn !== false);
   return result;
 }
 
@@ -5857,6 +6451,21 @@ function renderWelcome() {
 
       <!-- CTA 영역 -->
       <div class="v5-cta">
+        ${memberCamps.length > 0 ? `
+          <!-- v45: 회원 혜택 강조 카드 (사실 기반 가치 제안 / 다크 패턴 X) -->
+          <div class="v45-perk-card">
+            <div class="v45-perk-card-icon">🎁</div>
+            <div class="v45-perk-card-text">
+              <div class="v45-perk-card-title">
+                회원 전용 쿠폰 <b>${memberCamps.length}장</b> · 가입 즉시 발급
+              </div>
+              <div class="v45-perk-card-sub">
+                최대 ${Math.max(...memberCamps.map(c => c.discount))}% 할인 · 카톡 1초 연동
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
         <div class="v5-cta-kakao-wrap">
           <div class="v5-cta-kakao-pin"><img src="${ZL_ASSETS.pinPink}" alt="" /></div>
           <button class="v5-cta-kakao" id="kakao-signup-btn">
@@ -6150,6 +6759,7 @@ function openMemberCouponsModal() {
             if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
             state.member.receivedCampaigns = state.member.receivedCampaigns || [];
             state.member.receivedCampaigns.push(c.id);
+            api.recordIssuance(state.member, c, serial);  // v45: 쿠폰함 메타데이터
             persistMember(state.member);
             openKakaoAlimtalkModal(c, serial, () => {
               state.selectedCampaign = c;
@@ -6264,7 +6874,18 @@ function openBranchSelector() {
       }
       setCurrentBranchCode(code);
       const branch = BRANCHES.find(b => b.code === code);
-      try { toast(`📍 ${branch.name}으로 변경되었습니다`); } catch(e) {}
+      // v45: 매장 변경 시각 효과 (헤더 깜빡임 + 변경됨 배지)
+      // 매장 오발급 사고 방지 - 사용자가 매장이 바뀐 걸 확실히 인지하게
+      state.branchJustChangedAt = Date.now();
+      if (state.branchChangeFlashTimer) {
+        clearTimeout(state.branchChangeFlashTimer);
+      }
+      state.branchChangeFlashTimer = setTimeout(() => {
+        state.branchJustChangedAt = null;
+        state.branchChangeFlashTimer = null;
+        try { render(); } catch(e) {}
+      }, 3200);  // CSS 배지 fadeout 완료(3초) + 여유 200ms
+      try { toast(`📍 ${branch.name}으로 변경되었습니다 ✓`); } catch(e) {}
       close();
       // 페이지 다시 렌더링
       setTimeout(() => { try { render(); } catch(e) {} }, 280);
@@ -6487,10 +7108,10 @@ function renderMain() {
       <div class="v28-top">
         <div class="v28-top-left">
           <button class="v28-back-btn" id="back-to-welcome" aria-label="처음 화면으로">←</button>
-          <div class="v28-top-info" id="v28-top-info">
+          <div class="v28-top-info ${state.branchJustChangedAt ? 'v45-branch-flash' : ''}" id="v28-top-info">
             <div class="v28-top-icon"><img src="${ZL_ASSETS.logoCircle}" alt="제로연구소" /></div>
             <div class="v28-top-text">
-              <div class="v28-top-name">${BRANCH.name}</div>
+              <div class="v28-top-name">${BRANCH.name}${state.branchJustChangedAt ? '<span class="v45-branch-badge">변경됨</span>' : ''}</div>
               <div class="v28-top-sub">
                 ${isMember ? `${maskName(state.member.kakaoNickname)}님 · 카톡 연동` : '비회원으로 둘러보는 중'}
               </div>
@@ -6498,7 +7119,7 @@ function renderMain() {
           </div>
         </div>
         ${isMember
-          ? `<button class="v28-top-mode" id="mypage-btn"><span class="v28-top-mode-icon">⚡</span>내 기록</button>`
+          ? `<button class="v28-top-mode" id="mypage-btn"><span class="v28-top-mode-icon">⚡</span>마이페이지</button>`
           : (state.mode === 'admin'
               ? `<button class="v28-top-mode admin" id="mode-toggle"><span class="v28-top-mode-icon">⚡</span>고객모드</button>`
               : ``)
@@ -6909,7 +7530,7 @@ function renderSuccess() {
       </div>
 
       <button class="footer-cta" id="back-to-coupons">다른 쿠폰도 받기</button>
-      ${state.member ? `<button class="footer-cta" id="go-mypage" style="margin-top: 6px;">📊 내 기록 보기</button>` : ''}
+      ${state.member ? `<button class="footer-cta" id="go-mypage" style="margin-top: 6px;">📊 마이페이지</button>` : ''}
     </div>
   `;
 }
@@ -6934,12 +7555,12 @@ function renderResult(type) {
           </span>
           <br/><span style="font-size: 10.5px; color: #8B92A1; margin-top: 6px; display: inline-block;">(데모: ${COOLDOWN_SECONDS}초 후 자동 재활성)</span>
         ` : ''}
-        ${isUsed && isMember ? `<br/><br/><span style="color:#B45309; font-weight:800;">📊 내 기록에 저장되었어요</span>` : ''}
+        ${isUsed && isMember ? `<br/><br/><span style="color:#B45309; font-weight:800;">📊 마이페이지에 저장되었어요</span>` : ''}
         ${isUsed && !isMember ? `<br/><br/><span style="color:#B45309; font-weight:800;">💬 카톡 채널 가입하면 회원전용 쿠폰도 받을 수 있어요</span>` : ''}
       </div>
       <div class="result-cta-row">
         <button class="btn-primary" id="back-to-main">다른 쿠폰 보기</button>
-        ${isUsed && isMember ? `<button class="btn-secondary" id="go-mypage">📊 내 기록 보기</button>` : ''}
+        ${isUsed && isMember ? `<button class="btn-secondary" id="go-mypage">📊 마이페이지</button>` : ''}
         ${isUsed && !isMember ? `<button class="btn-kakao" id="upsell-after-use" style="padding: 14px;"><span class="btn-kakao-icon">💬</span><span class="btn-kakao-text">카톡으로 회원가입</span></button>` : ''}
       </div>
     </div>
@@ -6949,6 +7570,61 @@ function renderResult(type) {
 // ============================================
 // MYPAGE
 // ============================================
+// v45: 내 쿠폰함 카드 렌더링 (회원전용 쿠폰 1장)
+function renderMyCouponCard(item) {
+  const { campaign: c, meta: md, status, msLeft, isUsed } = item;
+  const statusLabel = {
+    available: '사용 가능',
+    urgent: '⏰ 만료 임박',
+    used: '✓ 사용 완료',
+    expired: '만료됨',
+  }[status];
+
+  // 만료 시간 표시
+  const expiresStr = md.expiresAt ? formatExpiresAt(md.expiresAt, status, msLeft) : '';
+  const issuedStr = md.issuedAt ? formatDate(md.issuedAt) : '';
+  const branchStr = isUsed && md.usedBranchName ? md.usedBranchName : (md.issuedBranchName || '');
+  const branchLabel = isUsed ? '사용' : '발급';
+
+  return `
+    <div class="v45-mycoupon-card ${status}">
+      <div class="v45-mycoupon-discount">
+        <div class="v45-mycoupon-discount-num">${c.discount}%</div>
+        <div class="v45-mycoupon-discount-label">할인</div>
+      </div>
+      <div class="v45-mycoupon-info">
+        <div class="v45-mycoupon-name">${c.name}</div>
+        <div class="v45-mycoupon-meta">
+          ${issuedStr ? `발급 ${issuedStr}` : ''}
+          ${expiresStr ? `<span class="meta-sep">·</span>${expiresStr}` : ''}
+          ${branchStr ? `<span class="meta-sep">·</span>${branchLabel} ${branchStr}` : ''}
+        </div>
+      </div>
+      <div class="v45-mycoupon-badge ${status}">${statusLabel}</div>
+    </div>
+  `;
+}
+
+// v45: 만료 시간 표시 (status별 다른 포맷)
+function formatExpiresAt(isoStr, status, msLeft) {
+  if (status === 'expired') {
+    return `${formatDate(isoStr)} 만료`;
+  }
+  if (status === 'used') {
+    return '';  // 사용 완료는 만료 시간 표시 안 함
+  }
+  // available / urgent: 남은 시간 표시
+  if (msLeft === null || msLeft === undefined) return '';
+  if (msLeft <= 0) return '만료됨';
+  const minLeft = Math.floor(msLeft / 60000);
+  const hourLeft = Math.floor(minLeft / 60);
+  const dayLeft = Math.floor(hourLeft / 24);
+  if (dayLeft >= 1) return `${dayLeft}일 후 만료`;
+  if (hourLeft >= 1) return `${hourLeft}시간 후 만료`;
+  if (minLeft >= 1) return `${minLeft}분 후 만료`;
+  return '곧 만료';
+}
+
 function renderMypage() {
   const m = state.member;
   const history = m.usageHistory || [];
@@ -6959,10 +7635,41 @@ function renderMypage() {
   const totalDiscountSum = history.reduce((a,h) => a + h.discount, 0);
   const days = Math.max(1, Math.floor((Date.now() - new Date(m.signupDate).getTime()) / (1000*60*60*24)));
 
+  // v45: 내 쿠폰함 — 회원전용 쿠폰만 (전체가능은 쿨다운 시스템)
+  const meta = m.receivedCampaignsMeta || {};
+  const usedMemberIds = m.usedMemberCampaigns || [];
+  const receivedIds = m.receivedCampaigns || [];
+  const now = Date.now();
+  const URGENT_THRESHOLD_MS = 24 * 60 * 60 * 1000;  // 24시간
+
+  // 회원전용 쿠폰 + 메타데이터 있는 것만 (기존 회원 호환 위해 메타 없으면 표시 안 함)
+  const myCoupons = receivedIds.map(cId => {
+    const c = CAMPAIGNS.find(x => x.id === cId);
+    if (!c || c.type !== 'member') return null;
+    const md = meta[cId];
+    if (!md) return null;  // 메타 없으면 = 기존 회원 / 표시 안 함
+    const expiresAt = md.expiresAt ? new Date(md.expiresAt).getTime() : null;
+    const isUsed = usedMemberIds.includes(cId);
+    const isExpired = !isUsed && expiresAt && now > expiresAt;
+    const msLeft = expiresAt ? expiresAt - now : null;
+    let status;
+    if (isUsed) status = 'used';
+    else if (isExpired) status = 'expired';
+    else if (msLeft !== null && msLeft <= URGENT_THRESHOLD_MS) status = 'urgent';
+    else status = 'available';
+    return { campaign: c, meta: md, status, expiresAt, msLeft, isUsed };
+  }).filter(x => x !== null);
+
+  // 활성 탭 (state.mypageCouponTab 없으면 기본 'active')
+  const activeTab = state.mypageCouponTab || 'active';
+  const activeCoupons = myCoupons.filter(x => x.status === 'available' || x.status === 'urgent');
+  const usedExpiredCoupons = myCoupons.filter(x => x.status === 'used' || x.status === 'expired');
+  const displayCoupons = activeTab === 'active' ? activeCoupons : usedExpiredCoupons;
+
   return `
     <div class="header">
       <div class="header-left">
-        <div class="header-branch">📊 내 사용 기록</div>
+        <div class="header-branch">📊 마이페이지</div>
         <div class="header-greeting">${maskName(m.kakaoNickname)}님 · 가입 ${days}일째</div>
       </div>
       <button class="back-btn-header" id="back-from-mypage">← 돌아가기</button>
@@ -6981,6 +7688,56 @@ function renderMypage() {
         <div class="stat-mini"><div class="stat-mini-num">${memberOnlyUsed}</div><div class="stat-mini-label">★ 회원전용</div></div>
         <div class="stat-mini"><div class="stat-mini-num">${allUsed}</div><div class="stat-mini-label">🎁 전체가능</div></div>
         <div class="stat-mini"><div class="stat-mini-num">${avgDiscount}%</div><div class="stat-mini-label">평균 할인</div></div>
+      </div>
+
+      <!-- v45: 내 쿠폰함 (회원전용 쿠폰) -->
+      <div class="v45-mycoupons">
+        <div class="section-label">
+          <div class="section-label-left"><span class="section-icon">🎟️</span><span class="section-title">내 쿠폰함</span></div>
+          <div class="section-count">${myCoupons.length}장</div>
+        </div>
+
+        <div class="v45-mycoupons-tabs">
+          <button class="v45-mycoupons-tab ${activeTab === 'active' ? 'active' : ''}" data-mycoupon-tab="active">
+            사용 가능
+            <span class="v45-mycoupons-tab-count">${activeCoupons.length}</span>
+          </button>
+          <button class="v45-mycoupons-tab ${activeTab === 'past' ? 'active' : ''}" data-mycoupon-tab="past">
+            지난 쿠폰
+            <span class="v45-mycoupons-tab-count">${usedExpiredCoupons.length}</span>
+          </button>
+        </div>
+
+        ${displayCoupons.length === 0 ? `
+          <div class="v45-mycoupons-empty">
+            <div class="v45-mycoupons-empty-emoji">📭</div>
+            ${activeTab === 'active'
+              ? '사용 가능한 쿠폰이 없어요<br/><span style="font-size:11px;">홈에서 회원전용 쿠폰을 받아보세요</span>'
+              : '지난 쿠폰 기록이 없어요'}
+          </div>
+        ` : `
+          <div class="v45-mycoupon-list">
+            ${displayCoupons.map(item => renderMyCouponCard(item)).join('')}
+          </div>
+        `}
+      </div>
+
+      <!-- v45: 친구 초대 (회원 자연 증식 / 점주 셀링 카드) -->
+      <div class="v45-referral-section">
+        <div class="v45-referral-card">
+          <div class="v45-referral-icon">🎁</div>
+          <div class="v45-referral-info">
+            <div class="v45-referral-title">친구에게 추천하기</div>
+            <div class="v45-referral-sub">
+              ${(m.referralCount || 0) > 0
+                ? `지금까지 <b>${m.referralCount}회</b> 공유했어요`
+                : '카톡으로 매장 링크 보내면 끝'}
+            </div>
+          </div>
+          <button class="v45-referral-btn" id="v45-referral-btn" type="button">
+            <span>📤</span><span>공유하기</span>
+          </button>
+        </div>
       </div>
 
       <div class="section-label">
@@ -7009,6 +7766,32 @@ function renderMypage() {
           `).join('')}
         </div>
       `}
+
+      <!-- v45: 카톡 알림 수신 토글 (정보통신망법 50조 대응)
+           위치: 마이페이지 최하단 (보조 영역 visual hierarchy)
+           단, 가독성/조작성은 법적 요건이므로 유지 -->
+      <div class="v45-marketing-section">
+        <div class="v45-marketing-row">
+          <div class="v45-marketing-text">
+            <div class="v45-marketing-title">
+              💬 카톡 알림 받기
+              <span class="v45-marketing-status ${m.kakaoMarketingOptIn !== false ? 'on' : 'off'}">
+                ${m.kakaoMarketingOptIn !== false ? 'ON' : 'OFF'}
+              </span>
+            </div>
+            <div class="v45-marketing-desc">
+              새 쿠폰·할인 알림을 카카오톡으로 받습니다
+            </div>
+          </div>
+          <button class="v45-marketing-switch ${m.kakaoMarketingOptIn !== false ? 'on' : ''}"
+                  id="v45-marketing-toggle"
+                  aria-label="카톡 알림 ${m.kakaoMarketingOptIn !== false ? '끄기' : '켜기'}">
+          </button>
+        </div>
+        <div class="v45-marketing-notice">
+          언제든지 수신 거부 가능합니다 · 정보통신망법 제50조
+        </div>
+      </div>
     </div>
   `;
 }
@@ -7652,6 +8435,57 @@ function bind() {
   attachClick('guest-hook', () => openKakaoConnectModal());
   attachClick('mypage-btn', () => { state.screen = 'mypage'; render(); });
   attachClick('back-from-mypage', () => { state.screen = 'main'; render(); });
+  // v45: 카톡 수신 거부 토글 (정보통신망법 50조)
+  attachClick('v45-marketing-toggle', () => {
+    if (!state.member) return;
+    const current = state.member.kakaoMarketingOptIn !== false;
+    state.member.kakaoMarketingOptIn = !current;
+    persistMember(state.member);
+    if (state.member.kakaoMarketingOptIn) {
+      toast('💬 카톡 알림 수신을 다시 시작합니다');
+    } else {
+      toast('🔕 카톡 알림 수신을 거부합니다');
+    }
+    render();
+  });
+  // v45: 마이페이지 쿠폰함 탭 전환
+  document.querySelectorAll('[data-mycoupon-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.mycouponTab;
+      if (tab && tab !== state.mypageCouponTab) {
+        state.mypageCouponTab = tab;
+        render();
+      }
+    });
+  });
+  // v45: 친구 초대 - 공유 버튼 (Web Share API + 클립보드 폴백)
+  attachClick('v45-referral-btn', () => {
+    if (!state.member) return;
+    const btn = document.getElementById('v45-referral-btn');
+    if (btn) btn.disabled = true;  // 더블 클릭 방지
+
+    api.shareReferral(state.member).then(result => {
+      if (btn) btn.disabled = false;
+      if (!result.success) {
+        if (result.reason === 'cancelled') return;  // 사용자 취소 = 조용히
+        toast('공유에 실패했어요. 다시 시도해주세요');
+        return;
+      }
+      // 성공: 카운트 +1 + 영속화
+      state.member.referralCount = (state.member.referralCount || 0) + 1;
+      persistMember(state.member);
+      // 토스트 (방법별 다른 메시지)
+      if (result.method === 'native') {
+        toast('🎁 친구에게 공유했어요!');
+      } else {
+        toast('📋 링크 복사 완료! 카톡으로 친구에게 보내주세요');
+      }
+      render();  // 카운트 갱신
+    }).catch(() => {
+      if (btn) btn.disabled = false;
+      toast('공유에 실패했어요. 다시 시도해주세요');
+    });
+  });
   attachClick('back-to-welcome', () => {
     // 회원 상태는 유지하고 처음 화면으로만 이동
     state.screen = 'welcome';
@@ -7685,6 +8519,7 @@ function bind() {
         if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
         state.member.receivedCampaigns = state.member.receivedCampaigns || [];
         state.member.receivedCampaigns.push(c.id);
+        api.recordIssuance(state.member, c, serial);  // v45: 쿠폰함 메타데이터
         persistMember(state.member);  // 받은 쿠폰 영속화
         // 카톡 알림톡 시뮬레이션 후 쿠폰 화면으로
         openKakaoAlimtalkModal(c, serial, () => {
@@ -8611,6 +9446,13 @@ function openKakaoLoginModal() {
 }
 
 function openKakaoConnectModal(targetDiscount) {
+  // v45: 가입 시 받을 수 있는 회원전용 쿠폰 미리보기 (최대 3장)
+  const availableMemberCamps = CAMPAIGNS
+    .filter(c => c.active && c.type === 'member' && !c.pushOnly && c.usedSerials < c.totalSerials)
+    .sort((a, b) => b.discount - a.discount);
+  const previewCamps = availableMemberCamps.slice(0, 3);
+  const extraCount = Math.max(0, availableMemberCamps.length - 3);
+
   const html = `
     <div class="modal-backdrop show" id="modal-bg">
       <div class="modal">
@@ -8620,6 +9462,31 @@ function openKakaoConnectModal(targetDiscount) {
           제로연구소 카카오채널을 친구로 추가하면<br/>
           <b>회원전용 쿠폰</b>을 카카오톡으로 받을 수 있어요
         </div>
+
+        ${previewCamps.length > 0 ? `
+          <!-- v45: 가입 시 받을 쿠폰 미리보기 (사실 정보) -->
+          <div class="v45-signup-preview">
+            <div class="v45-signup-preview-title">
+              <div class="v45-signup-preview-title-left">
+                <span>🎁</span>
+                <span>가입 시 받을 수 있는 쿠폰</span>
+              </div>
+              <span class="v45-signup-preview-badge">${availableMemberCamps.length}장</span>
+            </div>
+            <div class="v45-signup-preview-list">
+              ${previewCamps.map(c => `
+                <div class="v45-signup-preview-item">
+                  <div class="v45-signup-preview-item-discount">${c.discount}%</div>
+                  <div class="v45-signup-preview-item-name">${c.name}</div>
+                  <div class="v45-signup-preview-item-check">✓ 즉시</div>
+                </div>
+              `).join('')}
+            </div>
+            ${extraCount > 0 ? `
+              <div class="v45-signup-preview-more">외 ${extraCount}장 더</div>
+            ` : ''}
+          </div>
+        ` : ''}
 
         <div class="kakao-card">
           <div class="kakao-channel-pic"><img src="${ZL_ASSETS.logoCircle}" alt="제로연구소" /></div>
