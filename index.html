@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>ZERO 연구소 — 카카오채널 디지털 쿠폰 v3</title>
+<title>ZERO 연구소 — 카카오채널 디지털 쿠폰 v44</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
@@ -22,18 +22,50 @@
   .mode-toggle {
     position: fixed; top: 12px; right: calc(50% - 222px);
     z-index: 50;
-    background: #181600; color: #FEE500;
-    border: 1px solid #FEE500;
-    padding: 6px 10px; border-radius: 8px;
-    font-size: 10px; font-weight: 800;
+    background: linear-gradient(135deg, #181600 0%, #2A2510 100%);
+    color: #FEE500;
+    border: 1.5px solid #FEE500;
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 11px; font-weight: 900;
     cursor: pointer; font-family: inherit;
-    letter-spacing: 0.3px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    display: flex; align-items: center; gap: 4px;
+    letter-spacing: -0.2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 0 rgba(254,229,0,0.50);
+    display: flex; align-items: center; gap: 5px;
+    animation: v44-mode-toggle-pulse 2.4s ease-in-out infinite;
+    transition: all 0.15s;
   }
-  .mode-toggle:hover { background: #2A2510; }
-  .mode-toggle.admin { background: #DC2626; color: white; border-color: white; }
-  @media (max-width: 480px) { .mode-toggle { right: 12px; } }
+  .mode-toggle::before {
+    content: 'DEMO';
+    font-size: 8px;
+    font-weight: 900;
+    background: #FEE500;
+    color: #181600;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-right: 2px;
+    letter-spacing: 0.3px;
+  }
+  .mode-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+  }
+  .mode-toggle.admin {
+    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+    color: white;
+    border-color: white;
+  }
+  .mode-toggle.admin::before {
+    background: white;
+    color: #DC2626;
+  }
+  @keyframes v44-mode-toggle-pulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 0 rgba(254,229,0,0.50); }
+    50% { box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 0 0 6px rgba(254,229,0,0); }
+  }
+  @media (max-width: 480px) { .mode-toggle { right: 12px; top: 10px; padding: 7px 12px; font-size: 10.5px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .mode-toggle { animation: none; }
+  }
 
   /* === BRAND LOGO === */
   .brand-block { text-align: center; padding: 8px 0 4px; }
@@ -4860,11 +4892,263 @@
   /* === TOAST === */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0A0A0A; color: white; padding: 13px 20px; border-radius: 24px; font-size: 13px; font-weight: 600; z-index: 200; opacity: 0; pointer-events: none; transition: opacity .25s; max-width: 90%; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
   .toast.show { opacity: 1; }
+
+  /* ============================================
+     v42: 매장 확인 팝업 (발급 직전 1회 체크)
+     ============================================ */
+  .sc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 16, 32, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    transition: opacity 0.25s ease-out;
+  }
+  .sc-overlay.open { opacity: 1; }
+  .sc-modal {
+    background: white;
+    width: 100%;
+    max-width: 380px;
+    border-radius: 22px;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.40);
+  }
+  .sc-overlay.open .sc-modal { transform: translateY(0) scale(1); }
+  .sc-header {
+    padding: 22px 22px 18px;
+    background: linear-gradient(135deg, #1E40DD 0%, #2563EB 100%);
+    color: white;
+    text-align: center;
+    position: relative;
+  }
+  .sc-header-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: white;
+    color: #1E40DD;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .sc-header-title {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -0.4px;
+    margin-bottom: 4px;
+  }
+  .sc-header-sub {
+    font-size: 12px;
+    opacity: 0.92;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    line-height: 1.5;
+  }
+  .sc-body {
+    padding: 20px 22px 16px;
+  }
+  .sc-store-card {
+    background: linear-gradient(135deg, #FFFEF0 0%, #FEF3C7 100%);
+    border: 1.5px solid #FDE68A;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .sc-store-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: white;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+  }
+  .sc-store-icon img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .sc-store-info { flex: 1; min-width: 0; }
+  .sc-store-name {
+    font-size: 15px; font-weight: 900;
+    color: #181600; letter-spacing: -0.3px;
+    margin-bottom: 3px;
+  }
+  .sc-store-addr {
+    font-size: 11px; color: #92400E;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .sc-store-hours {
+    font-size: 10.5px; color: #B45309;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+  .sc-warn {
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-size: 11.5px;
+    color: #991B1B;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: -0.2px;
+    display: flex; align-items: flex-start; gap: 7px;
+  }
+  .sc-warn-icon {
+    font-size: 13px;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+  .sc-footer {
+    padding: 14px 22px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sc-confirm-btn {
+    width: 100%;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #1E40DD 0%, #2563EB 100%);
+    color: white;
+    border: 0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.3px;
+    box-shadow: 0 6px 16px rgba(30, 64, 221, 0.35);
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .sc-confirm-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(30, 64, 221, 0.45);
+  }
+  .sc-change-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background: white;
+    color: #5A6072;
+    border: 1px solid #E0E4EB;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: -0.2px;
+    transition: all 0.15s;
+  }
+  .sc-change-btn:hover {
+    background: #F8F9FB;
+    border-color: #1E40DD;
+    color: #1E40DD;
+  }
+
+  /* ============================================
+     v42: 모드 토글 숨김 (시크릿 키로만 표시)
+     ============================================ */
+  .mode-toggle,
+  .v5-mode-btn,
+  #mode-toggle.v28-top-mode {
+    display: none !important;
+  }
+  body.admin-enabled .mode-toggle,
+  body.admin-enabled .v5-mode-btn,
+  body.admin-enabled #mode-toggle.v28-top-mode {
+    display: flex !important;
+  }
+  /* 본사모드 진입했을 때만 (display: block 우선) */
+  body.admin-enabled .mode-toggle {
+    display: flex !important;
+  }
+
+  /* ============================================
+     v42: v28 헤더 매장 영역 클릭 가능 (▾ 표시)
+     ============================================ */
+  .v28-top-info {
+    cursor: pointer;
+    transition: opacity 0.15s;
+    padding: 4px 6px;
+    margin: -4px -6px;
+    border-radius: 8px;
+  }
+  .v28-top-info:hover {
+    background: rgba(30, 64, 221, 0.06);
+  }
+  .v28-top-info:active {
+    opacity: 0.7;
+  }
+  .v28-top-info::after {
+    content: '▾';
+    font-size: 13px;
+    color: #1E40DD;
+    font-weight: 800;
+    margin-left: 4px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  /* ============================================
+     v42: 보안 가드 - 텍스트/이미지 드래그 방지
+     ============================================ */
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+  }
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: auto;
+  }
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
 <div class="toast" id="toast"></div>
+
+<!-- v42: 매장 확인 팝업 (발급 직전 1회 체크) -->
+<div class="sc-overlay" id="sc-overlay" style="display:none;">
+  <div class="sc-modal">
+    <div class="sc-header">
+      <div class="sc-header-icon">📍</div>
+      <div class="sc-header-title">이 매장이 맞나요?</div>
+      <div class="sc-header-sub">쿠폰은 선택한 매장에서만 사용 가능합니다.<br/>매장이 다르면 변경 후 진행해주세요.</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-store-card">
+        <div class="sc-store-icon"><img id="sc-store-img" src="" alt="매장" /></div>
+        <div class="sc-store-info">
+          <div class="sc-store-name" id="sc-store-name">매장명</div>
+          <div class="sc-store-addr" id="sc-store-addr">매장 주소</div>
+          <div class="sc-store-hours" id="sc-store-hours">영업시간</div>
+        </div>
+      </div>
+      <div class="sc-warn">
+        <span class="sc-warn-icon">⚠️</span>
+        <span>잘못된 매장 선택 시 쿠폰이 무효 처리될 수 있어요</span>
+      </div>
+    </div>
+    <div class="sc-footer">
+      <button class="sc-confirm-btn" id="sc-confirm-btn">
+        <span>✓</span>
+        <span>네, 이 매장에서 사용할게요</span>
+      </button>
+      <button class="sc-change-btn" id="sc-change-btn">매장 다시 선택</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ============================================
@@ -4969,6 +5253,8 @@ function getCurrentBranchCode() {
 
 function setCurrentBranchCode(code) {
   try { localStorage.setItem('zerolab_current_branch', code); } catch(e) {}
+  // v42: 매장 변경 시 매장 확인 sessionStorage 초기화 (다음 발급 때 다시 확인 받음)
+  try { if (typeof clearStoreConfirmation === 'function') clearStoreConfirmation(); } catch(e) {}
 }
 
 function getCurrentBranch() {
@@ -5081,6 +5367,96 @@ const state = {
   },
   adminTab: 'campaign',  // 'campaign' | 'manage' | 'dashboard'
 };
+
+// ============================================
+// v42: 매장 확인 팝업 시스템 (발급 직전 1회 체크)
+// ============================================
+// sessionStorage에 매장코드 저장 → 같은 세션에선 1회만 확인
+// 매장 변경 시 자동 초기화 (setCurrentBranchCode에서 처리)
+const SC_STORAGE_KEY = 'zerolab_store_confirmed';
+
+function isStoreConfirmedThisSession() {
+  try {
+    const saved = sessionStorage.getItem(SC_STORAGE_KEY);
+    if (!saved) return false;
+    return saved === getCurrentBranchCode();
+  } catch(e) { return false; }
+}
+
+function markStoreConfirmed() {
+  try { sessionStorage.setItem(SC_STORAGE_KEY, getCurrentBranchCode()); } catch(e) {}
+}
+
+function clearStoreConfirmation() {
+  try { sessionStorage.removeItem(SC_STORAGE_KEY); } catch(e) {}
+}
+
+// 핵심 래퍼: 발급 직전에 매장 확인 (이미 확인됐으면 그대로 진행)
+// 사용: withStoreConfirm(() => { /* 발급 로직 */ })
+function withStoreConfirm(callback) {
+  if (typeof callback !== 'function') return;
+  if (isStoreConfirmedThisSession()) {
+    callback();
+    return;
+  }
+  openStoreConfirmModal(callback);
+}
+
+function openStoreConfirmModal(onConfirm) {
+  const overlay = document.getElementById('sc-overlay');
+  if (!overlay) {
+    // 모달이 없으면 안전 차원에서 바로 진행
+    if (typeof onConfirm === 'function') onConfirm();
+    return;
+  }
+  const branch = getCurrentBranch();
+  // 매장 정보 주입
+  const nameEl = document.getElementById('sc-store-name');
+  const addrEl = document.getElementById('sc-store-addr');
+  const hoursEl = document.getElementById('sc-store-hours');
+  const imgEl = document.getElementById('sc-store-img');
+  if (nameEl) nameEl.textContent = branch.name;
+  if (addrEl) addrEl.textContent = branch.address;
+  if (hoursEl) hoursEl.textContent = branch.hours || '연중무휴 24시간';
+  if (imgEl && typeof ZL_ASSETS !== 'undefined') imgEl.src = ZL_ASSETS.logoCircle;
+
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => overlay.classList.add('open'));
+
+  const close = () => {
+    overlay.classList.remove('open');
+    setTimeout(() => { overlay.style.display = 'none'; }, 250);
+  };
+
+  // 기존 핸들러 제거 (재오픈 시 중복 방지)
+  const confirmBtn = document.getElementById('sc-confirm-btn');
+  const changeBtn = document.getElementById('sc-change-btn');
+  if (confirmBtn) {
+    const newConfirm = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+    newConfirm.addEventListener('click', () => {
+      markStoreConfirmed();
+      close();
+      setTimeout(() => { if (typeof onConfirm === 'function') onConfirm(); }, 200);
+    });
+  }
+  if (changeBtn) {
+    const newChange = changeBtn.cloneNode(true);
+    changeBtn.parentNode.replaceChild(newChange, changeBtn);
+    newChange.addEventListener('click', () => {
+      close();
+      setTimeout(() => {
+        if (typeof openBranchSelector === 'function') openBranchSelector();
+      }, 280);
+    });
+  }
+  // 배경 클릭 시 닫기 (취소로 간주, 콜백 미실행)
+  const newOverlay = overlay.cloneNode(false);
+  // 위 cloneNode 하면 모달 사라지므로 cloneNode 안 하고 직접 핸들러만 갱신
+  overlay.onclick = (e) => {
+    if (e.target.id === 'sc-overlay') close();
+  };
+}
 
 // ============================================
 // HELPERS
@@ -5323,10 +5699,10 @@ function render() {
   // Mode toggle 표시 (body 토글이 보일 때만)
   if (toggleBtn) {
     if (state.mode === 'admin') {
-      toggleBtn.textContent = '👤 데모: 고객모드';
+      toggleBtn.textContent = '👤 손님 화면';
       toggleBtn.classList.add('admin');
     } else {
-      toggleBtn.textContent = '🔧 데모: 본사모드';
+      toggleBtn.textContent = '🔧 점주 화면';
       toggleBtn.classList.remove('admin');
     }
   }
@@ -5769,18 +6145,20 @@ function openMemberCouponsModal() {
         } else {
           const alreadyClaimed = (state.member.receivedCampaigns || []).includes(c.id);
           if (alreadyClaimed) { toast('이미 발급받은 쿠폰입니다'); return; }
-          const serial = api.issueSerial(id);
-          if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-          state.member.receivedCampaigns = state.member.receivedCampaigns || [];
-          state.member.receivedCampaigns.push(c.id);
-          persistMember(state.member);
-          openKakaoAlimtalkModal(c, serial, () => {
-            state.selectedCampaign = c;
-            state.activeSerial = serial;
-            state.secondsLeft = c.validMin * 60;
-            state.screen = 'coupon';
-            startTimer();
-            render();
+          withStoreConfirm(() => {
+            const serial = api.issueSerial(id);
+            if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+            state.member.receivedCampaigns = state.member.receivedCampaigns || [];
+            state.member.receivedCampaigns.push(c.id);
+            persistMember(state.member);
+            openKakaoAlimtalkModal(c, serial, () => {
+              state.selectedCampaign = c;
+              state.activeSerial = serial;
+              state.secondsLeft = c.validMin * 60;
+              state.screen = 'coupon';
+              startTimer();
+              render();
+            });
           });
         }
       }, 280);
@@ -6109,7 +6487,7 @@ function renderMain() {
       <div class="v28-top">
         <div class="v28-top-left">
           <button class="v28-back-btn" id="back-to-welcome" aria-label="처음 화면으로">←</button>
-          <div class="v28-top-info">
+          <div class="v28-top-info" id="v28-top-info">
             <div class="v28-top-icon"><img src="${ZL_ASSETS.logoCircle}" alt="제로연구소" /></div>
             <div class="v28-top-text">
               <div class="v28-top-name">${BRANCH.name}</div>
@@ -6656,7 +7034,7 @@ function renderAdmin() {
       <div class="admin-header">
         <div class="admin-header-row">
           <div class="admin-header-title">🔧 본사 캠페인 발송 도구</div>
-          <button class="admin-header-back" id="admin-back-btn">← 고객 모드</button>
+          <button class="admin-header-back" id="admin-back-btn">← 손님 화면</button>
         </div>
         <div class="admin-header-sub">신규 캠페인을 만들고 타겟 회원에게 카톡 알림톡을 발송합니다</div>
       </div>
@@ -7207,24 +7585,16 @@ function renderAdmin() {
 // EVENT BIND
 // ============================================
 function bind() {
-  // 모드 토글 - admin → customer 전환 시 점주 인증 세션 종료
+  // 모드 토글 - v44: 시연 편의 (sessionStorage 유지, 비번 재입력 X)
   const modeToggles = document.querySelectorAll('#mode-toggle');
   modeToggles.forEach(el => {
     el.onclick = () => {
-      const goingToCustomer = state.mode === 'admin';
       state.mode = state.mode === 'admin' ? 'customer' : 'admin';
       if (state.mode === 'admin') {
         stopTimer();
       } else {
-        // 점주 모드 → 고객 모드로 전환 시 인증 세션 종료
-        if (goingToCustomer) {
-          try {
-            sessionStorage.removeItem('zerolab_owner_auth');
-            const url = new URL(window.location.href);
-            url.searchParams.delete('role');
-            window.history.replaceState({}, '', url.toString());
-          } catch(e) {}
-        }
+        // 점주 → 손님 전환: sessionStorage 인증은 유지 (다시 점주로 갈 때 비번 X)
+        // 진짜 로그아웃은 시크릿 모드/브라우저 닫기로
         if (state.screen !== 'welcome' && state.screen !== 'main') state.screen = 'main';
       }
       render();
@@ -7242,6 +7612,8 @@ function bind() {
   attachClick('kakao-login-btn', () => openKakaoLoginModal());
   attachClick('guest-btn', () => { state.screen = 'main'; render(); });
   attachClick('branch-selector-btn', () => openBranchSelector());
+  // v42: v28 헤더의 매장 영역 클릭 → 매장 선택 모달
+  attachClick('v28-top-info', () => openBranchSelector());
 
   // welcome 화면의 쿠폰 티켓 클릭 → 바로 발급 흐름 진입 (v2/v3 디자인 모두 지원)
   document.querySelectorAll('.hero-ticket, .v3-ticket, .v4-ticket, .v5-ticket').forEach(el => {
@@ -7263,15 +7635,17 @@ function bind() {
         return;
       }
 
-      // 시리얼 발급 → 즉시 사용 화면
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
-      state.secondsLeft = c.validMin * 60;
-      state.screen = 'coupon';
-      startTimer();
-      render();
+      // 시리얼 발급 → 즉시 사용 화면 (v42: 매장 확인 후 진행)
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = c.validMin * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
     });
   });
   attachClick('header-signup-btn', () => openKakaoConnectModal());
@@ -7305,20 +7679,22 @@ function bind() {
         toast('이미 발급받은 쿠폰입니다');
         return;
       }
-      // 발급
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.member.receivedCampaigns = state.member.receivedCampaigns || [];
-      state.member.receivedCampaigns.push(c.id);
-      persistMember(state.member);  // 받은 쿠폰 영속화
-      // 카톡 알림톡 시뮬레이션 후 쿠폰 화면으로
-      openKakaoAlimtalkModal(c, serial, () => {
-        state.selectedCampaign = c;
-        state.activeSerial = serial;
-        state.secondsLeft = c.validMin * 60;
-        state.screen = 'coupon';
-        startTimer();
-        render();
+      // 발급 (v42: 매장 확인 후 진행)
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.member.receivedCampaigns = state.member.receivedCampaigns || [];
+        state.member.receivedCampaigns.push(c.id);
+        persistMember(state.member);  // 받은 쿠폰 영속화
+        // 카톡 알림톡 시뮬레이션 후 쿠폰 화면으로
+        openKakaoAlimtalkModal(c, serial, () => {
+          state.selectedCampaign = c;
+          state.activeSerial = serial;
+          state.secondsLeft = c.validMin * 60;
+          state.screen = 'coupon';
+          startTimer();
+          render();
+        });
       });
     });
   });
@@ -7336,14 +7712,16 @@ function bind() {
         toast(`🔒 ${formatCooldown(cooldownMs)} 후에 다시 사용할 수 있어요`);
         return;
       }
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
-      state.secondsLeft = c.validMin * 60;
-      state.screen = 'coupon';
-      startTimer();
-      render();
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = c.validMin * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
     });
   });
 
@@ -7359,14 +7737,16 @@ function bind() {
         toast(`🔒 ${formatCooldown(cooldownMs)} 후에 다시 사용할 수 있어요`);
         return;
       }
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
-      state.secondsLeft = c.validMin * 60;
-      state.screen = 'coupon';
-      startTimer();
-      render();
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = c.validMin * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
     });
   });
 
@@ -7424,29 +7804,31 @@ function bind() {
         return;
       }
 
-      // 시리얼 발급
-      const serial = api.issueSerial(id);
-      if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+      // 시리얼 발급 (v42: 매장 확인 후 진행)
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
 
-      state.selectedCampaign = c;
-      state.activeSerial = serial;
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
 
-      if (c.type === 'all') {
-        // 전체가능 → 앱 내 즉시 사용
-        state.secondsLeft = c.validMin * 60;
-        state.screen = 'coupon';
-        startTimer();
-        render();
-      } else {
-        // 회원전용 또는 push → 카톡 발송
-        state.screen = 'sending';
-        render();
-        setTimeout(() => {
-          api.recordUsage(state.member, c, serial, 'kakao');
-          state.screen = 'success';
+        if (c.type === 'all') {
+          // 전체가능 → 앱 내 즉시 사용
+          state.secondsLeft = c.validMin * 60;
+          state.screen = 'coupon';
+          startTimer();
           render();
-        }, 1800);
-      }
+        } else {
+          // 회원전용 또는 push → 카톡 발송
+          state.screen = 'sending';
+          render();
+          setTimeout(() => {
+            api.recordUsage(state.member, c, serial, 'kakao');
+            state.screen = 'success';
+            render();
+          }, 1800);
+        }
+      });
     });
   });
 
@@ -8541,27 +8923,36 @@ function toast(msg) {
 // ============================================
 // 점주 모드 보안 진입 (URL ?role=owner + 비밀번호)
 // 임시 조치 — M3에서 store.zerolab.kr 정식 분리 시 대체
+// v44: 인증된 세션에서 자동으로 양방향 토글 활성화 (시연 편의)
 // ============================================
 (function ownerModeEntry() {
   try {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('role') !== 'owner') return;
-    
-    // 이미 인증 세션 있으면 바로 진입
     const sessionAuth = sessionStorage.getItem('zerolab_owner_auth');
+
+    // v44: 인증된 세션이 살아있으면 → URL에 role=owner 없어도 토글 버튼 활성화
+    // (시연 중 점주 ↔ 손님 자유 전환)
     if (sessionAuth === 'authorized') {
-      state.mode = 'admin';
+      document.body.classList.add('admin-enabled');
+      // role=owner URL로 진입한 경우만 점주 모드로 시작
+      if (params.get('role') === 'owner') {
+        state.mode = 'admin';
+      }
       return;
     }
-    
+
+    // role=owner URL 진입 시에만 비밀번호 프롬프트
+    if (params.get('role') !== 'owner') return;
+
     // 비밀번호 입력
     const STORE_PASSWORD = 'zero-store-2026'; // ⚠️ M3에서 매장별 비밀번호로 변경
     const pw = prompt('🔒 점주 모드 진입\n\n점주 비밀번호를 입력해주세요');
-    
+
     if (pw === STORE_PASSWORD) {
       sessionStorage.setItem('zerolab_owner_auth', 'authorized');
+      document.body.classList.add('admin-enabled');  // v44: 토글 버튼 활성화
       state.mode = 'admin';
-      console.log('[ZeroLab] 점주 모드 진입');
+      console.log('[ZeroLab] 점주 모드 진입 (양방향 토글 활성화)');
     } else if (pw !== null) {
       alert('비밀번호가 올바르지 않습니다.\n본사에 문의해주세요.');
       // URL 파라미터 제거 (재시도 차단)
@@ -8570,6 +8961,84 @@ function toast(msg) {
       window.history.replaceState({}, '', url.toString());
     }
   } catch(e) { console.error(e); }
+})();
+
+// ============================================
+// v42: 본사 모드 시크릿 키 진입 (?admin=zerolab2026)
+// 시크릿 키 없으면 본사·고객 모드 토글 자체가 숨겨짐
+// ============================================
+(function adminSecretKeyEntry() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const SECRET_KEY = 'zerolab2026';
+    if (params.get('admin') === SECRET_KEY) {
+      document.body.classList.add('admin-enabled');
+      console.log('[ZeroLab] 본사 모드 토글 활성화');
+    }
+  } catch(e) {}
+})();
+
+// ============================================
+// v42: 보안 1단계 가드 (우클릭/F12/드래그 차단 + 콘솔 경고)
+// 실제 보안은 백엔드(M3 Supabase)에서 처리, 이건 1차 방어선만
+// ============================================
+(function securityGuard() {
+  try {
+    // 우클릭 차단
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      return false;
+    });
+
+    // 키보드 단축키 차단 (F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C)
+    document.addEventListener('keydown', (e) => {
+      // F12
+      if (e.key === 'F12') {
+        e.preventDefault();
+        return false;
+      }
+      // Ctrl+U (소스 보기)
+      if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+        e.preventDefault();
+        return false;
+      }
+      // Ctrl+S (저장)
+      if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        return false;
+      }
+      // Ctrl+Shift+I/J/C (개발자 도구)
+      if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // 텍스트/이미지 드래그 차단
+    document.addEventListener('dragstart', (e) => {
+      e.preventDefault();
+      return false;
+    });
+    document.addEventListener('selectstart', (e) => {
+      // 입력 필드는 허용
+      const target = e.target;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      e.preventDefault();
+      return false;
+    });
+
+    // 콘솔 경고 (호기심 차단)
+    setTimeout(() => {
+      try {
+        const style1 = 'color:#DC2626;font-size:24px;font-weight:900;';
+        const style2 = 'color:#181600;font-size:13px;font-weight:600;line-height:1.5;';
+        console.log('%c⚠️ 잠깐!', style1);
+        console.log('%c여기는 개발자 도구입니다.\n타인의 카카오 계정 정보를 입력하라는 안내를 받으셨다면\n100% 사기입니다. 절대 입력하지 마세요.\n\n— ZERO 연구소', style2);
+      } catch(e) {}
+    }, 500);
+  } catch(e) { /* 안전 무시 */ }
 })();
 
 render();
