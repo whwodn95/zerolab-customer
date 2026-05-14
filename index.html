@@ -1552,6 +1552,47 @@
   .admin-header-back:hover { background: rgba(255,255,255,0.28); }
   .admin-header-sub { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 500; }
 
+  /* v46: 점주 모드 헤더 누적 부담 표시 바 */
+  .owner-spent-bar {
+    margin-top: 10px;
+    padding: 9px 12px;
+    background: rgba(0,0,0,0.20);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    backdrop-filter: blur(8px);
+  }
+  .owner-spent-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.90);
+    letter-spacing: -0.2px;
+  }
+  .owner-spent-icon { font-size: 14px; }
+  .owner-spent-bar-right {
+    text-align: right;
+    line-height: 1.2;
+  }
+  .owner-spent-amount {
+    font-size: 16px;
+    font-weight: 900;
+    color: #FEE500;
+    letter-spacing: -0.4px;
+    display: block;
+  }
+  .owner-spent-hint {
+    font-size: 9px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
   .admin-content { padding: 16px 18px 32px; display: flex; flex-direction: column; gap: 14px; }
 
   /* === 점주 모드 탭 === */
@@ -1588,44 +1629,398 @@
   .admin-tab-content { display: none; flex-direction: column; gap: 14px; }
   .admin-tab-content.active { display: flex; }
 
-  /* === v5: 캠페인 종류 선택 === */
+  /* === v5: 캠페인 종류 선택 → v46: 세그먼트 탭으로 분리 === */
   .campaign-type-selector {
-    display: flex; flex-direction: column; gap: 8px;
-    margin-bottom: 14px;
+    display: flex;
+    gap: 0;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 12px;
   }
   .campaign-type-option {
-    display: flex; align-items: center; gap: 10px;
-    background: white;
-    border: 2px solid #E5E7EB;
-    border-radius: 10px;
-    padding: 12px 14px;
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: transparent;
+    border: 0;
+    border-radius: 9px;
+    padding: 12px 8px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
   }
-  .campaign-type-option:hover { border-color: #BFDBFE; background: #F8FAFF; }
+  .campaign-type-option:hover:not(.selected) {
+    background: rgba(255,255,255,0.5);
+  }
   .campaign-type-option input[type="radio"] {
-    width: 18px; height: 18px;
-    accent-color: #1E40DD;
-    flex-shrink: 0;
-    cursor: pointer;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
   }
   .campaign-type-option.selected {
-    border-color: #1E40DD;
-    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-    box-shadow: 0 2px 6px rgba(30,64,221,0.10);
+    background: linear-gradient(135deg, #1E40DD 0%, #3B82F6 100%);
+    box-shadow: 0 4px 10px rgba(30,64,221,0.30);
   }
-  .campaign-type-content { flex: 1; min-width: 0; }
+  .campaign-type-content { display: flex; align-items: center; gap: 6px; }
   .campaign-type-title {
-    font-size: 13px; font-weight: 800; color: #181600;
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #5A6072;
     letter-spacing: -0.2px;
-    margin-bottom: 2px;
+    transition: color 0.18s;
   }
   .campaign-type-desc {
-    font-size: 10.5px; color: #6B7280; font-weight: 600;
-    line-height: 1.5;
+    /* 탭 안에선 안 보임 — 별도 카드로 분리 */
+    display: none;
   }
-  /* 선택된 종류 강조 */
-  .campaign-type-option.selected .campaign-type-title { color: #1E40DD; }
+  .campaign-type-option.selected .campaign-type-title {
+    color: white;
+  }
+
+  /* v46: 선택된 캠페인 타입 설명 카드 (탭 아래) */
+  .campaign-type-desc-card {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border: 1px solid #93C5FD;
+    border-radius: 10px;
+    padding: 11px 13px;
+    margin-bottom: 14px;
+    font-size: 11px;
+    color: #1E3A8A;
+    font-weight: 600;
+    line-height: 1.55;
+  }
+  .campaign-type-desc-card.qr {
+    background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+    border-color: #6EE7B7;
+    color: #065F46;
+  }
+  .campaign-type-desc-card .desc-title {
+    font-size: 12.5px;
+    font-weight: 900;
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+  .campaign-type-desc-card.qr .desc-title { color: #047857; }
+  .campaign-type-desc-card:not(.qr) .desc-title { color: #1E40DD; }
+
+  /* ============================================ */
+  /* v46: 매장 운영 점수 카드 (캠페인 신청 폼 상단) */
+  /* ============================================ */
+  .score-main-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(252,253,255,0.95));
+    border-radius: 14px;
+    border: 2px solid #E8EAEF;
+    padding: 14px;
+    margin-bottom: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .score-main-card.tier-S { border-color: #15803D; box-shadow: 0 8px 20px rgba(21,128,61,0.12); }
+  .score-main-card.tier-A { border-color: #1E40DD; box-shadow: 0 8px 20px rgba(30,64,221,0.10); }
+  .score-main-card.tier-B { border-color: #D97706; box-shadow: 0 8px 20px rgba(217,119,6,0.10); }
+  .score-main-card.tier-C { border-color: #DC2626; box-shadow: 0 8px 20px rgba(220,38,38,0.10); }
+
+  .score-tier-tag {
+    font-size: 9.5px; font-weight: 800;
+    padding: 3px 7px; border-radius: 8px;
+    letter-spacing: 0.3px; margin-left: auto;
+  }
+  .score-tier-tag.S { color: #15803D; background: rgba(220,252,231,0.80); border: 1px solid rgba(21,128,61,0.15); }
+  .score-tier-tag.A { color: #1E40DD; background: rgba(235,241,255,0.80); border: 1px solid rgba(30,64,221,0.15); }
+  .score-tier-tag.B { color: #92400E; background: rgba(254,243,199,0.80); border: 1px solid rgba(217,119,6,0.15); }
+  .score-tier-tag.C { color: #991B1B; background: rgba(254,226,226,0.80); border: 1px solid rgba(220,38,38,0.15); }
+
+  .score-hero { text-align: center; padding: 6px 0 10px; }
+  .score-hero-label {
+    font-size: 10.5px; font-weight: 800; color: #8B92A1;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .score-hero-number {
+    font-size: 48px; font-weight: 900;
+    letter-spacing: -2px; line-height: 1;
+    transition: color 0.3s;
+  }
+  .score-hero-number.tier-S { color: #15803D; }
+  .score-hero-number.tier-A { color: #1E40DD; }
+  .score-hero-number.tier-B { color: #D97706; }
+  .score-hero-number.tier-C { color: #DC2626; }
+  .score-hero-suffix {
+    font-size: 16px; font-weight: 800;
+    color: #8B92A1; margin-left: 4px;
+  }
+  .score-hero-sub {
+    font-size: 11px; font-weight: 700;
+    color: #5A6072; margin-top: 6px;
+    letter-spacing: -0.2px;
+  }
+
+  .score-progress {
+    height: 7px; background: rgba(0,0,0,0.05);
+    border-radius: 999px; overflow: hidden;
+    margin: 6px 4px 12px;
+  }
+  .score-progress-bar {
+    height: 100%; border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+  }
+  .score-progress-bar.tier-S { background: linear-gradient(90deg, #15803D, #16A34A); }
+  .score-progress-bar.tier-A { background: linear-gradient(90deg, #1E40DD, #3B82F6); }
+  .score-progress-bar.tier-B { background: linear-gradient(90deg, #D97706, #F59E0B); }
+  .score-progress-bar.tier-C { background: linear-gradient(90deg, #DC2626, #EF4444); }
+
+  .score-burden-split { display: flex; gap: 8px; margin-bottom: 10px; }
+  .score-burden-side {
+    flex: 1; border-radius: 10px;
+    padding: 8px 10px; text-align: center;
+  }
+  .score-burden-side.hq { background: rgba(235,241,255,0.7); }
+  .score-burden-side.owner { background: rgba(255,237,213,0.7); }
+  .score-burden-label {
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .score-burden-side.hq .score-burden-label { color: #1E40DD; }
+  .score-burden-side.owner .score-burden-label { color: #B45309; }
+  .score-burden-percent { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+  .score-burden-side.hq .score-burden-percent { color: #1E40DD; }
+  .score-burden-side.owner .score-burden-percent { color: #B45309; }
+
+  .score-notice {
+    padding: 9px 11px; background: rgba(0,0,0,0.025);
+    border-radius: 9px; font-size: 10.5px;
+    color: #5A6072; font-weight: 700;
+    line-height: 1.5; letter-spacing: -0.2px;
+    display: flex; align-items: flex-start; gap: 6px;
+  }
+
+  .score-details-toggle {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px dashed rgba(0,0,0,0.08);
+  }
+  .score-details-toggle summary {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 900;
+    color: #1E40DD;
+    padding: 10px 14px;
+    letter-spacing: -0.2px;
+    list-style: none;
+    background: linear-gradient(135deg, rgba(235,241,255,0.85) 0%, rgba(219,234,254,0.65) 100%);
+    border: 1.5px solid rgba(30, 64, 221, 0.25);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .score-details-toggle summary:hover {
+    background: linear-gradient(135deg, rgba(235,241,255,1) 0%, rgba(219,234,254,0.85) 100%);
+    border-color: rgba(30, 64, 221, 0.55);
+    box-shadow: 0 4px 10px rgba(30, 64, 221, 0.15);
+  }
+  .score-details-toggle summary::-webkit-details-marker { display: none; }
+  .score-details-toggle summary::after {
+    content: '▼';
+    font-size: 10px;
+    color: #1E40DD;
+    transition: transform 0.2s;
+    margin-left: 8px;
+  }
+  .score-details-toggle[open] summary {
+    background: linear-gradient(135deg, rgba(235,241,255,0.6) 0%, rgba(252,253,255,0.6) 100%);
+    border-color: rgba(30, 64, 221, 0.20);
+  }
+  .score-details-toggle[open] summary::after { transform: rotate(180deg); }
+  .score-details-toggle[open] summary span.hint { display: none; }
+  .score-details-toggle summary .hint {
+    font-size: 10px;
+    font-weight: 700;
+    color: #5A6072;
+    background: rgba(255,255,255,0.7);
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-left: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .score-detail-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.05);
+  }
+  .score-detail-row:last-of-type { border-bottom: 0; }
+  .score-detail-icon {
+    width: 30px; height: 30px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; flex-shrink: 0;
+  }
+  .score-detail-icon.full { background: #DCFCE7; color: #15803D; }
+  .score-detail-icon.partial { background: #FEF3C7; color: #D97706; }
+  .score-detail-icon.empty { background: #FEE2E2; color: #DC2626; }
+  .score-detail-icon.no-data { background: #DBEAFE; color: #1E40DD; }
+  .score-detail-body { flex: 1; min-width: 0; }
+  .score-detail-name {
+    font-size: 11.5px; font-weight: 800; color: #181600;
+    letter-spacing: -0.2px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .score-no-data-badge {
+    font-size: 8.5px; font-weight: 900;
+    color: #1E40DD; background: rgba(30, 64, 221, 0.10);
+    padding: 1px 5px; border-radius: 4px;
+    letter-spacing: 0.3px;
+  }
+  .score-detail-value {
+    font-size: 10.5px; color: #5A6072;
+    font-weight: 600; margin-top: 2px; line-height: 1.4;
+  }
+  .score-detail-points { text-align: right; flex-shrink: 0; }
+  .score-detail-points-num { font-size: 16px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
+  .score-detail-points-num.full { color: #15803D; }
+  .score-detail-points-num.partial { color: #D97706; }
+  .score-detail-points-num.empty { color: #DC2626; }
+  .score-detail-points-num.no-data { color: #1E40DD; }
+  .score-detail-points-max {
+    font-size: 9.5px; color: #8B92A1;
+    font-weight: 700; margin-top: 1px;
+  }
+
+  .score-total {
+    margin-top: 8px; padding: 9px 11px;
+    background: linear-gradient(135deg, rgba(235,241,255,0.7), rgba(220,252,231,0.4));
+    border-radius: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid rgba(30, 64, 221, 0.10);
+  }
+  .score-total-label { font-size: 11.5px; font-weight: 900; color: #181600; }
+  .score-total-value { font-size: 16px; font-weight: 900; color: #1E40DD; letter-spacing: -0.5px; }
+  .score-total-value .small { font-size: 11.5px; color: #8B92A1; font-weight: 800; }
+
+  .score-tip-box {
+    margin-top: 10px; padding: 9px 11px;
+    background: rgba(254,243,199,0.5);
+    border: 1px dashed rgba(217, 119, 6, 0.30);
+    border-radius: 9px;
+    font-size: 10.5px; color: #92400E;
+    font-weight: 700; line-height: 1.5;
+  }
+  .score-tip-box.full {
+    background: rgba(220,252,231,0.5);
+    border-color: rgba(21, 128, 61, 0.30);
+    color: #166534;
+  }
+  .score-tip-title {
+    font-weight: 900; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .score-tip-box ul { list-style: none; padding-left: 0; margin-top: 3px; }
+  .score-tip-box li {
+    padding-left: 14px; position: relative;
+    margin-bottom: 3px; font-size: 10.5px;
+  }
+  .score-tip-box li::before {
+    content: '↑'; position: absolute;
+    left: 0; font-weight: 900;
+  }
+  .score-tip-box.full li::before { content: '✓'; color: #15803D; }
+
+  .score-recalc-info {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 11px; background: rgba(0,0,0,0.025);
+    border-radius: 9px; margin-top: 8px;
+    font-size: 10px; color: #5A6072; font-weight: 700;
+  }
+  .score-recalc-info b { color: #181600; font-weight: 900; }
+
+  /* v46: 신청 직전 최종 비용 요약 카드 */
+  .final-cost-summary {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAFBFD 100%);
+    border: 1.5px solid #E5E7EB;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    margin-bottom: 12px;
+  }
+  .final-cost-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    font-size: 12px;
+    color: #5A6072;
+    font-weight: 600;
+  }
+  .final-cost-row b { color: #181600; font-weight: 900; letter-spacing: -0.2px; }
+  .final-cost-row.total {
+    font-size: 12.5px;
+    padding: 8px 0 6px;
+    color: #181600;
+    border-top: 1px dashed rgba(0,0,0,0.08);
+    margin-top: 2px;
+  }
+  .final-cost-row.total b {
+    font-size: 14px;
+    color: #92400E;
+  }
+  .final-cost-row.hq { color: #1E40DD; font-weight: 700; }
+  .final-cost-row.hq b { color: #1E40DD; }
+  .final-cost-row.owner { color: #B45309; font-weight: 700; }
+  .final-cost-row.owner b { color: #B45309; }
+  .final-cost-divider {
+    height: 1px;
+    background: rgba(0,0,0,0.05);
+    margin: 6px 0;
+  }
+
+  /* v46: 발주 프로그램 차감 안내 카드 (최종 비용 카드 내부) */
+  .settlement-card {
+    margin-top: 12px;
+    padding: 11px 13px;
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border: 1.5px solid #FCD34D;
+    border-radius: 11px;
+  }
+  .settlement-title {
+    font-size: 11.5px;
+    font-weight: 900;
+    color: #78350F;
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+  }
+  .settlement-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 11.5px;
+    color: #92400E;
+    font-weight: 700;
+  }
+  .settlement-row b { color: #78350F; font-weight: 900; letter-spacing: -0.2px; }
+  .settlement-row.plus { color: #B45309; }
+  .settlement-row.plus b { color: #B45309; }
+  .settlement-row.after {
+    border-top: 1px dashed rgba(120, 53, 15, 0.30);
+    padding-top: 7px;
+    margin-top: 3px;
+    font-weight: 900;
+  }
+  .settlement-row.after b {
+    font-size: 13px;
+    color: #78350F;
+  }
+  .settlement-note {
+    margin-top: 7px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(120, 53, 15, 0.20);
+    font-size: 10px;
+    color: #92400E;
+    font-weight: 600;
+    letter-spacing: -0.1px;
+  }
 
   .admin-card {
     background: white; border-radius: 14px; padding: 16px;
@@ -2527,6 +2922,694 @@
     z-index: 0;
   }
   .v28-main > * { position: relative; z-index: 1; }
+
+  /* ============================================ */
+  /* v46: 손님 화면 — 단순화 (Hero + 그리드 + 등급) */
+  /* ============================================ */
+
+  /* 헤더 우측 액션 영역 (즐겨찾기 + 마이 버튼) */
+  .v28-top-right-actions {
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
+  }
+  .v46-fav-btn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.06);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; color: #5A6072;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .v46-fav-btn.active {
+    background: linear-gradient(135deg, #FEE500, #FACC15);
+    border-color: #F59E0B;
+    color: #181600;
+    box-shadow: 0 2px 6px rgba(254,229,0,0.40);
+  }
+  .v46-fav-btn:active { transform: scale(0.92); }
+
+  /* 단골 등급 카드 */
+  .v46-loyalty-card {
+    margin: 12px 16px 0;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .v46-loyalty-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.07); }
+  .v46-loyalty-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .v46-loyalty-tier {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 900;
+    letter-spacing: -0.2px;
+  }
+  .v46-loyalty-emoji { font-size: 16px; }
+  .v46-loyalty-demoted {
+    font-size: 9px; font-weight: 900;
+    color: white;
+    background: #DC2626;
+    padding: 2px 6px;
+    border-radius: 5px;
+    margin-left: 5px;
+  }
+  .v46-loyalty-visit {
+    font-size: 11px; font-weight: 700;
+    color: #5A6072;
+  }
+  .v46-loyalty-visit b { color: #181600; font-weight: 900; }
+  .v46-loyalty-progress {
+    height: 6px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .v46-loyalty-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 6px rgba(0,0,0,0.08);
+  }
+  .v46-loyalty-next {
+    margin-top: 6px;
+    font-size: 10px; font-weight: 800;
+    color: #5A6072;
+    letter-spacing: -0.2px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .v46-loyalty-next b { color: #181600; }
+  .v46-loyalty-detail-link {
+    color: #1E40DD;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  /* 비회원 단골 안내 */
+  .v46-guest-loyalty-card {
+    margin: 10px 16px 0;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    font-size: 11px; font-weight: 700;
+    color: #5A6072;
+    display: flex; align-items: center; gap: 8px;
+    letter-spacing: -0.2px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .v46-guest-loyalty-card:hover {
+    border-color: rgba(30,64,221,0.30);
+    box-shadow: 0 4px 12px rgba(30,64,221,0.08);
+  }
+  .v46-guest-loyalty-card b { color: #1E40DD; font-weight: 900; }
+  .v46-guest-emoji { font-size: 14px; flex-shrink: 0; }
+  .v46-guest-text { flex: 1; min-width: 0; }
+
+  /* 만료 임박 알림 배너 */
+  .v46-expiry-banner {
+    margin: 10px 16px 0;
+    display: flex; align-items: center; gap: 9px;
+    background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+    border: 1px solid #FCA5A5;
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(220,38,38,0.10);
+    transition: all 0.18s;
+  }
+  .v46-expiry-banner:active { transform: scale(0.98); }
+  .v46-expiry-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #DC2626, #EF4444);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    animation: v46-pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes v46-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 2px 6px rgba(220,38,38,0.40); }
+    50% { transform: scale(1.05); box-shadow: 0 4px 12px rgba(220,38,38,0.55); }
+  }
+  .v46-expiry-body { flex: 1; min-width: 0; line-height: 1.3; }
+  .v46-expiry-title {
+    font-size: 11.5px; font-weight: 900;
+    color: #991B1B; letter-spacing: -0.3px;
+  }
+  .v46-expiry-sub {
+    font-size: 10px; font-weight: 700;
+    color: #B91C1C; margin-top: 1px;
+  }
+  .v46-expiry-action {
+    font-size: 11px; font-weight: 900;
+    color: white;
+    background: #DC2626;
+    padding: 6px 11px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(220,38,38,0.35);
+    letter-spacing: -0.2px;
+  }
+
+  /* 비회원 가입 배너 */
+  .v46-join-banner {
+    margin: 12px 16px 0;
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #FEE500 0%, #FACC15 100%);
+    border-radius: 14px;
+    padding: 11px 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(254,229,0,0.30);
+    transition: transform 0.15s;
+  }
+  .v46-join-banner:active { transform: scale(0.98); }
+  .v46-join-icon {
+    width: 32px; height: 32px;
+    background: #181600;
+    color: #FEE500;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900;
+    flex-shrink: 0;
+  }
+  .v46-join-text { flex: 1; line-height: 1.3; min-width: 0; }
+  .v46-join-title {
+    font-size: 12.5px; font-weight: 900;
+    color: #181600; letter-spacing: -0.3px;
+  }
+  .v46-join-sub {
+    font-size: 10.5px; font-weight: 700;
+    color: rgba(24,22,0,0.70);
+    margin-top: 1px;
+  }
+  .v46-join-arrow {
+    font-size: 18px; font-weight: 900;
+    color: #181600;
+    flex-shrink: 0;
+  }
+
+  /* 섹션 헤더 (v46) */
+  .v46-section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 8px;
+  }
+  .v46-section-title {
+    font-size: 13px; font-weight: 900;
+    color: #181600; letter-spacing: -0.3px;
+  }
+  .v46-section-count {
+    font-size: 10.5px; font-weight: 800;
+    color: #5A6072;
+    background: rgba(0,0,0,0.04);
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+
+  /* Hero 카드 */
+  .v46-hero-wrap { padding: 0 16px; margin-bottom: 4px; }
+  .v46-hero-card {
+    position: relative;
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEE500 100%);
+    border: 1.5px solid #FACC15;
+    border-radius: 16px;
+    padding: 14px 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(254,229,0,0.25), 0 2px 6px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .v46-hero-card:active { transform: scale(0.985); }
+  .v46-hero-card::after {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 90px; height: 90px;
+    background: rgba(255,255,255,0.30);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .v46-hero-card > * { position: relative; z-index: 1; }
+  .v46-hero-percent-wrap { flex-shrink: 0; line-height: 0.95; text-align: center; }
+  .v46-hero-percent {
+    font-size: 42px; font-weight: 900;
+    color: #181600;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .v46-hero-unit {
+    font-size: 18px; font-weight: 900;
+    margin-left: 2px;
+    letter-spacing: -0.5px;
+  }
+  .v46-hero-info { flex: 1; min-width: 0; }
+  .v46-hero-badges {
+    display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap;
+  }
+  .v46-hero-badge {
+    font-size: 9px; font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.2px;
+  }
+  .v46-hero-badge.gold { background: rgba(24,22,0,0.85); color: #FEE500; }
+  .v46-hero-badge.red { background: #DC2626; color: white; box-shadow: 0 2px 4px rgba(220,38,38,0.30); }
+  .v46-hero-name {
+    font-size: 13.5px; font-weight: 900;
+    color: #181600;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  .v46-hero-meta {
+    font-size: 10.5px; font-weight: 700;
+    color: rgba(24,22,0,0.70);
+  }
+  .v46-hero-arrow {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    background: #181600;
+    color: #FEE500;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 900;
+    box-shadow: 0 3px 8px rgba(24,22,0,0.30);
+  }
+
+  /* 미니 카드 그리드 */
+  .v46-mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 16px;
+    margin-bottom: 4px;
+  }
+  .v46-mini-card {
+    background: white;
+    border: 1.5px solid rgba(0,0,0,0.06);
+    border-radius: 13px;
+    padding: 11px 11px 10px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+  .v46-mini-card:hover {
+    transform: translateY(-1px);
+    border-color: #1E40DD;
+    box-shadow: 0 6px 14px rgba(30,64,221,0.10);
+  }
+  .v46-mini-card:active { transform: translateY(0); }
+  .v46-mini-card.member {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFFEF8 100%);
+    border-color: #FDE68A;
+  }
+  .v46-mini-card.member::before {
+    content: '⭐ 회원';
+    position: absolute;
+    top: 7px; right: 7px;
+    font-size: 8.5px; font-weight: 900;
+    color: #B45309;
+    background: rgba(254,243,199,0.95);
+    padding: 2px 5px;
+    border-radius: 5px;
+    letter-spacing: -0.2px;
+    z-index: 1;
+  }
+  .v46-mini-card.locked {
+    background: linear-gradient(135deg, #F8FAFD 0%, #F1F3F7 100%);
+    border-color: #D1D5DB;
+    border-style: dashed;
+  }
+  .v46-mini-card.locked::before {
+    content: '🔒 회원만';
+    position: absolute;
+    top: 7px; right: 7px;
+    font-size: 8.5px; font-weight: 900;
+    color: white;
+    background: rgba(24,22,0,0.75);
+    padding: 2px 5px;
+    border-radius: 5px;
+    letter-spacing: -0.2px;
+    z-index: 1;
+  }
+  .v46-mini-card.locked .v46-mini-percent { color: #5A6072; }
+  .v46-mini-card.locked .v46-mini-name { color: #6B7280; }
+  .v46-mini-card.locked::after {
+    content: '가입하면 받기 ›';
+    display: block;
+    margin-top: 4px;
+    font-size: 9.5px;
+    font-weight: 900;
+    color: #1E40DD;
+    text-align: left;
+    letter-spacing: -0.2px;
+  }
+  .v46-mini-percent {
+    font-size: 24px; font-weight: 900;
+    color: #1E40DD;
+    letter-spacing: -1.1px;
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .v46-mini-card.member .v46-mini-percent { color: #B45309; }
+  .v46-mini-unit {
+    font-size: 12px; font-weight: 800;
+    margin-left: 2px;
+  }
+  .v46-mini-name {
+    font-size: 11px; font-weight: 800;
+    color: #181600;
+    letter-spacing: -0.2px;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 28px;
+  }
+  .v46-mini-meta {
+    font-size: 9.5px; font-weight: 700;
+    color: #5A6072;
+  }
+
+  /* 내 쿠폰함 링크 */
+  .v46-mycoupon-link {
+    margin: 14px 16px 70px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.7);
+    border-radius: 14px;
+    padding: 13px 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: all 0.18s;
+  }
+  .v46-mycoupon-link:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .v46-mycoupon-left { display: flex; align-items: center; gap: 10px; }
+  .v46-mycoupon-icon {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, #1E40DD, #3B82F6);
+    color: white;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .v46-mycoupon-name {
+    font-size: 12px; font-weight: 900;
+    color: #181600;
+  }
+  .v46-mycoupon-sub {
+    font-size: 9.5px; font-weight: 700;
+    color: #5A6072; margin-top: 1px;
+  }
+  .v46-mycoupon-arrow {
+    font-size: 18px; font-weight: 900;
+    color: #5A6072;
+  }
+
+  /* v46: 시리얼번호 복사 버튼 */
+  .v46-serial-copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #181600;
+    color: #FEE500;
+    border: 0;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: -0.3px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(24,22,0,0.25);
+    font-family: inherit;
+  }
+  .v46-serial-copy-btn:hover {
+    background: #2A2715;
+    box-shadow: 0 6px 16px rgba(24,22,0,0.35);
+  }
+  .v46-serial-copy-btn:active {
+    transform: scale(0.985);
+  }
+  .v46-serial-copy-btn.copied {
+    background: linear-gradient(135deg, #16A34A, #22C55E);
+    color: white;
+    box-shadow: 0 4px 12px rgba(22,163,74,0.35);
+  }
+  .v46-serial-copy-icon { font-size: 14px; }
+  .v46-serial-copy-text { letter-spacing: -0.3px; }
+
+  /* v46: 시리얼 노출 시 재발급 불가 경고 */
+  .v46-serial-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 14px 0 4px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+    border: 1.5px solid #FCA5A5;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(220,38,38,0.10);
+  }
+  .v46-serial-warning-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+    line-height: 1.1;
+  }
+  .v46-serial-warning-body { flex: 1; min-width: 0; line-height: 1.5; }
+  .v46-serial-warning-title {
+    font-size: 12.5px;
+    font-weight: 900;
+    color: #991B1B;
+    letter-spacing: -0.3px;
+    margin-bottom: 3px;
+  }
+  .v46-serial-warning-sub {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #B91C1C;
+    letter-spacing: -0.2px;
+  }
+  .v46-serial-warning-sub b {
+    color: #7F1D1D;
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  /* v46: 등급 상세보기 모달 */
+  .v46-tier-modal {
+    width: calc(100% - 24px);
+    max-width: 380px;
+    max-height: 92vh;
+    background: white;
+    border-radius: 22px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.30);
+  }
+  .v46-tier-modal-header {
+    position: relative;
+    padding: 18px 18px 14px;
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEE500 100%);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  .v46-tier-modal-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(24,22,0,0.10);
+    border: 0;
+    color: #181600;
+    font-size: 14px; font-weight: 900;
+    cursor: pointer;
+  }
+  .v46-tier-modal-title {
+    font-size: 15px; font-weight: 900;
+    color: #181600;
+    letter-spacing: -0.3px;
+  }
+  .v46-tier-modal-sub {
+    font-size: 11px; font-weight: 700;
+    color: rgba(24,22,0,0.70);
+    margin-top: 2px;
+  }
+  .v46-tier-modal-body {
+    overflow-y: auto;
+    padding: 16px;
+    flex: 1;
+  }
+  .v46-current-tier {
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 16px;
+    border: 1.5px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .v46-current-tier::before {
+    content: '';
+    position: absolute;
+    right: -25px; top: -25px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 50%;
+  }
+  .v46-current-tier > * { position: relative; z-index: 1; }
+  .v46-current-tier-label {
+    font-size: 10px; font-weight: 800;
+    opacity: 0.7;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .v46-current-tier-name {
+    font-size: 22px; font-weight: 900;
+    letter-spacing: -0.6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .v46-current-tier-visits {
+    font-size: 12px; font-weight: 700;
+    margin-top: 6px;
+  }
+  .v46-current-tier-visits b { font-weight: 900; }
+  .v46-current-tier-progress {
+    height: 7px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .v46-current-tier-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+  .v46-current-tier-next {
+    font-size: 10.5px; font-weight: 800;
+    margin-top: 6px;
+    letter-spacing: -0.2px;
+  }
+  .v46-tier-list-title {
+    font-size: 12px; font-weight: 900;
+    color: #181600;
+    margin-bottom: 8px;
+    letter-spacing: -0.2px;
+  }
+  .v46-tier-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+  .v46-tier-row {
+    background: white;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 11px 13px;
+    position: relative;
+  }
+  .v46-tier-row.current {
+    border-color: #1E40DD;
+    background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+    box-shadow: 0 4px 12px rgba(30,64,221,0.10);
+  }
+  .v46-tier-row.current::after {
+    content: '내 등급';
+    position: absolute;
+    top: 9px; right: 11px;
+    font-size: 9px; font-weight: 900;
+    color: white;
+    background: linear-gradient(135deg, #1E40DD, #3B82F6);
+    padding: 2px 7px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+  }
+  .v46-tier-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .v46-tier-emoji { font-size: 18px; flex-shrink: 0; }
+  .v46-tier-name {
+    font-size: 13px; font-weight: 900;
+    color: #181600;
+  }
+  .v46-tier-range {
+    font-size: 10.5px; font-weight: 700;
+    color: #5A6072;
+    margin-left: auto;
+    background: rgba(0,0,0,0.04);
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+  .v46-tier-row.current .v46-tier-range {
+    background: rgba(30,64,221,0.10);
+    color: #1E40DD;
+    font-weight: 800;
+  }
+  .v46-tier-discount {
+    font-size: 10.5px; font-weight: 700;
+    color: #5A6072;
+    margin: 4px 0 6px;
+    padding-left: 26px;
+  }
+  .v46-tier-benefits {
+    display: flex; flex-direction: column; gap: 3px;
+    padding-left: 26px;
+  }
+  .v46-tier-benefit {
+    font-size: 10.5px; font-weight: 700;
+    color: #2A2E37;
+    line-height: 1.45;
+    letter-spacing: -0.2px;
+    position: relative;
+    padding-left: 8px;
+  }
+  .v46-tier-benefit::before {
+    content: '·';
+    position: absolute; left: 0;
+    color: #1E40DD;
+    font-weight: 900;
+  }
+  .v46-tier-policy {
+    background: rgba(0,0,0,0.025);
+    border-radius: 11px;
+    padding: 11px 13px;
+  }
+  .v46-tier-policy-title {
+    font-size: 11px; font-weight: 900;
+    color: #181600;
+    margin-bottom: 5px;
+    letter-spacing: -0.2px;
+  }
+  .v46-tier-policy-item {
+    font-size: 10.5px; font-weight: 700;
+    color: #5A6072;
+    line-height: 1.65;
+    letter-spacing: -0.2px;
+  }
+  .v46-tier-policy-item b { color: #181600; font-weight: 900; }
 
   /* === 상단 헤더 (← 나사렛대점 + 쿠폰분석모드) === */
   .v28-top {
@@ -5928,6 +7011,332 @@ const state = {
 };
 
 // ============================================
+// v46: 매장 운영 점수 시스템 (본사 부담 비율 자동 산정)
+// ============================================
+// 4개 항목 × 25점 = 100점
+// 점수 = 본사 카톡 비용 부담 비율 (1:1 매핑)
+// 데이터 미집계 시 자동 25점 (본사 만점 처리)
+//
+// 룰:
+// 1. 가격 정책 준수: 위반 1건당 -3점 (최저 0)
+// 2. 자점매입 건수:   위반 1건당 -3점 (최저 0)
+// 3. 발주액 / 전월매출: 35% 이상 = 25점, 미만 = 0점 (바이너리)
+// 4. 매장 내 판촉물 인증: 전체 인증 = 25점, 1개라도 미인증 = 0점
+
+const SCORE_STORAGE_PREFIX = 'zerolab_store_score_';
+
+// 데모 데이터 (Supabase 연동 전까지 임시)
+// 실제 운영: 본사 admin에서 월 1회 자동 재산정 후 저장
+const DEMO_STORE_SCORES = {
+  'NS001': { price: { count: 0, hasData: true },  self: { count: 0, hasData: true },  order: { pct: 42, hasData: true },  promo: { count: 4, hasData: true }, calculatedAt: '2026-05-01' },
+  'CA002': { price: { count: 1, hasData: true },  self: { count: 0, hasData: true },  order: { pct: 38, hasData: true },  promo: { count: 4, hasData: true }, calculatedAt: '2026-05-01' },
+  'CA003': { price: { count: 0, hasData: true },  self: { count: 0, hasData: false }, order: { pct: 40, hasData: true },  promo: { count: 4, hasData: true }, calculatedAt: '2026-05-01' },
+  'SJ004': { price: { count: 2, hasData: true },  self: { count: 1, hasData: true },  order: { pct: 36, hasData: true },  promo: { count: 4, hasData: true }, calculatedAt: '2026-05-01' },
+  'CB005': { price: { count: 0, hasData: true },  self: { count: 0, hasData: true },  order: { pct: 45, hasData: true },  promo: { count: 3, hasData: true }, calculatedAt: '2026-05-01' },
+  'GG006': { price: { count: 0, hasData: false }, self: { count: 0, hasData: false }, order: { pct: 0, hasData: false }, promo: { count: 0, hasData: false }, calculatedAt: '2026-05-01' },  // 신규 매장 — 전부 미집계 → 100점
+  'GG007': { price: { count: 1, hasData: true },  self: { count: 0, hasData: true },  order: { pct: 40, hasData: true },  promo: { count: 4, hasData: true }, calculatedAt: '2026-05-01' },
+  'SE008': { price: { count: 4, hasData: true },  self: { count: 2, hasData: true },  order: { pct: 28, hasData: true },  promo: { count: 3, hasData: true }, calculatedAt: '2026-05-01' },  // 사고 매장 시뮬
+  'SE009': { price: { count: 0, hasData: true },  self: { count: 0, hasData: true },  order: { pct: 50, hasData: true },  promo: { count: 4, hasData: true }, calculatedAt: '2026-05-01' },
+};
+
+function getStoreScoreData(branchCode) {
+  if (!branchCode) return null;
+  // localStorage 우선 (본사가 수동 조정한 데이터 있으면)
+  try {
+    const saved = localStorage.getItem(SCORE_STORAGE_PREFIX + branchCode);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.price && parsed.self && parsed.order && parsed.promo) {
+        return parsed;
+      }
+    }
+  } catch(e) {}
+  // 데모 데이터 fallback
+  if (DEMO_STORE_SCORES[branchCode]) return DEMO_STORE_SCORES[branchCode];
+  // 미등록 매장 = 전부 미집계 = 자동 만점 (본사 부담 100%)
+  return { price: { count: 0, hasData: false }, self: { count: 0, hasData: false }, order: { pct: 0, hasData: false }, promo: { count: 0, hasData: false }, calculatedAt: null };
+}
+
+function calcCategoryScore(category, data) {
+  if (!data || !data.hasData) return 25;  // 미집계 = 만점
+  if (category === 'price' || category === 'self') {
+    return Math.max(0, 25 - (data.count || 0) * 3);
+  }
+  if (category === 'order') {
+    return (data.pct >= 35) ? 25 : 0;
+  }
+  if (category === 'promo') {
+    return (data.count === 4) ? 25 : 0;
+  }
+  return 0;
+}
+
+function calcStoreScore(branchCode) {
+  const d = getStoreScoreData(branchCode);
+  if (!d) return { total: 100, parts: { price: 25, self: 25, order: 25, promo: 25 }, data: null };
+  const parts = {
+    price: calcCategoryScore('price', d.price),
+    self:  calcCategoryScore('self',  d.self),
+    order: calcCategoryScore('order', d.order),
+    promo: calcCategoryScore('promo', d.promo),
+  };
+  const total = parts.price + parts.self + parts.order + parts.promo;
+  return { total, parts, data: d };
+}
+
+// 본사 부담 비율 (%) — 점수와 1:1
+function getHQBurdenRatio(branchCode) {
+  return calcStoreScore(branchCode).total;
+}
+
+// 등급 (S/A/B/C)
+function getScoreTier(total) {
+  if (total >= 80) return { tier: 'S', label: 'S등급 · 본사 우수 지원 매장', short: '우수 매장', color: '#15803D' };
+  if (total >= 60) return { tier: 'A', label: 'A등급 · 양호한 운영',       short: '양호',     color: '#1E40DD' };
+  if (total >= 40) return { tier: 'B', label: 'B등급 · 개선 권고',         short: '개선 필요', color: '#D97706' };
+  return                  { tier: 'C', label: 'C등급 · 본사 지원 제한 위험', short: '주의',     color: '#DC2626' };
+}
+
+// 항목별 측정값 텍스트
+function getScoreMetricText(key, data) {
+  if (!data || !data.hasData) {
+    if (key === 'self')  return '데이터 미집계 (M3 POS 연동 전) — 본사 만점 처리';
+    if (key === 'order') return '데이터 미집계 (신규 매장 등) — 본사 만점 처리';
+    return '데이터 미집계 — 본사 만점 처리';
+  }
+  if (key === 'price') return data.count === 0 ? '위반 0건 (지난 30일)' : `위반 ${data.count}건 (-${data.count * 3}점)`;
+  if (key === 'self')  return data.count === 0 ? '위반 0건 (POS 자동 추적)' : `위반 ${data.count}건 (-${data.count * 3}점)`;
+  if (key === 'order') return data.pct >= 35 ? `${data.pct}% (기준 35%↑ 충족)` : `${data.pct}% (기준 35% 미달 → 0점)`;
+  if (key === 'promo') return data.count === 4 ? '4/4 인증 완료' : `${data.count}/4 인증 (1개라도 미인증 → 0점)`;
+  return '';
+}
+
+// 카카오 친구톡 단가 (2026-05 검증, 타게팅 발송 기준)
+const KAKAO_UNIT_COST = 20;  // 원/건 — 성별/연령 타게팅 단가
+
+// ============================================
+// v46: 점주 부담 누적 추적 (월별 자동 리셋)
+// ============================================
+// 매월 1일 0시 → 새 키로 자동 전환 (zerolab_owner_spent_YYYY-MM_BRANCH)
+// 전월 누적분 = 발주 프로그램에서 일괄 차감 후 본사 admin이 마감 처리
+// 점주 모드 헤더에 항상 공개 (이번 달 누적)
+// 본사 admin에서 매장별 조회 가능
+
+const OWNER_SPENT_PREFIX = 'zerolab_owner_spent_';
+
+function getCurrentYearMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+// 데모 데이터: 이번 달 매장별 점주 누적 부담 (5월 시뮬)
+const DEMO_OWNER_SPENT_MAY = {
+  'NS001': 0,       // 100점 → 부담 0
+  'CA002': 240,     // 97점 → 4000×3% × 2번 = 240
+  'CA003': 0,       // 100점 (자점매입 미집계) → 부담 0
+  'SJ004': 720,     // 91점 → 4000×9% × 2번
+  'CB005': 3000,    // 75점 → 4000×25% × 3번
+  'GG006': 0,       // 100점 (신규) → 부담 0
+  'GG007': 360,     // 97점 → 4000×3% × 3번
+  'SE008': 13600,   // 32점 → 5000×68% × 4번 = 13,600
+  'SE009': 0,       // 100점 → 부담 0
+};
+
+function getOwnerMonthlySpent(branchCode) {
+  if (!branchCode) return 0;
+  const ym = getCurrentYearMonth();
+  const key = OWNER_SPENT_PREFIX + ym + '_' + branchCode;
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved !== null) return parseInt(saved) || 0;
+  } catch(e) {}
+  // 데모 fallback (이번 달이면 DEMO 데이터 사용)
+  if (DEMO_OWNER_SPENT_MAY[branchCode] !== undefined) {
+    return DEMO_OWNER_SPENT_MAY[branchCode];
+  }
+  return 0;
+}
+
+function addOwnerSpent(branchCode, amount, campaignName) {
+  if (!branchCode || amount <= 0) return;
+  const ym = getCurrentYearMonth();
+  const key = OWNER_SPENT_PREFIX + ym + '_' + branchCode;
+  try {
+    const current = getOwnerMonthlySpent(branchCode);
+    localStorage.setItem(key, String(current + amount));
+    // 이력 로그
+    const logKey = OWNER_SPENT_PREFIX + 'log_' + branchCode;
+    const log = JSON.parse(localStorage.getItem(logKey) || '[]');
+    log.unshift({ ym, amount, campaignName, ts: Date.now() });
+    localStorage.setItem(logKey, JSON.stringify(log.slice(0, 50)));
+  } catch(e) {}
+}
+
+// ============================================
+// v46: 단골 등급 시스템 (매장별 방문 횟수 기반)
+// ============================================
+// 4단계: 신규(0-4) / 단골(5-19) / VIP 단골(20-49) / 골드 단골(50+)
+// 평생 누적 + 3개월 미방문 시 1단계 강등
+// 매장별 등급 (전국 합산은 본사 admin에서 별도)
+
+const MEMBER_TIERS = [
+  { tier: 1, key: 'new',     emoji: '🧪', name: '신입연구원',  min: 0,   max: 15,   discountMax: 15, color: '#16A34A', bgGrad: ['#F0FDF4', '#DCFCE7'], borderColor: '#86EFAC' },
+  { tier: 2, key: 'regular', emoji: '🔬', name: '연구원',     min: 16,  max: 40,   discountMax: 20, color: '#B45309', bgGrad: ['#FFFBEB', '#FEF3C7'], borderColor: '#FDE68A' },
+  { tier: 3, key: 'vip',     emoji: '📊', name: '선임연구원',  min: 41,  max: 70,   discountMax: 25, color: '#1E40DD', bgGrad: ['#EFF6FF', '#DBEAFE'], borderColor: '#93C5FD' },
+  { tier: 4, key: 'gold',    emoji: '🏆', name: '수석연구원',  min: 71,  max: 9999, discountMax: 30, color: '#B91C1C', bgGrad: ['#FEF2F2', '#FEE2E2'], borderColor: '#FCA5A5' },
+];
+
+// 비회원 가상 등급 (모달 표시 + 회원가입 유도용)
+const GUEST_TIER = { tier: 0, key: 'guest', emoji: '👤', name: '비회원', min: 0, max: 0, discountMax: 15, color: '#6B7280', bgGrad: ['#F3F4F6', '#E5E7EB'], borderColor: '#D1D5DB' };
+
+const DEMO_REGULAR_INTERVAL = 30 * 86400 * 1000;  // 1개월 (강등 기준)
+
+function calcMemberTier(visits) {
+  for (let i = MEMBER_TIERS.length - 1; i >= 0; i--) {
+    if (visits >= MEMBER_TIERS[i].min) return MEMBER_TIERS[i];
+  }
+  return MEMBER_TIERS[0];
+}
+
+// 매장별 회원 등급 (1개월 미사용 시 강등 + 카운트 재설정)
+function getMemberTierData(member, branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  if (!member) return { visits: 0, tier: MEMBER_TIERS[0], demoted: false };
+
+  const rawVisits = getStoreVisitCount(member, branchCode);
+
+  // 강등 체크: 1개월 이내 사용 없으면 1단계 강등 + 카운트 = 강등 등급의 min
+  const lastUse = (member.usageHistory || [])
+    .filter(h => h.branchCode === branchCode)
+    .sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt))[0];
+
+  let effectiveVisits = rawVisits;
+  let demoted = false;
+  let baseTier = calcMemberTier(rawVisits);
+
+  if (lastUse && baseTier.tier > 1) {
+    const elapsed = Date.now() - new Date(lastUse.sentAt).getTime();
+    if (elapsed > DEMO_REGULAR_INTERVAL) {
+      const demotedTier = MEMBER_TIERS[baseTier.tier - 2];  // 한 단계 아래
+      effectiveVisits = demotedTier.min;  // 카운트 = 강등 등급의 최소값
+      baseTier = demotedTier;
+      demoted = true;
+    }
+  }
+
+  // 다음 등급까지
+  const nextTier = MEMBER_TIERS.find(t => t.min > effectiveVisits);
+  const remainingVisits = nextTier ? (nextTier.min - effectiveVisits) : 0;
+  const progress = nextTier
+    ? Math.min(100, ((effectiveVisits - baseTier.min) / (nextTier.min - baseTier.min)) * 100)
+    : 100;
+
+  return { visits: effectiveVisits, rawVisits, tier: baseTier, nextTier, remainingVisits, progress, demoted, lastVisit: lastUse };
+}
+
+// 손님이 받을 수 있는 캠페인 (등급별 할인율 제한 + 회원전용/전체 + 사용 마킹)
+function canMemberReceiveByTier(member, campaign, branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  if (!campaign.active) return false;
+  if (campaign.type === 'member' && !member) return false;  // 비회원은 회원전용 X
+
+  // 회원이면 등급별 할인율 제한 적용
+  if (member) {
+    const { tier } = getMemberTierData(member, branchCode);
+    if (campaign.discount > tier.discountMax) return false;
+  }
+  return true;
+}
+
+// ============================================
+// v46: 매장 즐겨찾기
+// ============================================
+const FAVORITE_STORAGE_KEY = 'zerolab_favorite_stores';
+
+function getFavoriteStores() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVORITE_STORAGE_KEY) || '[]');
+  } catch(e) { return []; }
+}
+function isStoreFavorite(branchCode) {
+  return getFavoriteStores().includes(branchCode || BRANCH.code);
+}
+function toggleStoreFavorite(branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  let favs = getFavoriteStores();
+  if (favs.includes(branchCode)) {
+    favs = favs.filter(c => c !== branchCode);
+  } else {
+    favs.push(branchCode);
+  }
+  try { localStorage.setItem(FAVORITE_STORAGE_KEY, JSON.stringify(favs)); } catch(e) {}
+  return favs.includes(branchCode);
+}
+
+// ============================================
+// v46: 만료 임박 쿠폰 추출 + Hero 자동 추천
+// ============================================
+// 만료 임박: 회원이 받은 캠페인 중 D-3 이내 미사용 (가장 임박한 것)
+function getMostUrgentExpiringCoupon(member, branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  if (!member || !member.receivedCampaignsMeta) return null;
+  const usedIds = (member.usedMemberCampaigns || []).concat(member.usedAllCampaigns || []);
+  const now = Date.now();
+  const urgent = (member.receivedCampaignsMeta || [])
+    .map(meta => {
+      const camp = CAMPAIGNS.find(c => c.id === meta.couponId);
+      if (!camp || !camp.active || usedIds.includes(camp.id)) return null;
+      const expireDate = meta.expireDate ? new Date(meta.expireDate).getTime() : null;
+      if (!expireDate) return null;
+      const daysLeft = Math.floor((expireDate - now) / 86400000);
+      if (daysLeft < 0 || daysLeft > 3) return null;
+      return { camp, daysLeft, expireDate };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.daysLeft - b.daysLeft);
+  return urgent[0] || null;
+}
+
+// Hero 자동 추천: 할인율 1순위 (단순) — 사용 가능한 쿠폰 중 가장 높은 할인율
+function getHeroCoupon(member, branchCode) {
+  branchCode = branchCode || BRANCH.code;
+  const isMember = !!member;
+  const usedIds = isMember
+    ? (member.usedMemberCampaigns || []).concat(member.usedAllCampaigns || [])
+    : [];
+  const candidates = CAMPAIGNS
+    .filter(c => c.active)
+    .filter(c => !usedIds.includes(c.id))
+    .filter(c => canMemberReceiveByTier(member, c, branchCode))
+    .filter(c => !c.pushOnly || (isMember && (c.pushedTo || []).includes(member.phone)));
+  if (candidates.length === 0) return null;
+  return candidates.sort((a, b) => b.discount - a.discount)[0];
+}
+
+// 그리드용 쿠폰 (Hero 제외, 활성 사용 가능 + 비회원에 회원전용 잠금 카드 분리)
+function getGridCoupons(member, branchCode, heroId) {
+  branchCode = branchCode || BRANCH.code;
+  const isMember = !!member;
+  const usedIds = isMember
+    ? (member.usedMemberCampaigns || []).concat(member.usedAllCampaigns || [])
+    : [];
+  const all = CAMPAIGNS
+    .filter(c => c.active)
+    .filter(c => !usedIds.includes(c.id))
+    .filter(c => c.id !== heroId)
+    .filter(c => !c.pushOnly || (isMember && (c.pushedTo || []).includes(member.phone)));
+
+  if (isMember) {
+    return { unlocked: all.filter(c => canMemberReceiveByTier(member, c, branchCode)), locked: [] };
+  }
+  // 비회원: 회원전용은 잠금, 전체쿠폰은 unlocked
+  return {
+    unlocked: all.filter(c => c.type === 'all'),
+    locked: all.filter(c => c.type === 'member'),
+  };
+}
+
+// ============================================
 // v42: 매장 확인 팝업 시스템 (발급 직전 1회 체크)
 // ============================================
 // sessionStorage에 매장코드 저장 → 같은 세션에선 1회만 확인
@@ -7155,20 +8564,21 @@ window.closeNewsletterDetail = function() {
 
 function renderMain() {
   const isMember = !!state.member;
-  // v6: 회원전용 사용 후 메인에서 영구 숨김
   const usedMemberIds = (isMember && state.member.usedMemberCampaigns) || [];
   const memberCamps = CAMPAIGNS.filter(c => c.active && c.type === 'member' && !c.pushOnly && !usedMemberIds.includes(c.id));
-  const allCamps = CAMPAIGNS.filter(c => c.active && c.type === 'all');
   const pushedCamps = isMember ? getPushedCampaignsForMember(state.member).filter(c => !usedMemberIds.includes(c.id)) : [];
 
-  // 회원전용 카드 - 색상 + 일러스트 매핑 (순환)
-  const memberColors = ['orange', 'blue', 'purple'];
-  const memberIllusts = [ZL_ASSETS.illustProteinBar, ZL_ASSETS.illustDrink, ZL_ASSETS.illustGift, ZL_ASSETS.illustExtra1, ZL_ASSETS.illustExtra2];
+  // v46: 단골 등급 + 즐겨찾기 + 만료 임박 + Hero 자동 선정
+  const tierData = isMember ? getMemberTierData(state.member, BRANCH.code) : null;
+  const isFav = isStoreFavorite(BRANCH.code);
+  const expiringSoon = isMember ? getMostUrgentExpiringCoupon(state.member, BRANCH.code) : null;
+  const heroCoupon = getHeroCoupon(state.member, BRANCH.code);
+  const grid = getGridCoupons(state.member, BRANCH.code, heroCoupon ? heroCoupon.id : null);
 
   return `
     <div class="v28-main">
 
-      <!-- 상단 헤더 -->
+      <!-- v46: 상단 헤더 (매장 + 즐겨찾기) -->
       <div class="v28-top">
         <div class="v28-top-left">
           <button class="v28-back-btn" id="back-to-welcome" aria-label="처음 화면으로">←</button>
@@ -7182,74 +8592,118 @@ function renderMain() {
             </div>
           </div>
         </div>
-        ${isMember
-          ? `<button class="v28-top-mode" id="mypage-btn"><span class="v28-top-mode-icon">⚡</span>마이페이지</button>`
-          : (state.mode === 'admin'
-              ? `<button class="v28-top-mode admin" id="mode-toggle"><span class="v28-top-mode-icon">⚡</span>고객모드</button>`
-              : ``)
-        }
+        <div class="v28-top-right-actions">
+          <button class="v46-fav-btn ${isFav ? 'active' : ''}" id="v46-fav-btn" aria-label="${isFav ? '즐겨찾기 해제' : '즐겨찾기 추가'}">
+            ${isFav ? '★' : '☆'}
+          </button>
+          ${isMember
+            ? `<button class="v28-top-mode" id="mypage-btn"><span class="v28-top-mode-icon">⚡</span>마이</button>`
+            : (state.mode === 'admin'
+                ? `<button class="v28-top-mode admin" id="mode-toggle"><span class="v28-top-mode-icon">⚡</span>고객모드</button>`
+                : ``)
+          }
+        </div>
       </div>
 
-      ${pushedCamps.length > 0 ? `
-        <div class="push-alert" id="push-alert-scroll" style="margin: 16px;">
-          <div class="push-alert-bell">🔔</div>
-          <div class="push-alert-text">
-            <div class="push-alert-title">새 쿠폰 ${pushedCamps.length}개가 도착했어요!</div>
-            <div class="push-alert-desc">카톡 알림으로 받으신 한정 쿠폰을 확인하세요</div>
+      <!-- v46: 단골 등급 진행 바 (회원만) -->
+      ${isMember && tierData ? `
+        <div class="v46-loyalty-card" id="v46-loyalty-card" role="button" aria-label="등급 상세 보기">
+          <div class="v46-loyalty-row">
+            <div class="v46-loyalty-tier" style="color: ${tierData.tier.color};">
+              <span class="v46-loyalty-emoji">${tierData.tier.emoji}</span>
+              <span>${tierData.tier.name}</span>
+              ${tierData.demoted ? '<span class="v46-loyalty-demoted">1개월 미사용 강등</span>' : ''}
+            </div>
+            <div class="v46-loyalty-visit">사용 <b>${tierData.visits}회</b></div>
           </div>
-          <div class="push-alert-arrow">↓</div>
+          <div class="v46-loyalty-progress">
+            <div class="v46-loyalty-progress-fill" style="width: ${tierData.progress}%; background: linear-gradient(90deg, ${tierData.tier.color}, ${tierData.tier.color}cc);"></div>
+          </div>
+          <div class="v46-loyalty-next">
+            ${tierData.nextTier
+              ? `다음 등급(${tierData.nextTier.emoji} ${tierData.nextTier.name})까지 <b>${tierData.remainingVisits}회</b> 더 ↑`
+              : '👑 최고 등급 달성!'}
+            <span class="v46-loyalty-detail-link">등급 안내 ›</span>
+          </div>
         </div>
-      ` : (!isMember && memberCamps.length > 0 ? `
-        <!-- 안내 배너: 박사고양이 + 가입 유도 -->
-        <div class="v28-banner" id="guest-hook">
-          <div class="v28-banner-text">
-            <div class="v28-banner-title">지금 <b>${memberCamps.length}개의 회원 쿠폰</b>을 놓치고 계세요</div>
-            <div class="v28-banner-sub">최대 ${Math.max(...memberCamps.map(c=>c.discount))}% 할인 · 카톡 1초 가입</div>
-            <button class="v28-banner-cta" id="header-signup-btn">
-              회원 가입 <span class="v28-banner-cta-arrow">›</span>
-            </button>
-          </div>
-          <img class="v28-banner-mascot" src="${ZL_ASSETS.catFull}" alt="ZERO LAB 박사" />
+      ` : (!isMember ? `
+        <div class="v46-guest-loyalty-card" id="v46-loyalty-card-guest" role="button">
+          <span class="v46-guest-emoji">👤</span>
+          <span class="v46-guest-text">비회원 · <b>회원 가입 시 🧪 신입연구원 시작</b></span>
+          <span class="v46-loyalty-detail-link">등급 안내 ›</span>
         </div>
       ` : '')}
 
-      ${pushedCamps.length > 0 ? `
-        <div class="v28-section-header" id="push-section">
-          <div class="v28-section-icon" style="background: linear-gradient(135deg, #BE185D, #EC4899); color: white;">🔔</div>
-          <div class="v28-section-title">방금 도착한 쿠폰</div>
-          <div class="v28-section-tag" style="background: #FCE7F3; color: #BE185D;">${pushedCamps.length}개 NEW</div>
-        </div>
-        <div class="coupon-list" style="padding: 0 16px;">
-          ${pushedCamps.map(c => renderCouponCard(c, isMember, true)).join('')}
-        </div>
-      ` : ''}
-
-      <!-- 회원전용 쿠폰 - 가로 스와이프 -->
-      ${memberCamps.length > 0 ? `
-        <div class="v28-section-header">
-          <div class="v28-section-icon">⭐</div>
-          <div class="v28-section-title">회원 전용 쿠폰</div>
-          <div class="v28-section-tag v28-section-tag-blue">${isMember ? '1인 1회' : memberCamps.length + '개'}</div>
-        </div>
-        <div class="v28-member-swipe">
-          ${memberCamps.map((c, idx) => renderV28MemberCard(
-            c,
-            isMember,
-            memberColors[idx % memberColors.length],
-            memberIllusts[idx % memberIllusts.length]
-          )).join('')}
+      <!-- v46: 만료 임박 알림 배너 (회원, D-3 이내 미사용 있을 때) -->
+      ${expiringSoon ? `
+        <div class="v46-expiry-banner" id="v46-expiry-banner" data-coupon="${expiringSoon.camp.id}">
+          <div class="v46-expiry-icon">⏰</div>
+          <div class="v46-expiry-body">
+            <div class="v46-expiry-title">${expiringSoon.daysLeft === 0 ? '오늘 만료' : `${expiringSoon.daysLeft}일 후 만료`}</div>
+            <div class="v46-expiry-sub">${expiringSoon.camp.name} ${expiringSoon.camp.discount}% 할인</div>
+          </div>
+          <div class="v46-expiry-action">지금 사용 →</div>
         </div>
       ` : ''}
 
-      <!-- 전체 사용 가능 쿠폰 (즉시 사용) -->
-      ${allCamps.length > 0 ? `
-        <div class="v28-section-header">
-          <div class="v28-section-icon" style="background: linear-gradient(135deg, #1E40DD, #3B82F6); color: white;">🎁</div>
-          <div class="v28-section-title">전체 사용 가능 쿠폰</div>
-          <div class="v28-section-tag">${allCamps.length}개 ›</div>
+      <!-- v46: 비회원 가입 유도 배너 -->
+      ${!isMember && memberCamps.length > 0 ? `
+        <div class="v46-join-banner" id="header-signup-btn">
+          <div class="v46-join-icon">⭐</div>
+          <div class="v46-join-text">
+            <div class="v46-join-title">카톡으로 1초 가입</div>
+            <div class="v46-join-sub">⭐ 회원 전용 쿠폰 ${memberCamps.length}개 즉시 받기</div>
+          </div>
+          <div class="v46-join-arrow">›</div>
         </div>
-        <div class="v28-all-list">
-          ${allCamps.map((c, idx) => renderV28AllCard(c, isMember, idx % 2 === 0 ? 'blue' : 'green')).join('')}
+      ` : ''}
+
+      <!-- v46: Hero 추천 쿠폰 (할인율 1순위) -->
+      ${heroCoupon ? `
+        <div class="v46-section-head">
+          <div class="v46-section-title">🌟 추천 쿠폰</div>
+        </div>
+        <div class="v46-hero-wrap">
+          <div class="v46-hero-card" data-campaign="${heroCoupon.id}">
+            <div class="v46-hero-percent-wrap">
+              <div class="v46-hero-percent">${heroCoupon.discount}<span class="v46-hero-unit">%</span></div>
+            </div>
+            <div class="v46-hero-info">
+              <div class="v46-hero-badges">
+                ${heroCoupon.type === 'member' ? '<span class="v46-hero-badge gold">⭐ 회원</span>' : '<span class="v46-hero-badge gold">전체</span>'}
+                ${(pushedCamps || []).some(p => p.id === heroCoupon.id) ? '<span class="v46-hero-badge red">🔥 NEW</span>' : ''}
+              </div>
+              <div class="v46-hero-name">${heroCoupon.name}</div>
+              <div class="v46-hero-meta">${heroCoupon.validMinutes || 30}분 사용 가능</div>
+            </div>
+            <div class="v46-hero-arrow">→</div>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- v46: 사용 가능한 쿠폰 그리드 -->
+      ${(grid.unlocked.length > 0 || grid.locked.length > 0) ? `
+        <div class="v46-section-head">
+          <div class="v46-section-title">🎁 ${isMember ? '사용 가능한 쿠폰' : '받을 수 있는 쿠폰'}</div>
+          <div class="v46-section-count">${grid.unlocked.length + grid.locked.length}개</div>
+        </div>
+        <div class="v46-mini-grid">
+          ${grid.unlocked.map(c => renderMiniCard(c, isMember, false)).join('')}
+          ${grid.locked.map(c => renderMiniCard(c, isMember, true)).join('')}
+        </div>
+      ` : ''}
+
+      <!-- v46: 내 쿠폰함 링크 -->
+      ${isMember ? `
+        <div class="v46-mycoupon-link" id="v46-mycoupon-link">
+          <div class="v46-mycoupon-left">
+            <div class="v46-mycoupon-icon">🎟️</div>
+            <div>
+              <div class="v46-mycoupon-name">내 쿠폰함</div>
+              <div class="v46-mycoupon-sub">사용한 쿠폰 ${usedMemberIds.length}개</div>
+            </div>
+          </div>
+          <div class="v46-mycoupon-arrow">›</div>
         </div>
       ` : ''}
 
@@ -7279,6 +8733,111 @@ function renderMain() {
 
     </div>
   `;
+}
+
+// v46: 미니 쿠폰 카드 (작은 2 컬럼)
+function renderMiniCard(c, isMember, isLocked) {
+  const member = isMember && state.member ? state.member : null;
+  const validMin = c.validMinutes || 30;
+  const isMemberCamp = c.type === 'member';
+  const cls = isLocked ? 'locked' : (isMemberCamp ? 'member' : '');
+  return `
+    <div class="v46-mini-card ${cls}" data-campaign="${c.id}" ${isLocked ? 'data-locked="1"' : ''}>
+      <div class="v46-mini-percent">${c.discount}<span class="v46-mini-unit">%</span></div>
+      <div class="v46-mini-name">${c.name}</div>
+      <div class="v46-mini-meta">${validMin}분 사용</div>
+    </div>
+  `;
+}
+
+// v46: 단골 등급 상세보기 모달 (회원/비회원 모두 호출 가능)
+function showLoyaltyTierModal() {
+  const isMember = !!state.member;
+  const tierData = isMember ? getMemberTierData(state.member, BRANCH.code) : null;
+  const currentTier = isMember ? tierData.tier : GUEST_TIER;
+
+  // 5단계 표시: 비회원 + 4 회원 등급
+  const allTiers = [GUEST_TIER, ...MEMBER_TIERS];
+  const tiersHTML = allTiers.map(t => {
+    const isCurrent = t.tier === currentTier.tier;
+    const benefits = getTierBenefits(t);
+    const discountText = t.tier === 0
+      ? '전체 쿠폰만 (회원전용 잠금)'
+      : t.tier === 1 ? '10~15%'
+      : t.tier === 2 ? '10~20%'
+      : t.tier === 3 ? '10~25%'
+      : '10~30%';
+    return `
+      <div class="v46-tier-row tier-${t.tier} ${isCurrent ? 'current' : ''}">
+        <div class="v46-tier-head">
+          <span class="v46-tier-emoji">${t.emoji}</span>
+          <span class="v46-tier-name">${t.name}</span>
+          <span class="v46-tier-range">${t.tier === 0 ? '가입 전' : (t.tier === 4 ? '71회+' : `${t.min}~${t.max}회`)}</span>
+        </div>
+        <div class="v46-tier-discount">받을 수 있는 쿠폰: <b style="color:${t.color};">${discountText}</b></div>
+        <div class="v46-tier-benefits">
+          ${benefits.map(b => `<div class="v46-tier-benefit">${b}</div>`).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const heroVisitsHTML = isMember
+    ? `<div class="v46-current-tier-visits" style="color:${currentTier.color};">쿠폰 사용 <b>${tierData.visits}회</b>${tierData.demoted ? ' <span style="font-size:9.5px;font-weight:900;color:white;background:#DC2626;padding:2px 6px;border-radius:5px;margin-left:4px;">강등됨</span>' : ''}</div>`
+    : `<div class="v46-current-tier-visits" style="color:${currentTier.color};">회원 가입 시 <b>🧪 신입연구원</b>부터 시작</div>`;
+
+  const heroProgressHTML = isMember
+    ? (tierData.nextTier ? `
+        <div class="v46-current-tier-progress" style="background: ${currentTier.color}22;">
+          <div class="v46-current-tier-progress-fill" style="width: ${tierData.progress}%; background: ${currentTier.color};"></div>
+        </div>
+        <div class="v46-current-tier-next" style="color:${currentTier.color};">다음 등급(${tierData.nextTier.emoji} ${tierData.nextTier.name})까지 <b>${tierData.remainingVisits}회</b> 더 ↑</div>
+      ` : '<div class="v46-current-tier-next" style="color:#B91C1C;">🏆 최고 등급 달성!</div>')
+    : `<div class="v46-current-tier-next" style="color:${currentTier.color};">카톡 1초 가입 시 즉시 신입연구원 → 첫구매 15% 쿠폰</div>`;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9998;padding:16px;animation:fadeIn 0.2s ease;';
+  modal.innerHTML = `
+    <div class="v46-tier-modal">
+      <div class="v46-tier-modal-header">
+        <button class="v46-tier-modal-close" id="v46-tier-close">✕</button>
+        <div class="v46-tier-modal-title">🔬 연구원 등급 안내</div>
+        <div class="v46-tier-modal-sub">${BRANCH.name} · 매장별로 등급 매김</div>
+      </div>
+      <div class="v46-tier-modal-body">
+        <div class="v46-current-tier" style="background: linear-gradient(135deg, ${currentTier.bgGrad[0]}, ${currentTier.bgGrad[1]}); border-color: ${currentTier.borderColor};">
+          <div class="v46-current-tier-label">${isMember ? '현재 내 등급' : '현재 등급'}</div>
+          <div class="v46-current-tier-name" style="color:${currentTier.color};">
+            <span style="font-size:24px;">${currentTier.emoji}</span>
+            <span>${currentTier.name}</span>
+          </div>
+          ${heroVisitsHTML}
+          ${heroProgressHTML}
+        </div>
+        <div class="v46-tier-list-title">📊 5단계 등급 시스템</div>
+        <div class="v46-tier-list">${tiersHTML}</div>
+        <div class="v46-tier-policy">
+          <div class="v46-tier-policy-title">ℹ️ 등급 정책</div>
+          <div class="v46-tier-policy-item">✓ <b>기준</b>: 쿠폰 사용 횟수 (받기만 한 건 제외)</div>
+          <div class="v46-tier-policy-item">✓ <b>매장별 등급</b>: 이 매장에서만 적용 (다른 매장은 별도)</div>
+          <div class="v46-tier-policy-item">✓ <b>평생 누적</b>: 사용 횟수는 처음부터 합산</div>
+          <div class="v46-tier-policy-item">✓ <b>강등</b>: 1개월 미사용 시 1단계 강등, 사용 횟수도 강등 등급의 최소값으로 재설정</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector('#v46-tier-close').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+}
+
+function getTierBenefits(t) {
+  if (t.tier === 0) return ['전체 사용 가능 쿠폰만 이용', '회원전용 쿠폰 잠금'];
+  if (t.tier === 1) return ['첫구매 15% 쿠폰 (1회)', '회원전용 쿠폰 잠금 해제'];
+  if (t.tier === 2) return ['신입연구원 혜택 포함', '회원전용 쿠폰 (10~20%) 자동 발송'];
+  if (t.tier === 3) return ['연구원 혜택 전체 포함', '선임 한정 캠페인 (최대 25%)', '가입 기념일 쿠폰'];
+  return ['선임연구원 혜택 전체 포함', '수석 단독 캠페인 (최대 30%)', '제로연구소 한정판 굿즈 (연 1회)'];
 }
 
 // 회원전용 쿠폰 카드 (이미지 없이 할인율을 hero로 강조)
@@ -7471,8 +9030,21 @@ function renderCoupon() {
 
         <div class="serial-display">
           <div class="serial-label">SERIAL NUMBER</div>
-          <div class="serial-code">${state.activeSerial}</div>
+          <div class="serial-code" id="v46-serial-code-display">${state.activeSerial}</div>
           <div class="barcode-wrap">${renderBarcode(state.activeSerial)}</div>
+          <button class="v46-serial-copy-btn" id="v46-serial-copy-btn" data-serial="${state.activeSerial}">
+            <span class="v46-serial-copy-icon">📋</span>
+            <span class="v46-serial-copy-text">시리얼번호 복사 · 저장</span>
+          </button>
+        </div>
+
+        <!-- v46: 재발급 불가 경고 (소비자 본인 책임 명시) -->
+        <div class="v46-serial-warning">
+          <div class="v46-serial-warning-icon">⚠️</div>
+          <div class="v46-serial-warning-body">
+            <div class="v46-serial-warning-title">시리얼 확인 후 닫으면 재발급되지 않습니다</div>
+            <div class="v46-serial-warning-sub">한번 노출된 쿠폰은 다시 사용할 수 없습니다. <b>시리얼번호를 저장</b>하시거나 결제를 마치고 닫아주세요. <b>사용 결정은 본인 책임</b>입니다.</div>
+          </div>
         </div>
 
         <div class="timer-row ${lowTime ? 'urgent' : ''}">
@@ -7489,7 +9061,7 @@ function renderCoupon() {
           <div class="use-step"><div class="use-step-num">2</div><div class="use-step-text">결제 시 <b>${c.discount}% 자동 할인</b></div></div>
         </div>
 
-        <button class="complete-btn" id="complete-btn">사용 완료</button>
+        <button class="complete-btn" id="complete-btn">결제 완료 · 닫기</button>
       </div>
 
       ${showUpsell ? `
@@ -7863,6 +9435,184 @@ function renderMypage() {
 // ============================================
 // ADMIN MODE — 본사 캠페인 발송 도구
 // ============================================
+
+// v46: 매장 운영 점수 카드 렌더링 (캠페인 신청 폼 상단)
+function renderStoreScoreCard() {
+  const branchCode = BRANCH.code;
+  const { total, parts, data } = calcStoreScore(branchCode);
+  const tier = getScoreTier(total);
+  const calculatedLabel = (data && data.calculatedAt) ? data.calculatedAt : '데이터 미집계';
+
+  // 향상 가이드 생성
+  const tips = [];
+  if (data) {
+    if (data.price && data.price.hasData && data.price.count > 0) {
+      const gain = Math.min(25, data.price.count * 3);
+      tips.push(`가격 정책 위반 ${data.price.count}건 해소 시 <b>+${gain}점</b>`);
+    }
+    if (data.self && data.self.hasData && data.self.count > 0) {
+      const gain = Math.min(25, data.self.count * 3);
+      tips.push(`자점매입 ${data.self.count}건 정상화 시 <b>+${gain}점</b>`);
+    }
+    if (data.order && data.order.hasData && data.order.pct < 35) {
+      tips.push(`발주액 35%↑ 회복 시 <b>+25점</b> (전부)`);
+    }
+    if (data.promo && data.promo.hasData && data.promo.count < 4) {
+      tips.push(`누락 판촉물 ${4 - data.promo.count}개 인증 시 <b>+25점</b> (전부)`);
+    }
+  }
+
+  // 항목 카드 4개
+  const detailRows = [
+    { key: 'price', name: '가격 정책 준수', pts: parts.price, d: data && data.price, text: getScoreMetricText('price', data && data.price) },
+    { key: 'self',  name: '자점매입 건수',   pts: parts.self,  d: data && data.self,  text: getScoreMetricText('self',  data && data.self) },
+    { key: 'order', name: '발주액 / 전월매출', pts: parts.order, d: data && data.order, text: getScoreMetricText('order', data && data.order) },
+    { key: 'promo', name: '매장 내 판촉물 인증', pts: parts.promo, d: data && data.promo, text: getScoreMetricText('promo', data && data.promo) },
+  ];
+
+  function pointCls(pts, hasData) {
+    if (!hasData) return 'no-data';
+    if (pts >= 20) return 'full';
+    if (pts >= 10) return 'partial';
+    return 'empty';
+  }
+  function iconChar(pts, hasData) {
+    if (!hasData) return 'i';
+    if (pts >= 20) return '✓';
+    if (pts >= 10) return '!';
+    return '✕';
+  }
+
+  const detailHTML = detailRows.map(r => {
+    const cls = pointCls(r.pts, r.d && r.d.hasData);
+    const ch = iconChar(r.pts, r.d && r.d.hasData);
+    const noDataBadge = (r.d && !r.d.hasData) ? ' <span class="score-no-data-badge">미집계 → 만점</span>' : '';
+    return `
+      <div class="score-detail-row">
+        <div class="score-detail-icon ${cls}">${ch}</div>
+        <div class="score-detail-body">
+          <div class="score-detail-name">${r.name}${noDataBadge}</div>
+          <div class="score-detail-value">${r.text}</div>
+        </div>
+        <div class="score-detail-points">
+          <div class="score-detail-points-num ${cls}">${r.pts}</div>
+          <div class="score-detail-points-max">/ 25점</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const tipsHTML = (tips.length === 0)
+    ? (total === 100
+        ? '<li>100점 만점 · 본사 100% 부담 유지 중</li>'
+        : `<li>측정 가능 항목 모두 만점 · 현재 ${total}점</li>`)
+    : tips.slice(0, 3).map(t => `<li>${t} (본사 부담 ↑)</li>`).join('');
+  const tipBoxCls = (tips.length === 0) ? 'score-tip-box full' : 'score-tip-box';
+  const tipTitleHTML = (tips.length === 0)
+    ? (total === 100 ? '🎉 만점 달성' : '✓ 측정 가능 항목 모두 만점')
+    : '💡 점수 향상 가이드';
+
+  return `
+    <div class="score-main-card tier-${tier.tier}">
+      <div style="font-size:13px;font-weight:900;color:#181600;letter-spacing:-0.3px;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        💰 본사 지원 비율
+        <span class="score-tier-tag ${tier.tier}">${tier.short}</span>
+      </div>
+
+      <div class="score-hero">
+        <div class="score-hero-label">내 매장 운영 점수</div>
+        <div>
+          <span class="score-hero-number tier-${tier.tier}">${total}</span>
+          <span class="score-hero-suffix">/ 100점</span>
+        </div>
+        <div class="score-hero-sub">${tier.label}</div>
+      </div>
+
+      <div class="score-progress">
+        <div class="score-progress-bar tier-${tier.tier}" style="width: ${total}%;"></div>
+      </div>
+
+      <div class="score-burden-split">
+        <div class="score-burden-side hq">
+          <div class="score-burden-label">본부 부담</div>
+          <div class="score-burden-percent">${total}%</div>
+        </div>
+        <div class="score-burden-side owner">
+          <div class="score-burden-label">점주 부담</div>
+          <div class="score-burden-percent">${100 - total}%</div>
+        </div>
+      </div>
+
+      <div class="score-notice">
+        <span>ℹ️</span>
+        <span><b>운영 점수 = 본사 부담 비율</b>. 매월 1일 자동 재산정. 데이터 미집계 시 본사 만점 처리.</span>
+      </div>
+
+      <details class="score-details-toggle">
+        <summary>📊 점수 상세 (4개 항목 × 25점) <span class="hint">눌러서 펼치기</span></summary>
+        <div style="margin-top:10px;">
+          ${detailHTML}
+          <div class="score-total">
+            <span class="score-total-label">총 운영 점수</span>
+            <span class="score-total-value">${total}<span class="small">/100</span></span>
+          </div>
+          <div class="${tipBoxCls}">
+            <div class="score-tip-title">${tipTitleHTML}</div>
+            <ul>${tipsHTML}</ul>
+          </div>
+          <div class="score-recalc-info">
+            <span>📅 다음 자동 재산정</span>
+            <b>2026-06-01</b>
+          </div>
+        </div>
+      </details>
+    </div>
+  `;
+}
+
+// v46: 메시지 입력 비용 칩 업데이트 (점수 기반 분담 표시)
+function updateBurdenChip(recipients, totalCost) {
+  const chipText = document.getElementById('admin-msg-burden-text');
+  if (!chipText) return;
+  const ratio = getHQBurdenRatio(BRANCH.code);
+  const hqAmt = Math.round(totalCost * ratio / 100);
+  const ownerAmt = totalCost - hqAmt;
+  if (totalCost === 0) {
+    chipText.innerHTML = `본사 ${ratio}% / 점주 ${100-ratio}%`;
+  } else {
+    chipText.innerHTML = `본사 <b>${hqAmt.toLocaleString()}원</b> (${ratio}%) / 점주 <b>${ownerAmt.toLocaleString()}원</b> (${100-ratio}%)`;
+  }
+}
+
+// v46: 신청 직전 최종 비용 요약 카드 갱신
+function updateFinalCostSummary(recipients, totalCost) {
+  const recEl = document.getElementById('final-recipients');
+  const totEl = document.getElementById('final-total-cost');
+  const hqAmtEl = document.getElementById('final-hq-amt');
+  const ownerAmtEl = document.getElementById('final-owner-amt');
+  const hqPctEl = document.getElementById('final-hq-pct');
+  const ownerPctEl = document.getElementById('final-owner-pct');
+  if (!recEl || !totEl) return;
+
+  const ratio = getHQBurdenRatio(BRANCH.code);
+  const hqAmt = Math.round(totalCost * ratio / 100);
+  const ownerAmt = totalCost - hqAmt;
+  recEl.textContent = recipients.toLocaleString() + '명';
+  totEl.textContent = totalCost.toLocaleString() + '원';
+  if (hqPctEl) hqPctEl.textContent = ratio;
+  if (ownerPctEl) ownerPctEl.textContent = 100 - ratio;
+  if (hqAmtEl) hqAmtEl.textContent = hqAmt.toLocaleString() + '원';
+  if (ownerAmtEl) ownerAmtEl.textContent = ownerAmt.toLocaleString() + '원';
+
+  // 발주 프로그램 차감 안내 갱신
+  const settleAddEl = document.getElementById('settlement-add');
+  const settleAfterEl = document.getElementById('settlement-after');
+  if (settleAddEl) settleAddEl.textContent = ownerAmt.toLocaleString() + '원';
+  if (settleAfterEl) {
+    const current = getOwnerMonthlySpent(BRANCH.code);
+    settleAfterEl.textContent = (current + ownerAmt).toLocaleString() + '원';
+  }
+}
+
 function renderAdmin() {
   const draft = state.adminDraft;
   // v7: 매장 단골만 표시 (전체 카톡 연동 회원 X)
@@ -7884,6 +9634,22 @@ function renderAdmin() {
           <button class="admin-header-back" id="admin-back-btn">← 손님 화면</button>
         </div>
         <div class="admin-header-sub">신규 캠페인을 만들고 타겟 회원에게 카톡 알림톡을 발송합니다</div>
+        ${(() => {
+          const monthlySpent = getOwnerMonthlySpent(BRANCH.code);
+          const ym = getCurrentYearMonth();
+          const [y, m] = ym.split('-');
+          return `
+        <div class="owner-spent-bar">
+          <div class="owner-spent-bar-left">
+            <span class="owner-spent-icon">💸</span>
+            <span class="owner-spent-label">${parseInt(m)}월 점주 부담 누적</span>
+          </div>
+          <div class="owner-spent-bar-right">
+            <b class="owner-spent-amount">${monthlySpent.toLocaleString()}원</b>
+            <span class="owner-spent-hint">${parseInt(m)+1}월 1일 발주 잔액에서 차감</span>
+          </div>
+        </div>`;
+        })()}
       </div>
 
       <div class="admin-content">
@@ -7968,35 +9734,49 @@ function renderAdmin() {
           <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 11px 13px; margin-bottom: 12px; font-size: 11px; color: #1E3A8A; font-weight: 600; line-height: 1.6;">
             💡 <b style="color: #1E40DD; font-weight: 800;">점주 신청 → 본사 승인 → 발송</b><br/>
             아래 양식 작성 후 신청하면 본사 운영팀이 검토합니다.<br/>
-            승인되면 자동으로 카톡 발송 (비용은 본사가 부담)
+            <b style="color:#1E40DD;font-weight:800;">카톡 비용 부담은 매장 운영 점수에 따라 자동 산정</b> (본사 X% / 점주 Y%)
           </div>
           <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FDE68A; border-radius: 8px; padding: 9px 11px; margin-bottom: 12px; font-size: 10.5px; color: #92400E; font-weight: 600; line-height: 1.5;">
             📌 점주는 <b style="color: #B45309; font-weight: 800;">회원전용 쿠폰 (10~30%)</b>만 신청 가능 · 전체가능 쿠폰은 본사 직접 운영
           </div>
 
-          <!-- v5: 캠페인 종류 선택 -->
+          <!-- v46: 캠페인 종류 세그먼트 탭 (카톡 발송 / 상시) -->
           <div style="font-size: 12px; font-weight: 800; color: #181600; margin-bottom: 8px; letter-spacing: -0.2px;">📌 캠페인 종류 선택</div>
           <div class="campaign-type-selector">
             <label class="campaign-type-option ${(draft.campaignType || 'push') === 'push' ? 'selected' : ''}" data-type="push">
               <input type="radio" name="campaignType" value="push" ${(draft.campaignType || 'push') === 'push' ? 'checked' : ''} />
               <div class="campaign-type-content">
-                <div class="campaign-type-title">📨 즉석 캠페인 (카톡 발송)</div>
-                <div class="campaign-type-desc">기존 회원에게 카톡 메시지 발송 · 본사 비용 부담<br/>월 1,000건 한도 · 발송 인원만큼 시리얼 필요</div>
+                <div class="campaign-type-title">📨 카톡 발송 캠페인</div>
               </div>
             </label>
             <label class="campaign-type-option ${draft.campaignType === 'qr' ? 'selected' : ''}" data-type="qr">
               <input type="radio" name="campaignType" value="qr" ${draft.campaignType === 'qr' ? 'checked' : ''} />
               <div class="campaign-type-content">
-                <div class="campaign-type-title">🎫 상시 쿠폰 (QR · 회원가입 유도)</div>
-                <div class="campaign-type-desc">QR 스캔 → 회원가입 시 자동 지급 · 카톡 발송 X<br/>회원당 1회 사용 후 소멸 (재발급 불가)</div>
+                <div class="campaign-type-title">🎫 상시 캠페인</div>
               </div>
             </label>
           </div>
 
-          <!-- v5: QR 타입 안내 배너 (qr 선택 시만 표시) -->
+          <!-- v46: 선택된 캠페인 타입 설명 카드 -->
+          <div class="campaign-type-desc-card" data-only-type="push">
+            <div class="desc-title">📨 카톡 발송 캠페인</div>
+            <div>· <b>회원가입자 대상 타게팅 카톡 발송</b> (성별/연령/단골 필터)</div>
+            <div>· 메시지 + 시리얼 첨부 → 회원 카톡으로 즉시 전송</div>
+            <div>· 비용 = 발송 인원 × 20원 → <b>운영 점수 비율로 분담</b></div>
+            <div>· 월 1,000건 한도 · 본사 승인 후 자동 발송</div>
+          </div>
+          <div class="campaign-type-desc-card qr" data-only-type="qr" style="display:none;">
+            <div class="desc-title">🎫 상시 캠페인</div>
+            <div>· <b>고객 앱에 쿠폰 상시 노출</b> (카톡 발송 X)</div>
+            <div>· 회원/비회원 누구나 받기 (회원당 1회 사용 후 소멸)</div>
+            <div>· 본사 카톡 비용 0원 · QR 스캔으로 신규 가입 유도 가능</div>
+            <div>· 신청 후 본사 승인 시 즉시 활성화 (만료일까지 자동 운영)</div>
+          </div>
+
+          <!-- 상시 캠페인 추가 안내 (qr 선택 시만 표시) -->
           <div data-only-type="qr" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px solid #6EE7B7; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; font-size: 11px; color: #065F46; font-weight: 700; line-height: 1.6; display:none;">
-            🎫 <b style="color: #047857; font-weight: 900;">상시 쿠폰 (QR형) 안내</b><br/>
-            <span style="font-weight:600;display:block;margin-top:3px;">· 신규 회원이 QR로 가입할 때마다 시스템이 자동으로 시리얼 1개 지급<br/>· 한 번 사용한 회원은 다시 못 받음 (회원 ID 단위 소멸)<br/>· 카톡 발송 없음 → 본사 카톡 비용 0원<br/>· 신청 후 본사 승인 시 즉시 활성화 (만료일까지 자동 분배)</span>
+            💡 <b style="color: #047857; font-weight: 900;">상시 캠페인 상세 안내</b><br/>
+            <span style="font-weight:600;display:block;margin-top:3px;">· QR 스캔 → 신규 회원이 가입할 때마다 시스템이 자동으로 시리얼 1개 지급<br/>· 한 번 사용한 회원은 다시 못 받음 (회원 ID 단위 소멸)<br/>· 카톡 발송 없음 → 본사 카톡 비용 0원<br/>· 신청 후 본사 승인 시 즉시 활성화 (만료일까지 자동 분배)</span>
           </div>
           <div class="admin-form-group">
             <div class="admin-input-group">
@@ -8080,7 +9860,7 @@ function renderAdmin() {
               <div style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #93C5FD; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 10.5px; color: #1E3A8A; font-weight: 600; line-height: 1.55;">
                 💡 POS사에서 받은 시리얼 엑셀을 첨부하세요.<br/>
                 형식: <code style="background:#FFFFFF;padding:1px 4px;border-radius:3px;font-size:10px;font-weight:800;color:#1E40DD;">XXXX-XXXX-XXXX-XXXX</code> (예: 0056-FE4D-3D84-BBCB)<br/>
-                <b style="color:#1E40DD;font-weight:800;">이 시리얼들은 모두 위 캠페인 (${draft.discount || 0}%) 으로 자동 매핑됩니다.</b>
+                <b id="serial-discount-note" style="color:#1E40DD;font-weight:800;">이 시리얼들은 모두 위 캠페인 (${draft.discount || 0}%) 으로 자동 매핑됩니다.</b>
               </div>
               <div style="background: #F9FAFB; border: 2px dashed #D1D5DB; border-radius: 10px; padding: 18px 14px; text-align: center; cursor: pointer; transition: all 0.15s;" id="campaign-serial-zone">
                 <div style="font-size: 24px; margin-bottom: 6px;">📁</div>
@@ -8101,36 +9881,27 @@ function renderAdmin() {
               </label>
               <textarea class="admin-input" id="admin-custom-message" rows="3" maxlength="1000" placeholder="예) 평일 점심 단백질바 25% 할인! 12-14시 한정 · 30분 내 사용" style="resize: vertical; font-family: inherit;">${draft.customMessage || ''}</textarea>
               <div class="msg-cost-row" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-                <div class="msg-cost-chip ok" id="admin-msg-status">
-                  <span class="msg-cost-icon">✓</span>
-                  <span id="admin-msg-status-text">친구톡(브랜드메시지) · 15원/건</span>
-                </div>
-                <div class="msg-cost-chip" style="background:#DCFCE7; color:#15803D; border-color:#86EFAC; font-weight:800;">
-                  <span class="msg-cost-icon">💰</span>
-                  본사 100% 부담
-                </div>
                 <div class="msg-cost-chip neutral">
                   <span class="msg-cost-icon">📊</span>
                   예상 발송: <b id="admin-msg-estimate-count" style="margin: 0 3px;">0건</b>
                 </div>
-                <div class="msg-cost-chip neutral">
-                  <span class="msg-cost-icon">💸</span>
-                  예상 비용: <b id="admin-msg-estimate-cost" style="margin: 0 3px;">0원</b>
-                </div>
               </div>
 
-              <!-- 정확한 단가 정보 -->
+              <!-- 카카오 메시지 단가 (본사 실비, 마진 0) -->
               <div style="background: #F8FAFD; border: 1px solid #E8EBF1; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 10.5px; color: #2A2E37; font-weight: 600; line-height: 1.55;">
                 <div style="font-weight:800;color:#181600;margin-bottom:4px;">📌 카카오 메시지 단가 (2026.1 시행, VAT 별도)</div>
                 <div>· 알림톡 8원 — 정보성만 (배송·결제 안내 등) <span style="color:#9CA3AF;">우리 쿠폰 마케팅엔 사용 불가</span></div>
-                <div>· <b style="color:#1E40DD;">친구톡(브랜드메시지) 15원</b> — 광고/마케팅 가능 <span style="color:#1E40DD;">→ 우리 영역</span></div>
+                <div>· <b style="color:#1E40DD;">친구톡(브랜드메시지) 20원</b> — 광고/마케팅 가능 (타게팅 발송 단가) <span style="color:#1E40DD;">→ 우리 영역</span></div>
                 <div>· 친구톡 이미지형 18원 / 와이드형 20원</div>
+                <div style="margin-top:7px;padding-top:7px;border-top:1px dashed #E8EBF1;color:#15803D;font-weight:800;">
+                  💡 본사가 카카오에 <b>직접 지불하는 실비 단가</b>입니다. 본사 마진 0원 · 운영 점수 비율대로 정직하게 분담합니다.
+                </div>
               </div>
 
               <!-- 반려 가능성 명시 -->
               <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 1px solid #FCD34D; border-radius: 8px; padding: 10px 12px; margin-top: 8px; font-size: 10.5px; color: #78350F; font-weight: 700; line-height: 1.55;">
                 ⚠️ <b style="color:#78350F;font-weight:900;">본사 검토 후 반려될 수 있어요</b><br/>
-                <span style="font-weight:600;display:block;margin-top:4px;">비용은 본사 100% 부담이라, 다음 경우 반려됩니다:</span>
+                <span style="font-weight:600;display:block;margin-top:4px;">비용 분담은 운영 점수 기반이고, 다음 경우 반려됩니다:</span>
                 <span style="font-weight:600;display:block;">· 매장 매출 대비 ROI가 낮은 경우</span>
                 <span style="font-weight:600;display:block;">· 메시지가 카카오 가이드 위반 시 (스팸성·과장 광고)</span>
                 <span style="font-weight:600;display:block;">· 같은 매장에서 단기간 반복 신청 시</span>
@@ -8237,43 +10008,6 @@ function renderAdmin() {
         <div class="admin-card" data-only-type="push">
           <div class="admin-card-title"><span class="admin-card-title-icon">📱</span>카톡 메시지 미리보기</div>
 
-          <!-- v40 메시지 구조 안내 (점주가 어떤 부분 입력하는지) -->
-          <div class="msg-structure-guide">
-            <div class="msg-structure-title">📋 메시지 구조 안내</div>
-            <div class="msg-structure-rows">
-              <div class="msg-structure-row gray">
-                <span class="msg-structure-dot gray"></span>
-                <span class="msg-structure-text">기본 양식</span>
-                <span class="msg-structure-tag">자동</span>
-              </div>
-              <div class="msg-structure-row gray">
-                <span class="msg-structure-dot gray"></span>
-                <span class="msg-structure-text">매장명 / 유효시간 / 버튼</span>
-                <span class="msg-structure-tag">자동</span>
-              </div>
-              <div class="msg-structure-row blue">
-                <span class="msg-structure-dot blue"></span>
-                <span class="msg-structure-text">캠페인 이름 + 할인율</span>
-                <span class="msg-structure-tag blue">위 폼 입력</span>
-              </div>
-              <div class="msg-structure-row yellow">
-                <span class="msg-structure-dot yellow"></span>
-                <span class="msg-structure-text"><b>점주 추가 메시지</b> ← 자유 입력</span>
-                <span class="msg-structure-tag yellow">선택</span>
-              </div>
-            </div>
-            <!-- 총 글자수 -->
-            <div class="msg-total-counter">
-              <span>📊 총 발송 글자수</span>
-              <span class="msg-total-counter-num">
-                <span id="admin-msg-total">~75</span> / 1,000자
-              </span>
-            </div>
-            <div class="msg-total-hint" id="admin-msg-readability">
-              ✓ 가독성 좋음 · 한 화면에 깔끔히 표시
-            </div>
-          </div>
-
           <div class="admin-preview-wrap">
             <div class="admin-preview-label">📱 실제 발송될 메시지</div>
             <div class="kakao-msg">
@@ -8322,13 +10056,71 @@ function renderAdmin() {
           </div>
         </div>
 
+        <!-- v46: 신청 직전 최종 요약 — 점수 + 발송비용 + 부담 분리 (push 전용) -->
+        <div data-only-type="push" style="margin-top: 6px;">
+          ${renderStoreScoreCard()}
+          ${(() => {
+            const baseCost = targetCount * KAKAO_UNIT_COST;
+            const ratio = getHQBurdenRatio(BRANCH.code);
+            const hqAmt = Math.round(baseCost * ratio / 100);
+            const ownerAmt = baseCost - hqAmt;
+            const currentSpent = getOwnerMonthlySpent(BRANCH.code);
+            const afterSpent = currentSpent + ownerAmt;
+            const ym = getCurrentYearMonth();
+            const m = parseInt(ym.split('-')[1]);
+            return `
+          <div class="final-cost-summary" id="final-cost-summary">
+            <div class="final-cost-row">
+              <span>발송 대상</span>
+              <b id="final-recipients">${targetCount}명</b>
+            </div>
+            <div class="final-cost-row">
+              <span>단가</span>
+              <b>${KAKAO_UNIT_COST}원 / 건</b>
+            </div>
+            <div class="final-cost-row total">
+              <span>총 발송 비용</span>
+              <b id="final-total-cost">${baseCost.toLocaleString()}원</b>
+            </div>
+            <div class="final-cost-divider"></div>
+            <div class="final-cost-row hq">
+              <span>본부 부담 (<span id="final-hq-pct">${ratio}</span>%)</span>
+              <b id="final-hq-amt">${hqAmt.toLocaleString()}원</b>
+            </div>
+            <div class="final-cost-row owner">
+              <span>점주 부담 (<span id="final-owner-pct">${100 - ratio}</span>%)</span>
+              <b id="final-owner-amt">${ownerAmt.toLocaleString()}원</b>
+            </div>
+
+            <div class="settlement-card">
+              <div class="settlement-title">📦 발주 프로그램 차감 안내</div>
+              <div class="settlement-row">
+                <span>${m}월 누적 (현재)</span>
+                <b id="settlement-current">${currentSpent.toLocaleString()}원</b>
+              </div>
+              <div class="settlement-row plus">
+                <span>＋ 이번 캠페인 점주 부담</span>
+                <b id="settlement-add">${ownerAmt.toLocaleString()}원</b>
+              </div>
+              <div class="settlement-row after">
+                <span>＝ 신청 후 ${m}월 누적</span>
+                <b id="settlement-after">${afterSpent.toLocaleString()}원</b>
+              </div>
+              <div class="settlement-note">
+                ※ ${m+1}월 1일에 발주 프로그램 잔액에서 일괄 차감
+              </div>
+            </div>
+          </div>`;
+          })()}
+        </div>
+
         <!-- push 타입: 발송 인원 표시 -->
         <button class="admin-send-btn" id="admin-send-btn" data-only-type="push" ${(targetCount === 0 || !draft.name) ? 'disabled' : ''}>
           📨 본사 승인 요청 (<span id="preview-target-count">${targetCount}</span>명 발송 예정)
         </button>
         <div data-only-type="push" style="font-size: 10.5px; color: #5A6072; text-align: center; margin-top: 8px; font-weight: 600; line-height: 1.5;">
           ※ 신청 후 본사 운영팀이 검토합니다 (보통 1영업일 이내)<br/>
-          ※ 승인 즉시 자동 발송 · 비용은 본사 100% 부담
+          ※ 승인 즉시 자동 발송 · 비용은 위 운영 점수에 따라 분담
         </div>
 
         <!-- qr 타입: QR 자동 지급 -->
@@ -8530,6 +10322,87 @@ function bind() {
   attachClick('guest-hook', () => openKakaoConnectModal());
   attachClick('mypage-btn', () => { state.screen = 'mypage'; render(); });
   attachClick('back-from-mypage', () => { state.screen = 'main'; render(); });
+
+  // v46: 매장 즐겨찾기 토글
+  attachClick('v46-fav-btn', () => {
+    const nowFav = toggleStoreFavorite(BRANCH.code);
+    toast(nowFav ? `⭐ ${BRANCH.name} 즐겨찾기 추가` : `☆ 즐겨찾기 해제`);
+    render();
+  });
+  // v46: 단골 등급 상세보기 모달 (회원 + 비회원 모두 진입 가능)
+  attachClick('v46-loyalty-card', () => showLoyaltyTierModal());
+  attachClick('v46-loyalty-card-guest', () => showLoyaltyTierModal());
+  // v46: 만료 임박 알림 클릭 → 해당 쿠폰으로 (현재는 토스트로 안내)
+  document.querySelectorAll('#v46-expiry-banner').forEach(el => {
+    el.addEventListener('click', () => {
+      const cid = el.dataset.coupon;
+      const camp = CAMPAIGNS.find(c => c.id === cid);
+      if (camp) toast(`🎟️ ${camp.name} 사용 가능`);
+    });
+  });
+  // v46: 미니 카드 + Hero 카드 클릭 (기존 v45 쿠폰 흐름 그대로 재현)
+  document.querySelectorAll('.v46-mini-card, .v46-hero-card').forEach(el => {
+    el.addEventListener('click', () => {
+      // 비회원 잠금 카드 → 가입 유도
+      if (el.dataset.locked === '1') {
+        openKakaoConnectModal();
+        return;
+      }
+      const cid = el.dataset.campaign;
+      const c = CAMPAIGNS.find(x => x.id === cid);
+      if (!c) return;
+      const isMember = !!state.member;
+
+      // === 회원전용 쿠폰 흐름 (카톡 알림톡 시뮬 → 시리얼) ===
+      if (c.type === 'member') {
+        if (!isMember) {
+          openKakaoConnectModal(c.discount);
+          return;
+        }
+        const alreadyClaimed = (state.member.receivedCampaigns || []).includes(c.id);
+        if (alreadyClaimed) {
+          toast('이미 발급받은 쿠폰입니다');
+          return;
+        }
+        withStoreConfirm(() => {
+          const serial = api.issueSerial(c.id);
+          if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+          state.member.receivedCampaigns = state.member.receivedCampaigns || [];
+          state.member.receivedCampaigns.push(c.id);
+          api.recordIssuance(state.member, c, serial);
+          persistMember(state.member);
+          openKakaoAlimtalkModal(c, serial, () => {
+            state.selectedCampaign = c;
+            state.activeSerial = serial;
+            state.secondsLeft = (c.validMin || 30) * 60;
+            state.screen = 'coupon';
+            startTimer();
+            render();
+          });
+        });
+        return;
+      }
+
+      // === 전체 사용 가능 쿠폰 흐름 (바로 시리얼 화면) ===
+      const cooldownMs = getCouponCooldown(c.id);
+      if (cooldownMs > 0) {
+        toast(`🔒 ${formatCooldown(cooldownMs)} 후에 다시 사용할 수 있어요`);
+        return;
+      }
+      withStoreConfirm(() => {
+        const serial = api.issueSerial(c.id);
+        if (!serial) { toast('재고가 모두 소진되었습니다'); return; }
+        state.selectedCampaign = c;
+        state.activeSerial = serial;
+        state.secondsLeft = (c.validMin || 30) * 60;
+        state.screen = 'coupon';
+        startTimer();
+        render();
+      });
+    });
+  });
+  // v46: 내 쿠폰함 (마이페이지로 이동)
+  attachClick('v46-mycoupon-link', () => { state.screen = 'mypage'; render(); });
   // v45: 카톡 수신 거부 토글 (정보통신망법 50조)
   attachClick('v45-marketing-toggle', () => {
     if (!state.member) return;
@@ -8776,6 +10649,40 @@ function bind() {
     }
     state.screen = 'used';
     render();
+  });
+
+  // v46: 시리얼번호 복사 버튼
+  attachClick('v46-serial-copy-btn', () => {
+    const btn = document.getElementById('v46-serial-copy-btn');
+    if (!btn) return;
+    const serial = btn.dataset.serial || state.activeSerial;
+    if (!serial) return;
+    const onCopied = () => {
+      btn.classList.add('copied');
+      btn.querySelector('.v46-serial-copy-icon').textContent = '✓';
+      btn.querySelector('.v46-serial-copy-text').textContent = '복사되었습니다 — 메모장 등에 저장하세요';
+      toast('📋 시리얼번호 복사됨');
+      setTimeout(() => {
+        if (!btn) return;
+        btn.classList.remove('copied');
+        const ic = btn.querySelector('.v46-serial-copy-icon');
+        const tx = btn.querySelector('.v46-serial-copy-text');
+        if (ic) ic.textContent = '📋';
+        if (tx) tx.textContent = '시리얼번호 복사 · 저장';
+      }, 2500);
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(serial).then(onCopied).catch(() => {
+          // 폴백: execCommand
+          fallbackCopy(serial, onCopied);
+        });
+      } else {
+        fallbackCopy(serial, onCopied);
+      }
+    } catch (e) {
+      fallbackCopy(serial, onCopied);
+    }
   });
   attachClick('upsell-kakao', () => openKakaoConnectModal());
   attachClick('back-to-main', () => {
@@ -9077,14 +10984,105 @@ function sendAdminRequest() {
       targetCount = (draft.serialFile && draft.serialFile.registered) || 0;
     }
 
-    showApprovalRequestModal(draft, targetCount);
+    // v46: POS/키오스크 일치 확인 팝업 (본사 승인 요청 직전)
+    showPosKioskConfirmModal(draft, targetCount, () => {
+      showApprovalRequestModal(draft, targetCount);
+    });
+}
+
+// v46: POS/키오스크 등록 일치 확인 팝업
+// 점주가 입력한 캠페인 조건과 매장 POS/키오스크에 실제 등록한 조건이 일치하는지
+// 본사 승인 요청 직전에 한 번 더 검증 (사고 방지)
+function showPosKioskConfirmModal(draft, targetCount, onConfirm) {
+  const type = draft.campaignType || 'push';
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9998;padding:16px;animation:fadeIn 0.2s ease;';
+
+  const conditionList = [
+    { label: '캠페인명',   value: draft.name || '-' },
+    { label: '할인율',    value: draft.discount + '%' },
+    { label: '사용 기간',  value: `${draft.startDate || '?'} ~ ${draft.endDate || '?'}` },
+    { label: '최소 결제',  value: (draft.minOrderAmount || 0).toLocaleString() + '원' },
+    { label: '쿠폰 발급 수', value: ((draft.serialFile && draft.serialFile.registered) || 0).toLocaleString() + '개' },
+  ];
+  const conditionRows = conditionList.map(c => `
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #E5E7EB;font-size:11.5px;">
+      <span style="color:#5A6072;font-weight:600;">${c.label}</span>
+      <span style="font-weight:800;color:#181600;">${c.value}</span>
+    </div>
+  `).join('');
+
+  modal.innerHTML = `
+    <div style="background:white;max-width:380px;width:100%;border-radius:18px;padding:20px 18px;box-shadow:0 20px 50px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:24px;">⚠️</div>
+        <h2 style="font-size:17px;font-weight:900;color:#181600;letter-spacing:-0.4px;margin-bottom:4px;">POS/키오스크 등록 확인</h2>
+        <p style="font-size:11.5px;color:#5A6072;font-weight:600;line-height:1.45;">본사에 신청하기 전에<br/>매장 시스템과 일치하는지 점검하세요</p>
+      </div>
+
+      <div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:11px;padding:11px 13px;margin-bottom:12px;font-size:11px;color:#92400E;font-weight:700;line-height:1.55;">
+        💡 <b style="color:#78350F;font-weight:900;">왜 한 번 더 확인하나요?</b><br/>
+        <span style="font-weight:600;">본사 시스템과 매장 POS가 다르게 등록되면 손님이 쿠폰을 못 쓰거나 가격 오류가 발생합니다. 두 시스템이 같은지 점주가 직접 검증해야 합니다.</span>
+      </div>
+
+      <div style="background:#F8FAFD;border:1px solid #E8EBF1;border-radius:11px;padding:11px 13px;margin-bottom:12px;">
+        <div style="font-size:11.5px;font-weight:900;color:#181600;margin-bottom:6px;letter-spacing:-0.2px;">📋 점주님이 입력하신 조건</div>
+        ${conditionRows}
+      </div>
+
+      <label style="display:flex;align-items:flex-start;gap:9px;padding:11px 13px;background:#EBF1FF;border:1.5px solid #93C5FD;border-radius:11px;cursor:pointer;margin-bottom:12px;user-select:none;">
+        <input type="checkbox" id="pos-confirm-check" style="width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:#1E40DD;cursor:pointer;" />
+        <span style="font-size:11.5px;color:#1E3A8A;font-weight:700;line-height:1.5;letter-spacing:-0.2px;">
+          매장 POS/키오스크에 <b style="color:#1E40DD;font-weight:900;">위 조건과 동일하게 쿠폰을 등록</b>했음을 확인했습니다
+        </span>
+      </label>
+
+      <div style="display:flex;gap:8px;">
+        <button id="pos-confirm-cancel" style="flex:1;padding:13px;background:#F3F4F6;color:#374151;border:1px solid #E5E7EB;border-radius:11px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:-0.2px;">
+          취소 · 다시 확인
+        </button>
+        <button id="pos-confirm-proceed" disabled style="flex:1.4;padding:13px;background:#CBD5E1;color:#94A3B8;border:0;border-radius:11px;font-size:12.5px;font-weight:900;cursor:not-allowed;font-family:inherit;letter-spacing:-0.2px;box-shadow:none;transition:all 0.15s;">
+          본사에 신청 →
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const check = modal.querySelector('#pos-confirm-check');
+  const proceedBtn = modal.querySelector('#pos-confirm-proceed');
+  const cancelBtn = modal.querySelector('#pos-confirm-cancel');
+
+  check.addEventListener('change', () => {
+    if (check.checked) {
+      proceedBtn.disabled = false;
+      proceedBtn.style.background = 'linear-gradient(135deg,#1E40DD,#3B82F6)';
+      proceedBtn.style.color = 'white';
+      proceedBtn.style.cursor = 'pointer';
+      proceedBtn.style.boxShadow = '0 6px 16px rgba(30,64,221,0.30)';
+    } else {
+      proceedBtn.disabled = true;
+      proceedBtn.style.background = '#CBD5E1';
+      proceedBtn.style.color = '#94A3B8';
+      proceedBtn.style.cursor = 'not-allowed';
+      proceedBtn.style.boxShadow = 'none';
+    }
+  });
+
+  cancelBtn.addEventListener('click', () => modal.remove());
+  proceedBtn.addEventListener('click', () => {
+    if (proceedBtn.disabled) return;
+    modal.remove();
+    if (typeof onConfirm === 'function') onConfirm();
+  });
 }
 
 // 본사 승인 요청 완료 모달
 function showApprovalRequestModal(draft, targetCount) {
   const type = draft.campaignType || 'push';
-  // === 정확한 단가: 친구톡(브랜드메시지) 15원/건 ===
-  const unitCost = 15;
+  // === 카카오 친구톡(브랜드메시지) 단가: 2026-05 검증, 타게팅 발송 20원/건 ===
+  const unitCost = KAKAO_UNIT_COST;  // 20원 — 성별/연령 타게팅 단가
   const msgType = '친구톡(브랜드메시지)';
   // qr 타입은 카톡 발송 없음 → 비용 0
   const totalCost = type === 'push' ? targetCount * unitCost : 0;
@@ -9107,6 +11105,13 @@ function showApprovalRequestModal(draft, targetCount) {
   };
 
   // 캠페인 정보 요약 — 타입별 다름
+  // v46: 점수 기반 본사/점주 부담 분리
+  const branchCode = BRANCH.code;
+  const hqRatio = getHQBurdenRatio(branchCode);
+  const tier = getScoreTier(hqRatio);
+  const hqAmt = Math.round(totalCost * hqRatio / 100);
+  const ownerAmt = totalCost - hqAmt;
+
   const summaryHTML = type === 'push' ? `
         <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
           <span style="color:#5A6072;font-weight:600;">캠페인</span>
@@ -9121,8 +11126,20 @@ function showApprovalRequestModal(draft, targetCount) {
           <span style="font-weight:800;">${targetCount}명 × ${unitCost}원</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;border-top:1px dashed #E8EBF1;margin-top:4px;padding-top:6px;">
-          <span style="color:#5A6072;font-weight:600;">예상 비용 (본사 부담)</span>
-          <span style="font-weight:900;color:#DC2626;">${totalCost.toLocaleString()}원</span>
+          <span style="color:#5A6072;font-weight:600;">총 발송 비용</span>
+          <span style="font-weight:900;color:#181600;">${totalCost.toLocaleString()}원</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
+          <span style="color:#5A6072;font-weight:600;">매장 운영 점수</span>
+          <span style="font-weight:900;color:${tier.color};">${hqRatio}점 · ${tier.short}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
+          <span style="color:#1E40DD;font-weight:700;">본부 부담 (${hqRatio}%)</span>
+          <span style="font-weight:900;color:#1E40DD;">${hqAmt.toLocaleString()}원</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
+          <span style="color:#B45309;font-weight:700;">점주 부담 (${100 - hqRatio}%)</span>
+          <span style="font-weight:900;color:#B45309;">${ownerAmt.toLocaleString()}원</span>
         </div>
   ` : `
         <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;">
@@ -9245,6 +11262,9 @@ function updateAdminPreview() {
   if (previewName) previewName.textContent = draft.name || '(캠페인 이름)';
   const previewDiscount = document.getElementById('preview-discount');
   if (previewDiscount) previewDiscount.innerHTML = `${draft.discount}<span class="kakao-campaign-discount-unit">% 할인</span>`;
+  // v46 버그 수정: 시리얼 안내 텍스트의 할인율도 동적 갱신
+  const serialNote = document.getElementById('serial-discount-note');
+  if (serialNote) serialNote.innerHTML = `이 시리얼들은 모두 위 캠페인 (${draft.discount || 0}%) 으로 자동 매핑됩니다.`;
   const previewPeriod = document.getElementById('preview-period');
   if (previewPeriod) previewPeriod.textContent = (draft.startDate && draft.endDate) ? `${draft.startDate} ~ ${draft.endDate}` : '미입력';
   const sendBtn = document.getElementById('admin-send-btn');
@@ -9271,7 +11291,7 @@ function updateAdminPreview() {
 // v38/v39 커스텀 메시지 글자수 + 비용 계산
 // === 정확한 카카오 단가 (2026.1.1 시행 기준, VAT 별도) ===
 //   - 알림톡: 8원 (정보성만 - 우리 쿠폰 마케팅엔 사용 불가)
-//   - 친구톡 텍스트: 15원 (광고/마케팅 가능 - 우리 케이스)
+//   - 친구톡(브랜드메시지) 텍스트형: 논타게팅 15원 / 타게팅 20원 (우리 케이스)
 //   - 친구톡 이미지: 18원
 //   - 친구톡 와이드: 20원
 // 쿠폰 마케팅은 카카오 정책상 친구톡(브랜드메시지) 영역
@@ -9326,10 +11346,9 @@ function updateAdminMsgCost() {
     }
   }
 
-  // 메시지 타입 — 우리 쿠폰 마케팅은 친구톡 텍스트형이 기본 (15원)
-  // 글자수에 따른 단가 변동 없음 (1,000자까지 동일)
-  // 가독성 경고만 표시
-  const unitCost = 15;  // 친구톡 텍스트형 (광고성 메시지)
+  // 메시지 타입 — 우리 쿠폰 마케팅은 친구톡 텍스트형 (타게팅 발송 20원/건)
+  // 글자수에 따른 단가 변동 없음 (1,000자까지 동일) / 가독성 경고만 표시
+  const unitCost = KAKAO_UNIT_COST;  // 20원
   const msgType = '친구톡(브랜드메시지)';
   let statusClass = 'ok', statusIcon = '✓', statusText = `${msgType} · ${unitCost}원/건`;
 
@@ -9365,11 +11384,31 @@ function updateAdminMsgCost() {
   if (estCount) estCount.textContent = recipients.toLocaleString() + '건';
   const estCost = document.getElementById('admin-msg-estimate-cost');
   if (estCost) estCost.textContent = totalCost.toLocaleString() + '원';
+  // v46: 점수 기반 본사/점주 부담 분리 갱신
+  updateBurdenChip(recipients, totalCost);
+  updateFinalCostSummary(recipients, totalCost);
 }
 
 function attachClick(id, fn) {
   const el = document.getElementById(id);
   if (el) el.addEventListener('click', fn);
+}
+
+// v46: 클립보드 복사 폴백 (navigator.clipboard 미지원 브라우저용)
+function fallbackCopy(text, onSuccess) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (typeof onSuccess === 'function') onSuccess();
+  } catch (e) {
+    toast('⚠️ 복사 실패 — 직접 입력해주세요');
+  }
 }
 
 // ============================================
